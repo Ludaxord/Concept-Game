@@ -3,32 +3,38 @@
 
 #include "MainCharacter.h"
 
-// Sets default values
-AMainCharacter::AMainCharacter()
-{
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
+// Sets default values
+AMainCharacter::AMainCharacter() {
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = true;
+
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(GetMesh(), "head"); // Attach camera to end of boom
+	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
+	FollowCamera->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
 }
 
 // Called when the game starts or when spawned
-void AMainCharacter::BeginPlay()
-{
+void AMainCharacter::BeginPlay() {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
-void AMainCharacter::Tick(float DeltaTime)
-{
+void AMainCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-
