@@ -6,9 +6,30 @@
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class ECombatState : uint8 {
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
+enum class ECharacterSoundState : uint8 {
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
+enum class ECharacterMontage: uint8 {
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+USTRUCT(BlueprintType)
+struct FInterpLocation {
+	GENERATED_BODY()
+
+};
+
+
 UCLASS()
-class CONCEPT_GAME_API AMainCharacter : public ACharacter
-{
+class CONCEPT_GAME_API AMainCharacter : public ACharacter {
 	GENERATED_BODY()
 
 public:
@@ -19,7 +40,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
