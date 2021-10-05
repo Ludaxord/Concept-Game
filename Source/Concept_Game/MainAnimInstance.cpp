@@ -3,3 +3,6 @@
 
 #include "MainAnimInstance.h"
 
+UMainAnimInstance::UMainAnimInstance() {
+	
+}
