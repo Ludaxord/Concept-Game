@@ -8,6 +8,7 @@
 UMainAnimInstance::UMainAnimInstance(): Speed(0.0f),
                                         bIsInAir(false),
                                         bIsAccelerating(false),
+                                        bRunning(false),
                                         MovementOffsetYaw(0.0f),
                                         LastMovementOffsetYaw(0.0f),
                                         bAiming(false),
