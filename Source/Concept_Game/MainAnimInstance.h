@@ -7,6 +7,15 @@
 #include "AttackType.h"
 #include "MainAnimInstance.generated.h"
 
+UENUM(BlueprintType)
+enum class EActionState: uint8 {
+	EAS_Aiming UMETA(DisplayName = "Aiming"),
+	EAS_Hip UMETA(DisplayName = "Hip"),
+	EAS_Reloading UMETA(DisplayName = "Reloading"),
+	EAS_InAir UMETA(DisplayName = "InAir"),
+	EAS_MAX UMETA(DisplayName = "DefaultMAX"),
+};
+
 /**
  * 
  */
@@ -16,14 +25,64 @@ class CONCEPT_GAME_API UMainAnimInstance : public UAnimInstance {
 public:
 	UMainAnimInstance();
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateAnimationProperties(float DeltaTime);
+
+	virtual void NativeInitializeAnimation() override;
+
+protected:
+	void TurnInPlace();
+
+	void Lean(float DeltaTime);
+
+public:
 	FORCEINLINE EAttackType GetCurrentAttackType() const {
 		return CurrentAttackType;
 	}
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	class AMainCharacter* MainCharacter;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Combat", meta= (AllowPrivateAccess = "true"))
 	EAttackType CurrentAttackType;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	EActionState ActionState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	bool bEquipping;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta= (AllowPrivateAccess = "true"))
 	bool bIsAimingAvailable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	bool bIsInAir;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	bool bIsAccelerating;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	bool bAiming;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	bool bReloading;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	bool bTurnInPlace;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crouching", meta = (AllowPrivateAccess = "true"))
+	bool bCrouching;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float MovementOffsetYaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float LastMovementOffsetYaw;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
+	float RootYawOffset;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta= (AllowPrivateAccess = "true"))
+	float Speed;
 };
