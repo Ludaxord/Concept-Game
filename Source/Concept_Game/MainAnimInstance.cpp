@@ -5,18 +5,20 @@
 
 #include "MainCharacter.h"
 
-UMainAnimInstance::UMainAnimInstance(): Speed(0.0f),
+UMainAnimInstance::UMainAnimInstance(): CurrentAttackType(EAttackType::EAT_RightHandFireWeapon),
+                                        ActionState(EActionState::EAS_Hip),
                                         bIsInAir(false),
                                         bIsAccelerating(false),
                                         bRunning(false),
+                                        bAiming(false),
+                                        bReloading(false),
+                                        bTurnInPlace(false),
+                                        bCrouching(false),
+                                        bCrawling(false),
                                         MovementOffsetYaw(0.0f),
                                         LastMovementOffsetYaw(0.0f),
-                                        bAiming(false),
                                         RootYawOffset(0.0f),
-                                        bReloading(false),
-                                        ActionState(EActionState::EAS_Hip),
-                                        bTurnInPlace(false),
-                                        CurrentAttackType(EAttackType::EAT_RightHandFireWeapon) {
+                                        Speed(0.0f) {
 
 }
 
