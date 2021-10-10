@@ -67,8 +67,25 @@ public:
 	void LookUpAtRate(float Rate);
 	void LookUp(float Value);
 
+	void UseWeapon();
+
+	void AimingButtonPressed();
+	void AimingButtonReleased();
+
+	void AimingFieldOfView();
+
+	void FireButtonPressed();
+	void FireButtonReleased();
+
+	void StartFireTimer();
+
+	UFUNCTION()
+	void AutoFireReset();
+
 	void ConstructCameraBoom();
 	void ConstructFollowCamera();
+
+	void PlayMontage(ECharacterMontage CharacterMontage);
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))

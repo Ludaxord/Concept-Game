@@ -18,27 +18,30 @@ AMainCharacter::AMainCharacter():
 	MouseHipLookUpRate(1.0f),
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
-	Health(100.0f),
-	MaxHealth(100.0f),
+	bAiming(false),
 	bAttackButtonPressed(false),
 	bAimingButtonPressed(false),
 	bShouldAttack(false),
+	CameraDefaultFOV(0.0f),
+	CameraZoomedFOV(35.0f),
+	CameraCurrentFOV(0.0f),
 	bCrouching(false),
 	bRunning(false),
-	BaseMovementSpeed(450.0f),
+	CombatState(ECombatState::ECS_Unoccupied),
 	CrouchMovementSpeed(300.0f),
-	AimingMovementSpeed(350.0f),
 	RunningMovementSpeed(650.0f),
 	CrawlingMovementSpeed(250.0f),
+	AimingMovementSpeed(350.0f),
+	BaseMovementSpeed(450.0f),
 	CrouchCharacterVisibility(50.0f),
 	RunningCharacterVisibility(100.0f),
-	BaseCharacterVisibility(80.0f),
 	CrawlingCharacterVisibility(30.0f),
+	BaseCharacterVisibility(80.0f),
 	StandingCapsuleHalfHeight(88.0f),
 	CrouchingCapsuleHalfHeight(44.0f),
 	CrawlingCapsuleHalfHeight(22.0f),
-	CombatState(ECombatState::ECS_Unoccupied),
-	bAiming(false) {
+	Health(100.0f),
+	MaxHealth(100.0f) {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructCameraBoom();
@@ -54,6 +57,13 @@ AMainCharacter::AMainCharacter():
 void AMainCharacter::BeginPlay() {
 	Super::BeginPlay();
 
+	if (FollowCamera) {
+		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
+	}
+
+	//TODO: Add Weapon and inventory (Depend on game progress)
+	//TODO: Add Ammo (Depend on game progress)
 }
 
 // Called every frame
@@ -120,4 +130,31 @@ void AMainCharacter::ConstructFollowCamera() {
 	FollowCamera->SetupAttachment(GetMesh(), "head"); // Attach camera to end of boom
 	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
 	FollowCamera->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
+}
+
+void AMainCharacter::UseWeapon() {
+}
+
+void AMainCharacter::AimingButtonPressed() {
+}
+
+void AMainCharacter::AimingButtonReleased() {
+}
+
+void AMainCharacter::AimingFieldOfView() {
+}
+
+void AMainCharacter::FireButtonPressed() {
+}
+
+void AMainCharacter::FireButtonReleased() {
+}
+
+void AMainCharacter::StartFireTimer() {
+}
+
+void AMainCharacter::AutoFireReset() {
+}
+
+void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage) {
 }

@@ -92,6 +92,24 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
 	float YawDelta;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
+	float Pitch;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta= (AllowPrivateAccess = "true"))
 	float Speed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	float RecoilWeight;
+
+	float RotationCurve;
+
+	float RotationCurveValueLastFrame;
+
+	float TIPCharacterYaw;
+
+	float TIPCharacterYawLastFrame;
+
+	FRotator CharacterRotation;
+
+	FRotator CharacterRotationLastFrame;
 };
