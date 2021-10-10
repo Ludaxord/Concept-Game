@@ -10,7 +10,6 @@
 AMainCharacter::AMainCharacter():
 	BaseTurnRate(45.0f),
 	BaseLookUpRate(45.0f),
-	bAiming(false),
 	HipTurnRate(90.0f),
 	HipLookUpRate(90.0f),
 	AimingTurnRate(20.0f),
@@ -18,18 +17,37 @@ AMainCharacter::AMainCharacter():
 	MouseHipTurnRate(1.0f),
 	MouseHipLookUpRate(1.0f),
 	MouseAimingTurnRate(0.6f),
-	MouseAimingLookUpRate(0.6f) {
+	MouseAimingLookUpRate(0.6f),
+	Health(100.0f),
+	MaxHealth(100.0f),
+	bAttackButtonPressed(false),
+	bAimingButtonPressed(false),
+	bShouldAttack(false),
+	bCrouching(false),
+	bRunning(false),
+	BaseMovementSpeed(450.0f),
+	CrouchMovementSpeed(300.0f),
+	AimingMovementSpeed(350.0f),
+	RunningMovementSpeed(650.0f),
+	CrawlingMovementSpeed(250.0f),
+	CrouchCharacterVisibility(50.0f),
+	RunningCharacterVisibility(100.0f),
+	BaseCharacterVisibility(80.0f),
+	CrawlingCharacterVisibility(30.0f),
+	StandingCapsuleHalfHeight(88.0f),
+	CrouchingCapsuleHalfHeight(44.0f),
+	CrawlingCapsuleHalfHeight(22.0f),
+	CombatState(ECombatState::ECS_Unoccupied),
+	bAiming(false) {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	ConstructCameraBoom();
+	ConstructFollowCamera();
+
+	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
+	bUseControllerRotationPitch = false;
 
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(GetMesh(), "head"); // Attach camera to end of boom
-	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
-	FollowCamera->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
 }
 
 // Called when the game starts or when spawned
@@ -90,4 +108,16 @@ void AMainCharacter::LookUpAtRate(float Rate) {
 void AMainCharacter::LookUp(float Value) {
 	float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
 	AddControllerPitchInput(Value * LookUpScaleFactor);
+}
+
+void AMainCharacter::ConstructCameraBoom() {
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+}
+
+void AMainCharacter::ConstructFollowCamera() {
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	FollowCamera->SetupAttachment(GetMesh(), "head"); // Attach camera to end of boom
+	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
+	FollowCamera->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
 }
