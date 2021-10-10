@@ -72,10 +72,25 @@ public:
 	void AimingButtonPressed();
 	void AimingButtonReleased();
 
+	void RunningButtonPressed();
+	void RunningButtonReleased();
+
+	void ChangePoseButtonPressed();
+
+	void Jump() override;
+
+	void Crouching();
+	void Crawling();
+	void Standing();
+
+	void Aim();
+
+	void StopAiming();
+
 	void AimingFieldOfView();
 
-	void FireButtonPressed();
-	void FireButtonReleased();
+	void UseWeaponButtonPressed();
+	void UseWeaponButtonReleased();
 
 	void StartFireTimer();
 
@@ -86,6 +101,12 @@ public:
 	void ConstructFollowCamera();
 
 	void PlayMontage(ECharacterMontage CharacterMontage);
+
+	UFUNCTION(BlueprintCallable)
+	void GrapClip();
+
+	UFUNCTION(BlueprintCallable)
+	void ReleaseClip();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
@@ -210,6 +231,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	float BaseMovementSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float CrouchGroundFriction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float CrawlingGroundFriction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float BaseGroundFriction;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Stealth", meta = (AllowPrivateAccess = "true"))
 	float CrouchCharacterVisibility;

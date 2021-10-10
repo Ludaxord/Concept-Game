@@ -4,6 +4,7 @@
 #include "MainCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
@@ -21,6 +22,9 @@ AMainCharacter::AMainCharacter():
 	bAiming(false),
 	bAttackButtonPressed(false),
 	bAimingButtonPressed(false),
+	CrouchGroundFriction(100.0f),
+	CrawlingGroundFriction(100.0f),
+	BaseGroundFriction(2.0f),
 	bShouldAttack(false),
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
@@ -32,7 +36,7 @@ AMainCharacter::AMainCharacter():
 	RunningMovementSpeed(650.0f),
 	CrawlingMovementSpeed(250.0f),
 	AimingMovementSpeed(350.0f),
-	BaseMovementSpeed(450.0f),
+	BaseMovementSpeed(350.0f),
 	CrouchCharacterVisibility(50.0f),
 	RunningCharacterVisibility(100.0f),
 	CrawlingCharacterVisibility(30.0f),
@@ -82,6 +86,16 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpAtRate);
 	PlayerInputComponent->BindAxis("Turn", this, &AMainCharacter::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
+
+	PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AMainCharacter::RunningButtonPressed);
+	PlayerInputComponent->BindAction("Running", IE_Released, this, &AMainCharacter::RunningButtonReleased);
+	PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::StopJumping);
+	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &AMainCharacter::AimingButtonPressed);
+	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
+	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
+	PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
 }
 
 void AMainCharacter::MoveForward(float Value) {
@@ -136,18 +150,91 @@ void AMainCharacter::UseWeapon() {
 }
 
 void AMainCharacter::AimingButtonPressed() {
+	bAimingButtonPressed = true;
+	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping && CombatState !=
+		ECombatState::ECS_Stunned)
+		Aim();
 }
 
 void AMainCharacter::AimingButtonReleased() {
+	bAimingButtonPressed = false;
+	StopAiming();
+}
+
+void AMainCharacter::RunningButtonPressed() {
+}
+
+void AMainCharacter::RunningButtonReleased() {
+}
+
+void AMainCharacter::ChangePoseButtonPressed() {
+	//TODO: Fix, Add Enum to check Current Pose...
+	if (!bCrouching && !bCrawling) {
+		UE_LOG(LogTemp, Error, TEXT("Crouch From Stand"));
+		Crouching();
+	}
+	else if (bCrouching && !bCrawling) {
+		UE_LOG(LogTemp, Error, TEXT("Crawl From Crouch"));
+		bCrouching = false;
+		Crawling();
+	}
+	else if (!bCrouching && bCrawling) {
+		UE_LOG(LogTemp, Error, TEXT("Crouch From Crawl"));
+		bCrawling = false;
+		Crouching();
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Stand"));
+		Standing();
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Crouching: %s, Crawling %s"), (bCrouching ? TEXT("true" ): TEXT("false")),
+	       (bCrawling ? TEXT("true" ): TEXT("false")));
+}
+
+void AMainCharacter::Jump() {
+	Super::Jump();
+}
+
+void AMainCharacter::Crouching() {
+	if (!GetCharacterMovement()->IsFalling())
+		bCrouching = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+	GetCharacterMovement()->GroundFriction = CrouchGroundFriction;
+}
+
+void AMainCharacter::Crawling() {
+	if (!GetCharacterMovement()->IsFalling())
+		bCrawling = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = CrawlingMovementSpeed;
+	GetCharacterMovement()->GroundFriction = CrawlingGroundFriction;
+}
+
+void AMainCharacter::Standing() {
+	if (!GetCharacterMovement()->IsFalling()) {
+		bCrawling = false;
+		bCrouching = false;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+	GetCharacterMovement()->GroundFriction = BaseGroundFriction;
+}
+
+void AMainCharacter::Aim() {
+}
+
+void AMainCharacter::StopAiming() {
 }
 
 void AMainCharacter::AimingFieldOfView() {
 }
 
-void AMainCharacter::FireButtonPressed() {
+void AMainCharacter::UseWeaponButtonPressed() {
 }
 
-void AMainCharacter::FireButtonReleased() {
+void AMainCharacter::UseWeaponButtonReleased() {
 }
 
 void AMainCharacter::StartFireTimer() {
@@ -157,4 +244,10 @@ void AMainCharacter::AutoFireReset() {
 }
 
 void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage) {
+}
+
+void AMainCharacter::GrapClip() {
+}
+
+void AMainCharacter::ReleaseClip() {
 }
