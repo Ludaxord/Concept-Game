@@ -15,6 +15,7 @@ UMainAnimInstance::UMainAnimInstance(): CurrentAttackType(EAttackType::EAT_Right
                                         bAiming(false),
                                         bReloading(false),
                                         bTurnInPlace(false),
+                                        PoseType(EPoseType::EPT_Stand),
                                         bCrouching(false),
                                         bCrawling(false),
                                         MovementOffsetYaw(0.0f),
@@ -30,6 +31,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
 	if (MainCharacter) {
 		bCrouching = MainCharacter->GetCrouching();
+		bCrawling = MainCharacter->GetCrawling();
 		bReloading = MainCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = MainCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 		//TODO: Add FABRIK

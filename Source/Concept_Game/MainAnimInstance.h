@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "AttackType.h"
+#include "PoseType.h"
 #include "MainAnimInstance.generated.h"
 
 UENUM(BlueprintType)
@@ -62,6 +63,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	bool bIsAccelerating;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
+	bool bTurnInPlace;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Pose", meta = (AllowPrivateAccess = "true"))
+	EPoseType PoseType;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	bool bRunning;
 
@@ -70,9 +77,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	bool bReloading;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
-	bool bTurnInPlace;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crouching", meta = (AllowPrivateAccess = "true"))
 	bool bCrouching;
