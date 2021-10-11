@@ -3,3 +3,5 @@
 
 #include "FireWeapon.h"
 
+AFireWeapon::AFireWeapon() {
+}

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon.h"
-#include "MysteryWeapon.generated.h"
+#include "WeaponAnimInstance.h"
+#include "FireWeaponAnimInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API AMysteryWeapon : public AWeapon
+class CONCEPT_GAME_API UFireWeaponAnimInstance : public UWeaponAnimInstance
 {
 	GENERATED_BODY()
 	

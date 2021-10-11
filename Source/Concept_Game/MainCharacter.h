@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "AmmoType.h"
+#include "CyberWeapon.h"
+#include "FireWeapon.h"
+#include "MeleeWeapon.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
@@ -164,12 +167,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ReloadMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
-	UParticleSystem* ImpactParticles;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
-	UParticleSystem* BeamParticles;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 
@@ -197,7 +194,13 @@ private:
 	class AWeapon* EquippedWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AWeapon> DefaultWeaponClass;
+	TSubclassOf<AFireWeapon> DefaultFireWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ACyberWeapon> DefaultCyberWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AMeleeWeapon> DefaultMeleeWeaponClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	class AItem* TraceHitItem;
