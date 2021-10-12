@@ -7,6 +7,7 @@
 #include "CyberWeapon.h"
 #include "FireWeapon.h"
 #include "MeleeWeapon.h"
+#include "PoseType.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
@@ -205,11 +206,16 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	class AItem* TraceHitItem;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = "true"))
-	bool bCrouching;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	EPoseType PoseType;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = "true"))
-	bool bCrawling;
+	EPoseType LastPoseType;
+
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	// bool bCrouching;
+
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	// bool bCrawling;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Movement", meta = (AllowPrivateAccess = "true"))
 	bool bRunning;
@@ -298,13 +304,17 @@ public:
 		return bAiming;
 	}
 
-	FORCEINLINE bool GetCrawling() const {
-		return bCrawling;
+	FORCEINLINE EPoseType GetCurrentPoseType() const {
+		return PoseType;
 	}
 
-	FORCEINLINE bool GetCrouching() const {
-		return bCrouching;
-	}
+	// FORCEINLINE bool GetCrawling() const {
+	// 	return bCrawling;
+	// }
+
+	// FORCEINLINE bool GetCrouching() const {
+	// 	return bCrouching;
+	// }
 
 	FORCEINLINE bool GetRunning() const {
 		return bRunning;

@@ -16,8 +16,6 @@ UMainAnimInstance::UMainAnimInstance(): CurrentAttackType(EAttackType::EAT_Right
                                         bReloading(false),
                                         bTurnInPlace(false),
                                         PoseType(EPoseType::EPT_Stand),
-                                        bCrouching(false),
-                                        bCrawling(false),
                                         MovementOffsetYaw(0.0f),
                                         LastMovementOffsetYaw(0.0f),
                                         RootYawOffset(0.0f),
@@ -30,8 +28,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		MainCharacter = Cast<AMainCharacter>(TryGetPawnOwner());
 
 	if (MainCharacter) {
-		bCrouching = MainCharacter->GetCrouching();
-		bCrawling = MainCharacter->GetCrawling();
+		PoseType = MainCharacter->GetCurrentPoseType();
 		bReloading = MainCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = MainCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 		//TODO: Add FABRIK
@@ -125,7 +122,7 @@ void UMainAnimInstance::TurnInPlace() {
 
 	RecoilWeight = bTurnInPlace
 		               ? (bReloading || bEquipping ? 1.0f : 0.0f)
-		               : (bCrouching
+		               : (PoseType == EPoseType::EPT_Crouch
 			                  ? (bReloading || bEquipping ? 1.0f : 0.1f)
 			                  : (bAiming || bReloading || bEquipping ? 1.0f : 0.5f));
 }

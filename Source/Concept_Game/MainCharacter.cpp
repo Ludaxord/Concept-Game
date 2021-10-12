@@ -29,7 +29,6 @@ AMainCharacter::AMainCharacter():
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
 	CameraCurrentFOV(0.0f),
-	bCrouching(false),
 	bRunning(false),
 	CombatState(ECombatState::ECS_Unoccupied),
 	CrouchMovementSpeed(300.0f),
@@ -44,6 +43,8 @@ AMainCharacter::AMainCharacter():
 	StandingCapsuleHalfHeight(88.0f),
 	CrouchingCapsuleHalfHeight(44.0f),
 	CrawlingCapsuleHalfHeight(22.0f),
+	PoseType(EPoseType::EPT_Stand),
+	LastPoseType(EPoseType::EPT_Stand),
 	Health(100.0f),
 	MaxHealth(100.0f) {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -168,28 +169,32 @@ void AMainCharacter::RunningButtonReleased() {
 }
 
 void AMainCharacter::ChangePoseButtonPressed() {
-	//TODO: Fix, Add Enum to check Current Pose...
-	if (!bCrouching && !bCrawling) {
-		UE_LOG(LogTemp, Error, TEXT("Crouch From Stand"));
+	switch (PoseType) {
+	case EPoseType::EPT_Stand:
 		Crouching();
+		break;
+	case EPoseType::EPT_Crouch: {
+		if (LastPoseType == EPoseType::EPT_Crawl) {
+			Standing();
+		}
+		else {
+			Crawling();
+		}
 	}
-	else if (bCrouching && !bCrawling) {
-		UE_LOG(LogTemp, Error, TEXT("Crawl From Crouch"));
-		bCrouching = false;
-		Crawling();
-	}
-	else if (!bCrouching && bCrawling) {
-		UE_LOG(LogTemp, Error, TEXT("Crouch From Crawl"));
-		bCrawling = false;
+	break;
+	case EPoseType::EPT_Crawl:
 		Crouching();
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("Stand"));
+		break;
+	default:
 		Standing();
+		break;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Crouching: %s, Crawling %s"), (bCrouching ? TEXT("true" ): TEXT("false")),
-	       (bCrawling ? TEXT("true" ): TEXT("false")));
+	const TEnumAsByte<EPoseType> PoseEnum = PoseType;
+	FString EnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
+
+	UE_LOG(LogTemp, Warning, TEXT("Pose: %s, Stand: %s"), *EnumAsString,
+	       (PoseType == EPoseType::EPT_Stand ? TEXT("true") : TEXT("false")))
 }
 
 void AMainCharacter::Jump() {
@@ -198,7 +203,7 @@ void AMainCharacter::Jump() {
 
 void AMainCharacter::Crouching() {
 	if (!GetCharacterMovement()->IsFalling())
-		bCrouching = true;
+		PoseType = EPoseType::EPT_Crouch;
 
 	GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
 	GetCharacterMovement()->GroundFriction = CrouchGroundFriction;
@@ -206,20 +211,20 @@ void AMainCharacter::Crouching() {
 
 void AMainCharacter::Crawling() {
 	if (!GetCharacterMovement()->IsFalling())
-		bCrawling = true;
+		PoseType = EPoseType::EPT_Crawl;
 
 	GetCharacterMovement()->MaxWalkSpeed = CrawlingMovementSpeed;
 	GetCharacterMovement()->GroundFriction = CrawlingGroundFriction;
+	LastPoseType = PoseType;
 }
 
 void AMainCharacter::Standing() {
-	if (!GetCharacterMovement()->IsFalling()) {
-		bCrawling = false;
-		bCrouching = false;
-	}
+	if (!GetCharacterMovement()->IsFalling())
+		PoseType = EPoseType::EPT_Stand;
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 	GetCharacterMovement()->GroundFriction = BaseGroundFriction;
+	LastPoseType = PoseType;
 }
 
 void AMainCharacter::Aim() {
