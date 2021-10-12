@@ -79,7 +79,7 @@ public:
 	void RunningButtonPressed();
 	void RunningButtonReleased();
 
-	void ChangePoseButtonPressed();
+	void ChangePoseButtonPressed(FKey Key);
 
 	void Jump() override;
 

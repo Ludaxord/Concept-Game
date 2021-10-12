@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter():
@@ -97,6 +98,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
+
 }
 
 void AMainCharacter::MoveForward(float Value) {
@@ -168,7 +170,10 @@ void AMainCharacter::RunningButtonPressed() {
 void AMainCharacter::RunningButtonReleased() {
 }
 
-void AMainCharacter::ChangePoseButtonPressed() {
+void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
+	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
+	auto KeyTime = Player->GetInputKeyTimeDown(Key);
+
 	switch (PoseType) {
 	case EPoseType::EPT_Stand:
 		Crouching();
@@ -178,6 +183,7 @@ void AMainCharacter::ChangePoseButtonPressed() {
 			Standing();
 		}
 		else {
+			//TODO: Enable crawling only when long press button
 			Crawling();
 		}
 	}
@@ -193,8 +199,8 @@ void AMainCharacter::ChangePoseButtonPressed() {
 	const TEnumAsByte<EPoseType> PoseEnum = PoseType;
 	FString EnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
 
-	UE_LOG(LogTemp, Warning, TEXT("Pose: %s, Stand: %s"), *EnumAsString,
-	       (PoseType == EPoseType::EPT_Stand ? TEXT("true") : TEXT("false")))
+	UE_LOG(LogTemp, Warning, TEXT("Pose: %s, Pressed Key %s"), *EnumAsString,
+	       *(Key.GetDisplayName().ToString()))
 }
 
 void AMainCharacter::Jump() {
