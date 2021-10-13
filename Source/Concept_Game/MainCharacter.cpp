@@ -4,6 +4,7 @@
 #include "MainCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -76,6 +77,7 @@ void AMainCharacter::BeginPlay() {
 void AMainCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	InterpCapsuleHalfHeight(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -249,6 +251,52 @@ void AMainCharacter::UseWeaponButtonReleased() {
 }
 
 void AMainCharacter::StartFireTimer() {
+}
+
+void AMainCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
+	float TargetCapsuleHalfHeight = 0;
+	float InterpSpeed = 20.0f;
+	switch (PoseType) {
+
+	case EPoseType::EPT_Stand:
+		TargetCapsuleHalfHeight = StandingCapsuleHalfHeight;
+		break;
+	case EPoseType::EPT_Crouch:
+		TargetCapsuleHalfHeight = CrouchingCapsuleHalfHeight;
+		break;
+	case EPoseType::EPT_Run:
+		TargetCapsuleHalfHeight = StandingCapsuleHalfHeight;
+		break;
+	case EPoseType::EPT_Aim:
+		TargetCapsuleHalfHeight = StandingCapsuleHalfHeight;
+		break;
+	case EPoseType::EPT_Crawl:
+		TargetCapsuleHalfHeight = 34.0f;
+		InterpSpeed = 1.f;
+		break;
+	}
+
+	const float InterpHalfHeight = FMath::FInterpTo(GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+	                                                TargetCapsuleHalfHeight,
+	                                                DeltaTime,
+	                                                InterpSpeed);
+
+	const float DeltaCapsuleHalfHeight = InterpHalfHeight - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	const FVector MeshOffset = {0.0f, 0.0f, -DeltaCapsuleHalfHeight};
+	GetMesh()->AddLocalOffset(MeshOffset);
+
+	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
+
+	UE_LOG(LogTemp, Warning,
+	       TEXT(
+		       "Capsule: Capsule Half Height: %f Interp Half Height: %f Scaled Capsule Height: %f Delta Capsule Half Height: %f DeltaTime: %f"
+	       ),
+	       TargetCapsuleHalfHeight,
+	       InterpHalfHeight,
+	       GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+	       DeltaCapsuleHalfHeight,
+	       DeltaTime
+	);
 }
 
 void AMainCharacter::AutoFireReset() {

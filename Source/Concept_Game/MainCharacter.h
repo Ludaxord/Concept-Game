@@ -98,6 +98,8 @@ public:
 
 	void StartFireTimer();
 
+	void InterpCapsuleHalfHeight(float DeltaTime);
+
 	UFUNCTION()
 	void AutoFireReset();
 
