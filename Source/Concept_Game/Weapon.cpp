@@ -4,4 +4,9 @@
 #include "Weapon.h"
 
 AWeapon::AWeapon() {
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AWeapon::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
 }

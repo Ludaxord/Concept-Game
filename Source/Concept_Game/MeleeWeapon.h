@@ -7,6 +7,14 @@
 #include "Weapon.h"
 #include "MeleeWeapon.generated.h"
 
+USTRUCT()
+struct FMeleeWeaponDataTable : public FWeaponDataTable {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EMeleeWeaponType MeleeWeaponType;
+};
+
 /**
  * 
  */
