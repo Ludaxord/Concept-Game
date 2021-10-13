@@ -80,6 +80,7 @@ public:
 	void RunningButtonReleased();
 
 	void ChangePoseButtonPressed(FKey Key);
+	void ChangePoseAxisButtonPressed(float Value);
 
 	void Jump() override;
 
@@ -184,6 +185,8 @@ private:
 	float ShootFireDuration;
 
 	bool bFiringBullet;
+
+	float PoseAxisValueCounter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float CameraDefaultFOV;

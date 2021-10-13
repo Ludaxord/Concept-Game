@@ -35,6 +35,7 @@ AMainCharacter::AMainCharacter():
 	CombatState(ECombatState::ECS_Unoccupied),
 	CrouchMovementSpeed(300.0f),
 	RunningMovementSpeed(650.0f),
+	PoseAxisValueCounter(0),
 	CrawlingMovementSpeed(250.0f),
 	AimingMovementSpeed(350.0f),
 	BaseMovementSpeed(350.0f),
@@ -88,6 +89,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMainCharacter::TurnRate);
 	PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("PoseChange", this, &AMainCharacter::ChangePoseAxisButtonPressed);
 	PlayerInputComponent->BindAxis("Turn", this, &AMainCharacter::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
 
@@ -176,18 +178,20 @@ void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
 	auto KeyTime = Player->GetInputKeyTimeDown(Key);
 
+
 	switch (PoseType) {
 	case EPoseType::EPT_Stand:
 		Crouching();
 		break;
 	case EPoseType::EPT_Crouch: {
-		if (LastPoseType == EPoseType::EPT_Crawl) {
-			Standing();
-		}
-		else {
-			//TODO: Enable crawling only when long press button
-			Crawling();
-		}
+		Standing();
+		// if (LastPoseType == EPoseType::EPT_Crawl) {
+		// 	Standing();
+		// }
+		// else {
+		// 	//TODO: Enable crawling only when long press button
+		// 	Crawling();
+		// }
 	}
 	break;
 	case EPoseType::EPT_Crawl:
@@ -201,8 +205,21 @@ void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
 	const TEnumAsByte<EPoseType> PoseEnum = PoseType;
 	FString EnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
 
-	UE_LOG(LogTemp, Warning, TEXT("Pose: %s, Pressed Key %s"), *EnumAsString,
-	       *(Key.GetDisplayName().ToString()))
+	UE_LOG(LogTemp, Warning, TEXT("Pose: %s, Pressed Key %s, Key Time %f Key Value"), *EnumAsString,
+	       *(Key.GetDisplayName().ToString()), KeyTime)
+}
+
+void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
+	UE_LOG(LogTemp, Error, TEXT("Axis Button Value: %f PoseAxisValueCounter: %f"), Value, PoseAxisValueCounter)
+	if (PoseAxisValueCounter > 80) {
+		Crawling();
+	}
+
+	if (Value == 0)
+		PoseAxisValueCounter = 0;
+	else
+		PoseAxisValueCounter += Value;
+
 }
 
 void AMainCharacter::Jump() {
@@ -287,16 +304,16 @@ void AMainCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
 
-	UE_LOG(LogTemp, Warning,
-	       TEXT(
-		       "Capsule: Capsule Half Height: %f Interp Half Height: %f Scaled Capsule Height: %f Delta Capsule Half Height: %f DeltaTime: %f"
-	       ),
-	       TargetCapsuleHalfHeight,
-	       InterpHalfHeight,
-	       GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
-	       DeltaCapsuleHalfHeight,
-	       DeltaTime
-	);
+	// UE_LOG(LogTemp, Warning,
+	//        TEXT(
+	// 	       "Capsule: Capsule Half Height: %f Interp Half Height: %f Scaled Capsule Height: %f Delta Capsule Half Height: %f DeltaTime: %f"
+	//        ),
+	//        TargetCapsuleHalfHeight,
+	//        InterpHalfHeight,
+	//        GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+	//        DeltaCapsuleHalfHeight,
+	//        DeltaTime
+	// );
 }
 
 void AMainCharacter::AutoFireReset() {
