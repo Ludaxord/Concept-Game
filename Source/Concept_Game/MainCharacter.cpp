@@ -90,11 +90,12 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMainCharacter::TurnRate);
 	PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpAtRate);
 	PlayerInputComponent->BindAxis("PoseChange", this, &AMainCharacter::ChangePoseAxisButtonPressed);
+	PlayerInputComponent->BindAxis("Running", this, &AMainCharacter::RunningButtonPressed);
 	PlayerInputComponent->BindAxis("Turn", this, &AMainCharacter::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
 
-	PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AMainCharacter::RunningButtonPressed);
-	PlayerInputComponent->BindAction("Running", IE_Released, this, &AMainCharacter::RunningButtonReleased);
+	// PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AMainCharacter::RunningButtonPressed);
+	// PlayerInputComponent->BindAction("Running", IE_Released, this, &AMainCharacter::RunningButtonReleased);
 	PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::StopJumping);
@@ -168,10 +169,14 @@ void AMainCharacter::AimingButtonReleased() {
 	StopAiming();
 }
 
-void AMainCharacter::RunningButtonPressed() {
+void AMainCharacter::RunningButtonPressed(float Value) {
+	bRunning = (PoseType == EPoseType::EPT_Stand && Value > 0);
+	UE_LOG(LogTemp, Warning, TEXT("Running %s"), bRunning ? TEXT("true") : TEXT("false"))
 }
 
 void AMainCharacter::RunningButtonReleased() {
+	if (PoseType == EPoseType::EPT_Stand)
+		bRunning = false;
 }
 
 void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
@@ -185,13 +190,6 @@ void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
 		break;
 	case EPoseType::EPT_Crouch: {
 		Standing();
-		// if (LastPoseType == EPoseType::EPT_Crawl) {
-		// 	Standing();
-		// }
-		// else {
-		// 	//TODO: Enable crawling only when long press button
-		// 	Crawling();
-		// }
 	}
 	break;
 	case EPoseType::EPT_Crawl:
@@ -210,7 +208,6 @@ void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
 }
 
 void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
-	UE_LOG(LogTemp, Error, TEXT("Axis Button Value: %f PoseAxisValueCounter: %f"), Value, PoseAxisValueCounter)
 	if (PoseAxisValueCounter > 80) {
 		Crawling();
 	}

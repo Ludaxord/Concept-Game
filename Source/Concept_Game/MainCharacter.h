@@ -76,7 +76,7 @@ public:
 	void AimingButtonPressed();
 	void AimingButtonReleased();
 
-	void RunningButtonPressed();
+	void RunningButtonPressed(float Value);
 	void RunningButtonReleased();
 
 	void ChangePoseButtonPressed(FKey Key);

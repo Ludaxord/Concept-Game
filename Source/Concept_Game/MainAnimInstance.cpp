@@ -31,6 +31,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		PoseType = MainCharacter->GetCurrentPoseType();
 		bReloading = MainCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = MainCharacter->GetCombatState() == ECombatState::ECS_Equipping;
+		bRunning = MainCharacter->GetRunning();
 		//TODO: Add FABRIK
 
 		FVector Velocity = MainCharacter->GetVelocity();
