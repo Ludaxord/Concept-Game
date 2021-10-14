@@ -89,6 +89,12 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 protected:
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	virtual void BeginPlay() override;
+
+	void StopFalling();
+
 	FTimerHandle ThrowWeaponTimer;
 
 	float ThrowWeaponTime;

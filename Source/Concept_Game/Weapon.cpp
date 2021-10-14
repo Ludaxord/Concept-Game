@@ -10,3 +10,14 @@ AWeapon::AWeapon() {
 void AWeapon::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 }
+
+void AWeapon::OnConstruction(const FTransform& Transform) {
+	Super::OnConstruction(Transform);
+}
+
+void AWeapon::BeginPlay() {
+	Super::BeginPlay();
+}
+
+void AWeapon::StopFalling() {
+}
