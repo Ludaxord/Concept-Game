@@ -67,27 +67,6 @@ void AItem::OnConstruction(const FTransform& Transform) {
 void AItem::PlayEquipSound(bool bForcePlaySound) {
 }
 
-void AItem::EnableCustomDepth() {
-}
-
-void AItem::DisableCustomDepth() {
-}
-
-void AItem::EnableGlowMaterial() {
-}
-
-void AItem::DisableGlowMaterial() {
-}
-
-void AItem::UpdatePulse() {
-}
-
-void AItem::ResetPulseTimer() {
-}
-
-void AItem::StartPulseTimer() {
-}
-
 // Called every frame
 void AItem::Tick(float DeltaTime) {
 
