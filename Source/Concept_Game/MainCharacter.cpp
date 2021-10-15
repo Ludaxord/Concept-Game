@@ -4,6 +4,7 @@
 #include "MainCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -59,6 +60,7 @@ AMainCharacter::AMainCharacter():
 	ConstructFollowCamera();
 	ConstructEyesCamera();
 	ConstructRefFollowCamera();
+	ConstructRefFollowCameraArrowComponent();
 
 	ChangeCameraTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ChangeCameraTimeline"));
 
@@ -74,8 +76,8 @@ void AMainCharacter::BeginPlay() {
 
 	ChangeCameraTimeline->SetTimelineLength(1.0f);
 
-	// UpdateCameraTimelineFloat.BindDynamic(this, &AMainCharacter::OnCameraTimelineFloatUpdate);
-	UpdateCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineUpdate);
+	UpdateCameraTimelineFloat.BindDynamic(this, &AMainCharacter::OnCameraTimelineFloatUpdate);
+	// UpdateCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineUpdate);
 	FinishCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineFinished);
 
 	ChangeCameraTimeline->AddInterpFloat(ChangeCameraFloatCurve, UpdateCameraTimelineFloat);
@@ -197,6 +199,11 @@ void AMainCharacter::ConstructEyesCamera() {
 void AMainCharacter::ConstructRefFollowCamera() {
 	RefFollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("RefFollowCamera"));
 	RefFollowCamera->SetupAttachment(GetCapsuleComponent());
+}
+
+void AMainCharacter::ConstructRefFollowCameraArrowComponent() {
+	RefFollowCameraRotation = CreateDefaultSubobject<UArrowComponent>(TEXT("RefFollowCameraRotation"));
+	RefFollowCameraRotation->SetupAttachment(GetCapsuleComponent());
 }
 
 void AMainCharacter::UseWeapon() {
@@ -422,9 +429,14 @@ void AMainCharacter::OnCameraTimelineUpdate() {
 	FVector CameraLoc = CameraTrack.GetLocation();
 	FQuat CameraRot = CameraTrack.GetRotation();
 	FVector CameraScale = CameraTrack.GetScale3D();
-	// FollowCamera->SetRelativeTransform(FTransform(FRotator(CameraRot.X, CameraRot.Y, CameraRot.Z), CameraLoc,
-	//                                               CameraScale));
-	FollowCamera->SetRelativeTransform(CameraTrack);
+	FollowCamera->SetRelativeTransform(FTransform(
+			// FRotator(CameraRot.X, CameraRot.Y, CameraRot.Z),
+			FRotator(CameraRot.Y, CameraRot.Z, CameraRot.X),
+			CameraLoc,
+			CameraScale
+		)
+	);
+	// FollowCamera->SetRelativeTransform(CameraTrack);
 
 	const FRotator EyesCameraRotation = EyesCamera->GetComponentRotation();
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
@@ -435,36 +447,47 @@ void AMainCharacter::OnCameraTimelineUpdate() {
 }
 
 void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
-	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Float Update"))
 	FAlphaBlend AlphaBlend;
 	AlphaBlend.SetCustomCurve(ChangeCameraFloatCurve);
-	FTransform CameraTrack = UKismetMathLibrary::TLerp(EyesCameraTransform,
-	                                                   FollowCameraTransform,
-	                                                   Output);
+	FTransform CameraTrack = UKismetMathLibrary::TLerp(
+		FollowCameraTransform,
+		EyesCameraTransform,
+		AlphaBlend.GetAlpha()
+	);
 	FVector CameraLoc = CameraTrack.GetLocation();
 	FQuat CameraRot = CameraTrack.GetRotation();
 	FVector CameraScale = CameraTrack.GetScale3D();
-	FollowCamera->SetRelativeTransform(FTransform(FRotator(CameraRot.X, CameraRot.Y, CameraRot.Z), CameraLoc,
-	                                              CameraScale));
+	FollowCamera->SetRelativeTransform(FTransform(
+			// FRotator(CameraRot.X, CameraRot.Y, CameraRot.Z),
+			FRotator(CameraRot.Y, CameraRot.Z, CameraRot.X),
+			CameraLoc,
+			CameraScale
+		)
+	);
+	// FollowCamera->SetRelativeTransform(CameraTrack);
 
 	const FRotator EyesCameraRotation = EyesCamera->GetComponentRotation();
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
-	Player->SetControlRotation(FRotator(EyesCameraRotation.Pitch, EyesCameraRotation.Yaw, 0.0f));
+	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Update Pitch %f, Yaw %f Alpha %f"), EyesCameraRotation.Pitch,
+	       EyesCameraRotation.Yaw, AlphaBlend.GetAlpha())
+	Player->SetControlRotation(FRotator(EyesCameraRotation.Pitch, CameraRot.Z, 0.0f));
 }
 
 void AMainCharacter::OnCameraTimelineFinished() {
 	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Finished"))
+	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
 	if (bSwitchToFollowCamera) {
 		FollowCamera->AttachToComponent(CameraBoom,
 		                                FAttachmentTransformRules(
-			                                EAttachmentRule::KeepWorld,
-			                                EAttachmentRule::KeepWorld,
-			                                EAttachmentRule::KeepWorld,
+			                                EAttachmentRule::SnapToTarget,
+			                                EAttachmentRule::SnapToTarget,
+			                                EAttachmentRule::SnapToTarget,
 			                                true
 		                                ));
+		Player->SetControlRotation(RefFollowCameraRotation->GetComponentRotation());
 	}
 	else {
 		SetActiveCameras(false);
 	}
-	EnableInput(UGameplayStatics::GetPlayerController(this, 0));
+	EnableInput(Player);
 }

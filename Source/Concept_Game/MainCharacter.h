@@ -118,6 +118,7 @@ public:
 	void ConstructFollowCamera();
 	void ConstructEyesCamera();
 	void ConstructRefFollowCamera();
+	void ConstructRefFollowCameraArrowComponent();
 
 	void PlayMontage(ECharacterMontage CharacterMontage);
 
@@ -153,6 +154,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* RefFollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* RefFollowCameraRotation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	FTransform EyesCameraTransform;
