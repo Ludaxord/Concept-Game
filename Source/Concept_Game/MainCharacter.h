@@ -8,6 +8,7 @@
 #include "FireWeapon.h"
 #include "MeleeWeapon.h"
 #include "PoseType.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
@@ -105,11 +106,18 @@ public:
 
 	void InterpCapsuleHalfHeight(float DeltaTime);
 
+	//TODO: In Target only change camera to Follow Camera when player stick to cover,
+	//TODO: NOTE: Button need to be pressed to stick to cover, when only close to cover player will lean from cover. 
+	//TODO: NOTE: When stick to cover mode is on, there is no need to press aiming, only analog/mouse movement will give ability to aim. Like Deus Ex Aiming mechanic.
+	void ChangeDebugCamera();
+
 	UFUNCTION()
 	void AutoFireReset();
 
 	void ConstructCameraBoom();
 	void ConstructFollowCamera();
+	void ConstructEyesCamera();
+	void ConstructRefFollowCamera();
 
 	void PlayMontage(ECharacterMontage CharacterMontage);
 
@@ -119,12 +127,56 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReleaseClip();
 
+protected:
+	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
+	                              bool AttackComponent = false, USkeletalMeshComponent* Parent = nullptr) const;
+	void SetActiveCameras(bool FollowCameraActive) const;
+
+	UFUNCTION()
+	void OnCameraTimelineUpdate();
+
+	UFUNCTION()
+	void OnCameraTimelineFloatUpdate(float Output);
+
+	UFUNCTION()
+	void OnCameraTimelineFinished();
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* EyesCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* RefFollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
+	FTransform EyesCameraTransform;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
+	FTransform FollowCameraTransform;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	class UTimelineComponent* ChangeCameraTimeline;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	class UCurveFloat* ChangeCameraFloatCurve;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	FOnTimelineFloat UpdateCameraTimelineFloat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	FOnTimelineEvent UpdateCameraTimelineEvent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
+	FOnTimelineEvent FinishCameraTimelineEvent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
+	bool bSwitchToFollowCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float BaseTurnRate;
@@ -307,6 +359,14 @@ public:
 
 	FORCEINLINE UCameraComponent* GetFollowCamera() const {
 		return FollowCamera;
+	}
+
+	FORCEINLINE UCameraComponent* GetEyesCamera() const {
+		return EyesCamera;
+	}
+
+	FORCEINLINE UCameraComponent* GetRefFollowCamera() const {
+		return RefFollowCamera;
 	}
 
 	FORCEINLINE bool GetAiming() const {
