@@ -42,6 +42,10 @@ USTRUCT(BlueprintType)
 struct FInterpLocation {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent* SceneComponent;
+
+	int32 ItemCount;
 };
 
 
