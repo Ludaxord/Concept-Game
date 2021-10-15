@@ -36,6 +36,7 @@ AMainCharacter::AMainCharacter():
 	CameraCurrentFOV(0.0f),
 	bRunning(false),
 	bSwitchToFollowCamera(false),
+	bEnableCameraTransition(false),
 	CombatState(ECombatState::ECS_Unoccupied),
 	CrouchMovementSpeed(300.0f),
 	RunningMovementSpeed(650.0f),
@@ -76,12 +77,12 @@ void AMainCharacter::BeginPlay() {
 
 	ChangeCameraTimeline->SetTimelineLength(0.1f);
 
-	UpdateCameraTimelineFloat.BindDynamic(this, &AMainCharacter::OnCameraTimelineFloatUpdate);
+	if (bEnableCameraTransition)
+		UpdateCameraTimelineFloat.BindDynamic(this, &AMainCharacter::OnCameraTimelineFloatUpdate);
 	FinishCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineFinished);
 
 	ChangeCameraTimeline->AddInterpFloat(ChangeCameraFloatCurve, UpdateCameraTimelineFloat);
-	// ChangeCameraTimeline->SetFloatCurve(ChangeCameraFloatCurve, "");
-	ChangeCameraTimeline->SetTimelinePostUpdateFunc(UpdateCameraTimelineEvent);
+	// ChangeCameraTimeline->SetTimelinePostUpdateFunc(UpdateCameraTimelineEvent);
 	ChangeCameraTimeline->SetTimelineFinishedFunc(FinishCameraTimelineEvent);
 	ChangeCameraTimeline->RegisterComponent();
 
@@ -433,9 +434,11 @@ void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
 	);
 
 	const FRotator EyesCameraRotation = EyesCamera->GetComponentRotation();
+	FVector EyesCameraLocation = EyesCamera->GetRelativeLocation();
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
-	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Update Pitch %f, Yaw %f Alpha %f"), EyesCameraRotation.Pitch,
-	       CameraRot.Z, Output)
+	UE_LOG(LogTemp, Warning,
+	       TEXT("Eyes Rotation Pitch: %f Eyes Location Y: %f Transition Location Z: %f Transition Rotation Z: %f"),
+	       EyesCameraRotation.Pitch, EyesCameraLocation.Y, CameraLoc.Z, CameraRot.Z, Output)
 	Player->SetControlRotation(FRotator(EyesCameraRotation.Pitch, CameraRot.Z, 0.0f));
 }
 
