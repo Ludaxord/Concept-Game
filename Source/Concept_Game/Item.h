@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Effects.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
@@ -119,18 +120,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void PlayEquipSound(bool bForcePlaySound = false);
-
-	//TODO: Create different classes for effects. Do not keep it in item.
-	virtual void EnableCustomDepth();
-	virtual void DisableCustomDepth();
-
-	void EnableGlowMaterial();
-	void DisableGlowMaterial();
-
-	void UpdatePulse();
-
-	void ResetPulseTimer();
-	void StartPulseTimer();
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* ItemMesh;
@@ -213,25 +202,8 @@ private:
 
 	bool bCanChangeCustomDepth;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
-	class UCurveVector* PulseCurve;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
-	UCurveVector* InterpPulseCurve;
-
-	FTimerHandle PulseTimer;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
-	float PulseCurveTime;
-
-	UPROPERTY(VisibleAnywhere, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
-	float GlowAmount;
-
-	UPROPERTY(VisibleAnywhere, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
-	float FresnelExponent;
-
-	UPROPERTY(VisibleAnywhere, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
-	float FresnelReflectFraction;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	FGlowMaterial GlowMaterial;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Inventory", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconItem;
@@ -257,15 +229,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rarity", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconBackground;
 
-	//TODO: Create different classes for effects. Do not keep it in item.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rarity", meta = (AllowPrivateAccess = "true"))
-	FLinearColor GlowColor;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rarity", meta = (AllowPrivateAccess = "true"))
-	FLinearColor LightColor;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rarity", meta = (AllowPrivateAccess = "true"))
-	FLinearColor DarkColor;
+	FCustomDepth CustomDepth;
 
 public:
 	FORCEINLINE FGuid GetGuid() const {
@@ -353,7 +318,7 @@ public:
 	}
 
 	FORCEINLINE FLinearColor GetGlowColor() const {
-		return GlowColor;
+		return CustomDepth.GlowColor;
 	}
 
 	FORCEINLINE int32 GetMaterialIndex() const {
