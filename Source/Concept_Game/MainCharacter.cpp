@@ -74,10 +74,9 @@ AMainCharacter::AMainCharacter():
 void AMainCharacter::BeginPlay() {
 	Super::BeginPlay();
 
-	ChangeCameraTimeline->SetTimelineLength(1.0f);
+	ChangeCameraTimeline->SetTimelineLength(0.1f);
 
 	UpdateCameraTimelineFloat.BindDynamic(this, &AMainCharacter::OnCameraTimelineFloatUpdate);
-	// UpdateCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineUpdate);
 	FinishCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineFinished);
 
 	ChangeCameraTimeline->AddInterpFloat(ChangeCameraFloatCurve, UpdateCameraTimelineFloat);
@@ -361,7 +360,6 @@ void AMainCharacter::ChangeDebugCamera() {
 		bSwitchToFollowCamera = !bSwitchToFollowCamera;
 		UE_LOG(LogTemp, Error, TEXT("Camera TPP: %s"), bSwitchToFollowCamera ? TEXT("true") : TEXT("false"))
 
-
 		if (!bSwitchToFollowCamera) {
 			FollowCameraTransform = SetCameraTransform(FollowCamera);
 			ChangeCameraTimeline->PlayFromStart();
@@ -418,37 +416,7 @@ void AMainCharacter::SetActiveCameras(bool FollowCameraActive) const {
 	RefFollowCamera->SetActive(false);
 }
 
-void AMainCharacter::OnCameraTimelineUpdate() {
-	FAlphaBlend AlphaBlend;
-	AlphaBlend.SetCustomCurve(ChangeCameraFloatCurve);
-	FTransform CameraTrack = UKismetMathLibrary::TLerp(
-		FollowCameraTransform,
-		EyesCameraTransform,
-		AlphaBlend.GetAlpha()
-	);
-	FVector CameraLoc = CameraTrack.GetLocation();
-	FQuat CameraRot = CameraTrack.GetRotation();
-	FVector CameraScale = CameraTrack.GetScale3D();
-	FollowCamera->SetRelativeTransform(FTransform(
-			// FRotator(CameraRot.X, CameraRot.Y, CameraRot.Z),
-			FRotator(CameraRot.Y, CameraRot.Z, CameraRot.X),
-			CameraLoc,
-			CameraScale
-		)
-	);
-	// FollowCamera->SetRelativeTransform(CameraTrack);
-
-	const FRotator EyesCameraRotation = EyesCamera->GetComponentRotation();
-	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
-	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Update Pitch %f, Yaw %f Alpha %f"), EyesCameraRotation.Pitch,
-	       EyesCameraRotation.Yaw, AlphaBlend.GetAlpha())
-	Player->SetControlRotation(FRotator(EyesCameraRotation.Pitch, CameraRot.Z, 0.0f));
-
-}
-
 void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
-	FAlphaBlend AlphaBlend;
-	AlphaBlend.SetCustomCurve(ChangeCameraFloatCurve);
 	FTransform CameraTrack = UKismetMathLibrary::TLerp(
 		FollowCameraTransform,
 		EyesCameraTransform,
@@ -458,18 +426,16 @@ void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
 	FQuat CameraRot = CameraTrack.GetRotation();
 	FVector CameraScale = CameraTrack.GetScale3D();
 	FollowCamera->SetRelativeTransform(FTransform(
-			// FRotator(CameraRot.X, CameraRot.Y, CameraRot.Z),
 			FRotator(CameraRot.Y, CameraRot.Z, CameraRot.X),
 			CameraLoc,
 			CameraScale
 		)
 	);
-	// FollowCamera->SetRelativeTransform(CameraTrack);
 
 	const FRotator EyesCameraRotation = EyesCamera->GetComponentRotation();
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
 	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Update Pitch %f, Yaw %f Alpha %f"), EyesCameraRotation.Pitch,
-	       EyesCameraRotation.Yaw, Output)
+	       CameraRot.Z, Output)
 	Player->SetControlRotation(FRotator(EyesCameraRotation.Pitch, CameraRot.Z, 0.0f));
 }
 
@@ -484,7 +450,9 @@ void AMainCharacter::OnCameraTimelineFinished() {
 			                                EAttachmentRule::SnapToTarget,
 			                                true
 		                                ));
-		Player->SetControlRotation(RefFollowCameraRotation->GetComponentRotation());
+		if (RefFollowCameraRotation) {
+			Player->SetControlRotation(RefFollowCameraRotation->GetComponentRotation());
+		}
 	}
 	else {
 		SetActiveCameras(false);

@@ -134,9 +134,6 @@ protected:
 	void SetActiveCameras(bool FollowCameraActive) const;
 
 	UFUNCTION()
-	void OnCameraTimelineUpdate();
-
-	UFUNCTION()
 	void OnCameraTimelineFloatUpdate(float Output);
 
 	UFUNCTION()
