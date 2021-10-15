@@ -452,7 +452,7 @@ void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
 	FTransform CameraTrack = UKismetMathLibrary::TLerp(
 		FollowCameraTransform,
 		EyesCameraTransform,
-		AlphaBlend.GetAlpha()
+		Output
 	);
 	FVector CameraLoc = CameraTrack.GetLocation();
 	FQuat CameraRot = CameraTrack.GetRotation();
@@ -469,7 +469,7 @@ void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
 	const FRotator EyesCameraRotation = EyesCamera->GetComponentRotation();
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
 	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Update Pitch %f, Yaw %f Alpha %f"), EyesCameraRotation.Pitch,
-	       EyesCameraRotation.Yaw, AlphaBlend.GetAlpha())
+	       EyesCameraRotation.Yaw, Output)
 	Player->SetControlRotation(FRotator(EyesCameraRotation.Pitch, CameraRot.Z, 0.0f));
 }
 
