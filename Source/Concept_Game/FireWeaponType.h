@@ -6,6 +6,7 @@ enum class EFireWeaponType : uint8 {
 	EFWT_Glock UMETA(DisplayName = "Glock"),
 	EFWT_Colt UMETA(DisplayName = "Colt"),
 	EFWT_AK47 UMETA(DisplayName = "AK47"),
+	EFWT_AK74 UMETA(DisplayName = "AK74"),
 	EFWT_AKVal UMETA(DisplayName = "AKVal"),
 	EFWT_SMG1 UMETA(DisplayName = "SMG11"),
 	EFWT_AA12 UMETA(DisplayName = "AA12"),
