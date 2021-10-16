@@ -25,7 +25,7 @@ AMainCharacter::AMainCharacter():
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
-	bAttackButtonPressed(false),
+	bUseWeaponButtonPressed(false),
 	bAimingButtonPressed(false),
 	CrouchGroundFriction(100.0f),
 	CrawlingGroundFriction(100.0f),
@@ -191,8 +191,8 @@ void AMainCharacter::ConstructFollowCamera() {
 
 void AMainCharacter::ConstructEyesCamera() {
 	EyesCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("EyesCamera"));
-	EyesCamera->SetupAttachment(GetMesh(), "head"); // Attach camera to end of boom
-	EyesCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
+	EyesCamera->SetupAttachment(GetMesh(), "head");
+	EyesCamera->bUsePawnControlRotation = true;
 	EyesCamera->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
 }
 
@@ -207,6 +207,7 @@ void AMainCharacter::ConstructRefFollowCameraArrowComponent() {
 }
 
 void AMainCharacter::UseWeapon() {
+	UE_LOG(LogTemp, Warning, TEXT("Use Weapon"));
 }
 
 void AMainCharacter::AimingButtonPressed() {
@@ -311,9 +312,12 @@ void AMainCharacter::AimingFieldOfView() {
 }
 
 void AMainCharacter::UseWeaponButtonPressed() {
+	bUseWeaponButtonPressed = true;
+	UseWeapon();
 }
 
 void AMainCharacter::UseWeaponButtonReleased() {
+	bUseWeaponButtonPressed = false;
 }
 
 void AMainCharacter::StartFireTimer() {
@@ -364,12 +368,14 @@ void AMainCharacter::ChangeDebugCamera() {
 		if (!bSwitchToFollowCamera) {
 			FollowCameraTransform = SetCameraTransform(FollowCamera);
 			ChangeCameraTimeline->PlayFromStart();
+			bUseControllerRotationYaw = false;
 			// UE_LOG(LogTemp, Warning, TEXT("Camera Timeline: Play From Start"));
 		}
 		else {
 			SetActiveCameras(true);
 			FollowCameraTransform = RefFollowCamera->GetComponentTransform();
 			ChangeCameraTimeline->ReverseFromEnd();
+			bUseControllerRotationYaw = true;
 			// UE_LOG(LogTemp, Warning, TEXT("Camera Timeline: Reverse From End"));
 		}
 	}
@@ -459,6 +465,13 @@ void AMainCharacter::OnCameraTimelineFinished() {
 	}
 	else {
 		SetActiveCameras(false);
+
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = true;
+		bUseControllerRotationPitch = false;
+		UE_LOG(LogTemp, Warning, TEXT("Is Eyes Camera Attached To Mesh: %s"),
+		       EyesCamera->IsAttachedTo(GetMesh()) ? TEXT("true") : TEXT("false"));
+		// EyesCamera->SetupAttachment(GetMesh(), "head");
 	}
 	EnableInput(Player);
 }

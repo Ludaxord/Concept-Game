@@ -234,7 +234,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 
-	bool bAttackButtonPressed;
+	bool bUseWeaponButtonPressed;
 
 	bool bAimingButtonPressed;
 
