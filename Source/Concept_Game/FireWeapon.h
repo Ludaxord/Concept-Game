@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AmmoType.h"
 #include "FireWeaponType.h"
+#include "MagazineType.h"
 #include "Weapon.h"
 #include "FireWeapon.generated.h"
 
@@ -17,6 +18,9 @@ struct FFireWeaponDataTable : public FWeaponDataTable {
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EAmmoType AmmoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EMagazineType MagazineType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 WeaponAmmo;
@@ -61,6 +65,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	EAmmoType AmmoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	EAmmoType MagazineType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "DataTable", meta = (AllowPrivateAccess = "true"))
 	float AutoFireRate;

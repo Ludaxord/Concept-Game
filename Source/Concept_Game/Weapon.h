@@ -78,7 +78,7 @@ struct FWeaponDataTable : public FTableRowBase {
 	float BaseHeadShotDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float bThrowable;
+	bool bThrowable;
 };
 
 /**
