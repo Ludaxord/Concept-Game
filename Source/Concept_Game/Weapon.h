@@ -15,7 +15,7 @@ struct FWeaponDataTable : public FTableRowBase {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Lethal;
+	bool bLethal;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EWeaponType WeaponType;
@@ -76,6 +76,9 @@ struct FWeaponDataTable : public FTableRowBase {
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseHeadShotDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float bThrowable;
 };
 
 /**
@@ -118,5 +121,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	bool bThrowable;
 private:
 };

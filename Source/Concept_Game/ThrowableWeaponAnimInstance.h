@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/HUD.h"
-#include "QuickSelectHUD.generated.h"
+#include "WeaponAnimInstance.h"
+#include "ThrowableWeaponAnimInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API AQuickSelectHUD : public AHUD
+class CONCEPT_GAME_API UThrowableWeaponAnimInstance : public UWeaponAnimInstance
 {
 	GENERATED_BODY()
 	

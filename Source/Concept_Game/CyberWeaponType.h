@@ -1,9 +1,9 @@
 #pragma once
 UENUM(BlueprintType)
 enum class ECyberWeaponType : uint8 {
-	EFWT_Hack UMETA(DisplayName = "Hack"),
-	EFWT_Stealth UMETA(DisplayName = "Stealth"),
-	EFWT_WireTravel UMETA(DisplayName = "Travel Through the wires"),
-	EFWT_EnvScan UMETA(DisplayName = "Environment Scan"),
-	EFWT_MAX UMETA(DisplayName = "DefaultMAX")
+	ECWT_Hack UMETA(DisplayName = "Hack"),
+	ECWT_Stealth UMETA(DisplayName = "Stealth"),
+	ECWT_WireTravel UMETA(DisplayName = "Travel Through the wires"),
+	ECWT_EnvScan UMETA(DisplayName = "Environment Scan"),
+	ECWT_MAX UMETA(DisplayName = "DefaultMAX")
 };

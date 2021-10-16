@@ -9,7 +9,10 @@ public class Concept_Game : ModuleRules
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[]
-            { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "PhysicsCore", "NavigationSystem", "AIModule", "Paper2D" });
+        {
+            "Core", "CoreUObject", "Engine", "InputCore", "UMG", "PhysicsCore", "NavigationSystem", "AIModule",
+            "Paper2D", "UMGEditor"
+        });
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 
