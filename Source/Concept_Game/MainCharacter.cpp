@@ -518,6 +518,11 @@ void AMainCharacter::SpawnDefaultWeapon(EWeaponType WeaponType) {
 			WeaponCreated = CreateDefaultWeapon(DefaultFireWeaponClass, "RightHandSocket");
 		}
 		break;
+	case EWeaponType::EWT_Throwable:
+		if (DefaultThrowableWeaponClass) {
+			WeaponCreated = CreateDefaultWeapon(DefaultThrowableWeaponClass, "RightHandSocket");
+		}
+		break;
 	case EWeaponType::EWT_Force:
 		if (DefaultCyberWeaponClass) {
 			WeaponCreated = CreateDefaultWeapon(DefaultCyberWeaponClass, "RightHandSocket");

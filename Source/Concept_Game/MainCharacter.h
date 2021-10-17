@@ -8,6 +8,7 @@
 #include "FireWeapon.h"
 #include "MeleeWeapon.h"
 #include "PoseType.h"
+#include "ThrowableWeapon.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
@@ -274,6 +275,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ACyberWeapon> DefaultCyberWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AThrowableWeapon> DefaultThrowableWeaponClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AMeleeWeapon> DefaultMeleeWeaponClass;

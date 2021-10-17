@@ -58,6 +58,8 @@ public:
 
 	virtual void StartWeaponAnimationTimer() override;
 
+	virtual void InitializeWeaponDataTable() override;
+
 	virtual void BeginPlay() override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;

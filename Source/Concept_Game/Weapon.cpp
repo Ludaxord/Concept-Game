@@ -24,6 +24,9 @@ void AWeapon::DecreaseUsability() {
 void AWeapon::StartWeaponAnimationTimer() {
 }
 
+void AWeapon::InitializeWeaponDataTable() {
+}
+
 void AWeapon::OnConstruction(const FTransform& Transform) {
 	Super::OnConstruction(Transform);
 }

@@ -97,6 +97,7 @@ public:
 	virtual void PerformAttack(ACharacter* RefCharacter);
 	virtual void DecreaseUsability();
 	virtual void StartWeaponAnimationTimer();
+	virtual void InitializeWeaponDataTable();
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 

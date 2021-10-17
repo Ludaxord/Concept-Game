@@ -5,3 +5,19 @@
 
 AThrowableWeapon::AThrowableWeapon() {
 }
+
+bool AThrowableWeapon::GetUsability() {
+	return false;
+}
+
+void AThrowableWeapon::PerformAttack(ACharacter* RefCharacter) {
+	
+}
+
+void AThrowableWeapon::DecreaseUsability() {
+	
+}
+
+void AThrowableWeapon::StartWeaponAnimationTimer() {
+	
+}

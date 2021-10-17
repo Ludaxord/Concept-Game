@@ -24,6 +24,14 @@ class CONCEPT_GAME_API AThrowableWeapon : public AWeapon {
 	GENERATED_BODY()
 public:
 	AThrowableWeapon();
+
+	virtual bool GetUsability() override;
+
+	virtual void PerformAttack(ACharacter* RefCharacter) override;
+
+	virtual void DecreaseUsability() override;
+
+	virtual void StartWeaponAnimationTimer() override;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	EThrowableWeaponType ThrowableWeaponType;
