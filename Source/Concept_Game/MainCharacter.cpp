@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -100,6 +101,7 @@ void AMainCharacter::BeginPlay() {
 		RefFollowCamera->SetActive(false);
 	}
 
+	SpawnDefaultWeapon();
 	//TODO: Add Weapon and inventory (Depend on game progress)
 	//TODO: Add Ammo (Depend on game progress)
 }
@@ -391,6 +393,60 @@ void AMainCharacter::GrapClip() {
 }
 
 void AMainCharacter::ReleaseClip() {
+}
+
+void AMainCharacter::SpawnDefaultWeapon(EWeaponType WeaponType) const {
+	bool WeaponCreated = false;
+	switch (WeaponType) {
+	case EWeaponType::EWT_Any: {
+		if (DefaultFireWeaponClass) {
+			WeaponCreated = CreateDefaultWeapon(DefaultFireWeaponClass, "RightHandSocket");
+		}
+
+		if (!WeaponCreated) {
+			if (DefaultCyberWeaponClass) {
+				WeaponCreated = CreateDefaultWeapon(DefaultCyberWeaponClass, "RightHandSocket");
+			}
+		}
+
+		if (!WeaponCreated) {
+			if (DefaultMeleeWeaponClass) {
+				WeaponCreated = CreateDefaultWeapon(DefaultMeleeWeaponClass, "RightHandSocket");
+			}
+		}
+	}
+	break;
+	case EWeaponType::EWT_Melee:
+		if (DefaultMeleeWeaponClass) {
+			WeaponCreated = CreateDefaultWeapon(DefaultMeleeWeaponClass, "RightHandSocket");
+		}
+		break;
+	case EWeaponType::EWT_Fire:
+		if (DefaultFireWeaponClass) {
+			WeaponCreated = CreateDefaultWeapon(DefaultFireWeaponClass, "RightHandSocket");
+		}
+		break;
+	case EWeaponType::EWT_Force:
+		if (DefaultCyberWeaponClass) {
+			WeaponCreated = CreateDefaultWeapon(DefaultCyberWeaponClass, "RightHandSocket");
+		}
+		break;
+	}
+}
+
+template <typename T>
+bool AMainCharacter::CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName) const {
+	bool bWeaponCreated = false;
+	T* DefaultWeapon = GetWorld()->SpawnActor<T>(WeaponClass);
+	const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(SocketName);
+	if (Socket) {
+		Socket->AttachActor(DefaultWeapon, GetMesh());
+		bWeaponCreated = true;
+	}
+
+	EquippedWeapon = DefaultWeapon;
+
+	return bWeaponCreated;
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,

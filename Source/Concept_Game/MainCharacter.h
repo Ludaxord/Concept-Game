@@ -128,6 +128,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReleaseClip();
 
+	void SpawnDefaultWeapon(EWeaponType WeaponType = EWeaponType::EWT_Any) const;
+
+	template <typename T>
+	bool CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName) const;
+
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
 	                              bool AttackComponent = false, USkeletalMeshComponent* Parent = nullptr) const;
