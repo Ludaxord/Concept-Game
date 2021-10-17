@@ -42,10 +42,17 @@ struct FCyberWeaponDataTable : public FWeaponDataTable {
 UCLASS()
 class CONCEPT_GAME_API ACyberWeapon : public AWeapon {
 	GENERATED_BODY()
-
 public:
+	ACyberWeapon();
+
+	virtual bool GetUsability() override;
+
+	virtual void PerformAttack(ACharacter* RefCharacter) override;
+
+	virtual void DecreaseUsability() override;
+
+	virtual void StartWeaponAnimationTimer() override;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	ECyberWeaponType CyberWeaponType;
-private:
 };

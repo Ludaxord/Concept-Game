@@ -12,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter():
@@ -175,6 +176,55 @@ void AMainCharacter::LookUp(float Value) {
 	AddControllerPitchInput(Value * LookUpScaleFactor);
 }
 
+bool AMainCharacter::IsWeaponUsable() {
+	return EquippedWeapon == nullptr ? false : EquippedWeapon->GetUsability();
+}
+
+void AMainCharacter::PlayCharacterSound(ECharacterSoundState CharacterSoundState) {
+	switch (CharacterSoundState) {
+	case ECharacterSoundState::ECSS_UseWeapon:
+		if (EquippedWeapon->GetUsageSound()) {
+			UGameplayStatics::PlaySound2D(this, EquippedWeapon->GetUsageSound());
+		}
+		break;
+	case ECharacterSoundState::ECSS_ReloadWeapon: break;
+	case ECharacterSoundState::ECSS_FixWeapon: break;
+	case ECharacterSoundState::ECSS_MAX: break;
+	default: break;
+	}
+}
+
+void AMainCharacter::PerformAttack() {
+	EquippedWeapon->PerformAttack(this);
+}
+
+void AMainCharacter::StartCrosshairMovement() {
+}
+
+void AMainCharacter::StartAttackTimer(EWeaponType WeaponType) {
+}
+
+void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
+	switch (WeaponType) {
+	case EWeaponType::EWT_Melee: {
+	}
+	break;
+	case EWeaponType::EWT_Fire: {
+		PlayCharacterSound(ECharacterSoundState::ECSS_UseWeapon);
+		PerformAttack();
+		PlayMontage(ECharacterMontage::ECM_UseWeapon, EquippedWeapon->GetWeaponType());
+		StartCrosshairMovement();
+		EquippedWeapon->DecreaseUsability();
+		StartAttackTimer(EquippedWeapon->GetWeaponType());
+		EquippedWeapon->StartWeaponAnimationTimer();
+	}
+	break;
+	case EWeaponType::EWT_Force: {
+	}
+	break;
+	}
+}
+
 void AMainCharacter::ConstructCameraBoom() {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -210,6 +260,13 @@ void AMainCharacter::ConstructRefFollowCameraArrowComponent() {
 
 void AMainCharacter::UseWeapon() {
 	UE_LOG(LogTemp, Warning, TEXT("Use Weapon"));
+	if (Health <= 0.0f) return;
+	if (EquippedWeapon == nullptr) return;
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (!IsWeaponUsable()) return;
+
+	UseWeaponByType(EquippedWeapon->GetWeaponType());
+
 }
 
 void AMainCharacter::AimingButtonPressed() {
@@ -386,7 +443,42 @@ void AMainCharacter::ChangeDebugCamera() {
 void AMainCharacter::AutoFireReset() {
 }
 
-void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage) {
+void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType WeaponType) {
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance) {
+		switch (CharacterMontage) {
+		case ECharacterMontage::ECM_UseWeapon: {
+			switch (WeaponType) {
+			case EWeaponType::EWT_Melee: {
+				if (MeleeWeaponMontage) {
+					AnimInstance->Montage_Play(MeleeWeaponMontage);
+					AnimInstance->Montage_JumpToSection(FName("StartMelee"));
+				}
+			}
+			break;
+			case EWeaponType::EWT_Fire: {
+				if (FireWeaponMontage) {
+					AnimInstance->Montage_Play(FireWeaponMontage);
+					AnimInstance->Montage_JumpToSection(FName("StartFire"));
+				}
+			}
+			break;
+			case EWeaponType::EWT_Force: {
+				if (ForceMontage) {
+					AnimInstance->Montage_Play(ForceMontage);
+					AnimInstance->Montage_JumpToSection(FName("StartCyber"));
+				}
+			}
+			break;
+			}
+		}
+		break;
+		case ECharacterMontage::ECM_ReloadWeapon: break;
+		case ECharacterMontage::ECM_FixWeapon: break;
+		case ECharacterMontage::ECS_MAX: break;
+		default: ;
+		}
+	}
 }
 
 void AMainCharacter::GrapClip() {
@@ -395,7 +487,7 @@ void AMainCharacter::GrapClip() {
 void AMainCharacter::ReleaseClip() {
 }
 
-void AMainCharacter::SpawnDefaultWeapon(EWeaponType WeaponType) const {
+void AMainCharacter::SpawnDefaultWeapon(EWeaponType WeaponType) {
 	bool WeaponCreated = false;
 	switch (WeaponType) {
 	case EWeaponType::EWT_Any: {
@@ -435,7 +527,7 @@ void AMainCharacter::SpawnDefaultWeapon(EWeaponType WeaponType) const {
 }
 
 template <typename T>
-bool AMainCharacter::CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName) const {
+bool AMainCharacter::CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName) {
 	bool bWeaponCreated = false;
 	T* DefaultWeapon = GetWorld()->SpawnActor<T>(WeaponClass);
 	const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(SocketName);

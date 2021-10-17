@@ -289,6 +289,10 @@ public:
 		return SlotIndexY;
 	}
 
+	FORCEINLINE EItemRarity GetItemRarity() const {
+		return ItemRarity;
+	}
+
 	FORCEINLINE void SetSlotIndexX(int32 Index) {
 		SlotIndexX = Index;
 	}

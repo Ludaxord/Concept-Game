@@ -22,6 +22,15 @@ UCLASS()
 class CONCEPT_GAME_API AMeleeWeapon : public AWeapon {
 	GENERATED_BODY()
 public:
+	AMeleeWeapon();
+
+	virtual bool GetUsability() override;
+
+	virtual void PerformAttack(ACharacter* RefCharacter) override;
+
+	virtual void DecreaseUsability() override;
+
+	virtual void StartWeaponAnimationTimer() override;
 protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))

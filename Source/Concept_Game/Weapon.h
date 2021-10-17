@@ -91,6 +91,12 @@ public:
 	AWeapon();
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual bool GetUsability();
+
+	virtual void PerformAttack(ACharacter* RefCharacter);
+	virtual void DecreaseUsability();
+	virtual void StartWeaponAnimationTimer();
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
@@ -124,5 +130,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	bool bThrowable;
-private:
+public:
+	USoundCue* GetUsageSound() const {
+		return UseSound;
+	};
+
+	EWeaponType GetWeaponType() const {
+		return WeaponType;
+	}
+
 };

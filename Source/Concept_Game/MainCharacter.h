@@ -24,18 +24,17 @@ enum class ECombatState : uint8 {
 
 UENUM(BlueprintType)
 enum class ECharacterSoundState : uint8 {
-	ECSS_Fire UMETA(DisplayName = "Fire Sound"),
-	ECSS_Melee UMETA(DisplayName = "Melee Montage"),
-	ECSS_Force UMETA(DisplayName = "Force Montage"),
+	ECSS_UseWeapon UMETA(DisplayName = "Use Weapon Sound"),
+	ECSS_ReloadWeapon UMETA(DisplayName = "Reload Weapon Sound"),
+	ECSS_FixWeapon UMETA(DisplayName = "Fix Weapon Sound"),
 	ECSS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
 UENUM(BlueprintType)
 enum class ECharacterMontage: uint8 {
-	ECS_Fire UMETA(DisplayName = "Fire Montage"),
-	ECS_Melee UMETA(DisplayName = "Melee Montage"),
-	ECS_Force UMETA(DisplayName = "Force Montage"),
-	ECS_Reload UMETA(DisplayName = "Reload Montage"),
+	ECM_UseWeapon UMETA(DisplayName = "Use Weapon Montage"),
+	ECM_ReloadWeapon UMETA(DisplayName = "Reload Weapon Montage"),
+	ECM_FixWeapon UMETA(DisplayName = "Fix Weapon Montage"),
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
@@ -76,6 +75,12 @@ public:
 	void LookUpAtRate(float Rate);
 	void LookUp(float Value);
 
+	bool IsWeaponUsable();
+	void PlayCharacterSound(ECharacterSoundState CharacterSoundState);
+	void PerformAttack();
+	void StartCrosshairMovement();
+	void StartAttackTimer(EWeaponType WeaponType);
+	void UseWeaponByType(EWeaponType WeaponType);
 	void UseWeapon();
 
 	void AimingButtonPressed();
@@ -120,7 +125,7 @@ public:
 	void ConstructRefFollowCamera();
 	void ConstructRefFollowCameraArrowComponent();
 
-	void PlayMontage(ECharacterMontage CharacterMontage);
+	void PlayMontage(ECharacterMontage CharacterMontage, EWeaponType WeaponType);
 
 	UFUNCTION(BlueprintCallable)
 	void GrapClip();
@@ -128,10 +133,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReleaseClip();
 
-	void SpawnDefaultWeapon(EWeaponType WeaponType = EWeaponType::EWT_Any) const;
+	void SpawnDefaultWeapon(EWeaponType WeaponType = EWeaponType::EWT_Any);
 
 	template <typename T>
-	bool CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName) const;
+	bool CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName);
 
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",

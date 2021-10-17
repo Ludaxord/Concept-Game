@@ -50,6 +50,22 @@ class CONCEPT_GAME_API AFireWeapon : public AWeapon {
 public:
 	AFireWeapon();
 
+	virtual bool GetUsability() override;
+
+	virtual void PerformAttack(ACharacter* RefCharacter) override;
+
+	virtual void DecreaseUsability() override;
+
+	virtual void StartWeaponAnimationTimer() override;
+
+	virtual void BeginPlay() override;
+
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	int32 GetAmmo() const {
+		return Ammo;
+	};
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FName ReloadMontageSection;
