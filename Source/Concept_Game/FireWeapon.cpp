@@ -5,6 +5,7 @@
 
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 AFireWeapon::AFireWeapon() {
 }
@@ -20,14 +21,32 @@ void AFireWeapon::PerformAttack() {
 		if (GetMuzzleFlash()) {
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetMuzzleFlash(), SocketTransform);
 		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("Perform Attack From Equipped Weapon Failed, No Muzzle Flash found..."));
+		}
 
 		FHitResult BeamHitResult;
 		//TODO: Add Types of actor that is able to be hit by BeamHitResult...
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("Perform Attack From Equipped Weapon Failed, No Barrel Socket found..."));
-	}
+		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult)) {
+			if (BeamHitResult.Actor.IsValid()) {
+				//TODO Add bullet hit interface
+			}
+			else {
+				if (ImpactParticles) {
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamHitResult.Location);
+				}
+			}
 
+			if (BeamParticles) {
+				UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(
+					GetWorld(), BeamParticles, SocketTransform);
+				if (Beam) {
+					//NOTE: name "Target" is a part of beam particles file, it should be dynamic to different particle systems.
+					Beam->SetVectorParameter(FName("Target"), BeamHitResult.Location);
+				}
+			}
+		}
+	}
 }
 
 void AFireWeapon::DecreaseUsability() {
@@ -130,6 +149,8 @@ void AFireWeapon::InitializeWeaponDataTable() {
 			CrosshairsRight = FireWeaponDataRow->CrosshairsRight;
 			AutoFireRate = FireWeaponDataRow->AutoFireRate;
 			MuzzleFlash = FireWeaponDataRow->MuzzleFlash;
+			ImpactParticles = FireWeaponDataRow->ImpactParticles;
+			BeamParticles = FireWeaponDataRow->BeamParticles;
 			UseSound = FireWeaponDataRow->UseSound;
 			BoneToHide = FireWeaponDataRow->BoneToHide;
 			bAutomatic = FireWeaponDataRow->bAutomatic;
