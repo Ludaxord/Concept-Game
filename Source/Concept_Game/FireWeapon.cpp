@@ -3,6 +3,9 @@
 
 #include "FireWeapon.h"
 
+#include "Engine/SkeletalMeshSocket.h"
+#include "Kismet/GameplayStatics.h"
+
 AFireWeapon::AFireWeapon() {
 }
 
@@ -13,8 +16,13 @@ bool AFireWeapon::GetUsability() {
 void AFireWeapon::PerformAttack() {
 	const USkeletalMeshSocket* BarrelSocket = GetItemMesh()->GetSocketByName("BarrelSocket");
 	if (BarrelSocket) {
-				UE_LOG(LogTemp, Warning, TEXT("Perform Attack From Equipped Weapon Barrel Socket"));
+		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(GetItemMesh());
+		if (GetMuzzleFlash()) {
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetMuzzleFlash(), SocketTransform);
+		}
 
+		FHitResult BeamHitResult;
+		//TODO: Add Types of actor that is able to be hit by BeamHitResult...
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("Perform Attack From Equipped Weapon Failed, No Barrel Socket found..."));

@@ -126,4 +126,8 @@ public:
 	void SetReloadMontageSection(const FName& Name) {
 		ReloadMontageSection = Name;
 	}
+
+	UParticleSystem* GetMuzzleFlash() const {
+		return MuzzleFlash;
+	}
 };
