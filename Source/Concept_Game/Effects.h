@@ -16,6 +16,9 @@ struct FCustomDepth : public FEffect {
 	FCustomDepth();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FName VectorParameterName;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FLinearColor GlowColor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -32,7 +35,7 @@ struct FCustomDepth : public FEffect {
 };
 
 USTRUCT(BlueprintType)
-struct FGlowMaterial : public FEffect {
+struct FGlowMaterial : public FCustomDepth {
 	GENERATED_BODY()
 
 	FGlowMaterial();
@@ -61,4 +64,6 @@ struct FGlowMaterial : public FEffect {
 
 	void ResetPulseTimer();
 	void StartPulseTimer();
+
+	void EnableGlowMaterial();
 };

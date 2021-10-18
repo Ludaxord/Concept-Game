@@ -20,3 +20,6 @@ void FGlowMaterial::ResetPulseTimer() {
 
 void FGlowMaterial::StartPulseTimer() {
 }
+
+void FGlowMaterial::EnableGlowMaterial() {
+}

@@ -91,7 +91,34 @@ void AFireWeapon::InitializeWeaponDataTable() {
 
 		if (FireWeaponDataRow) {
 			UE_LOG(LogTemp, Warning, TEXT("Fire Weapon Data Row Loaded: %s"), *FireWeaponDataRow->ItemName);
+			AmmoType = FireWeaponDataRow->AmmoType;
+			SetWeaponType(FireWeaponDataRow->WeaponType);
+			Ammo = FireWeaponDataRow->WeaponAmmo;
+			MagazineCapacity = FireWeaponDataRow->MagazineCapacity;
+			SetPickupSound(FireWeaponDataRow->PickupSound);
+			SetEquipSound(FireWeaponDataRow->EquipSound);
+			GetItemMesh()->SetSkeletalMesh(FireWeaponDataRow->ItemMesh);
+			SetItemName(FireWeaponDataRow->ItemName);
 
+			SetMaterialInstance(FireWeaponDataRow->MaterialInstance);
+			PreviousMaterialIndex = GetMaterialIndex();
+			GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
+			SetMaterialIndex(FireWeaponDataRow->MaterialIndex);
+			SetClipBoneName(FireWeaponDataRow->ClipBoneName);
+			SetReloadMontageSection(FireWeaponDataRow->ReloadMontageSection);
+			GetItemMesh()->SetAnimInstanceClass(FireWeaponDataRow->AnimBP);
+			CrosshairsMiddle = FireWeaponDataRow->CrosshairsMiddle;
+			CrosshairsTop = FireWeaponDataRow->CrosshairsTop;
+			CrosshairsBottom = FireWeaponDataRow->CrosshairsBottom;
+			CrosshairsLeft = FireWeaponDataRow->CrosshairsLeft;
+			CrosshairsRight = FireWeaponDataRow->CrosshairsRight;
+			AutoFireRate = FireWeaponDataRow->AutoFireRate;
+			MuzzleFlash = FireWeaponDataRow->MuzzleFlash;
+			UseSound = FireWeaponDataRow->UseSound;
+			BoneToHide = FireWeaponDataRow->BoneToHide;
+			bAutomatic = FireWeaponDataRow->bAutomatic;
+			Damage = FireWeaponDataRow->BaseDamage;
+			HeadShotDamage = FireWeaponDataRow->BaseHeadShotDamage;
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Failed to load Fire Weapon Data Row"));

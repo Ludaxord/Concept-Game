@@ -184,6 +184,7 @@ void AMainCharacter::PlayCharacterSound(ECharacterSoundState CharacterSoundState
 	switch (CharacterSoundState) {
 	case ECharacterSoundState::ECSS_UseWeapon:
 		if (EquippedWeapon->GetUsageSound()) {
+			UE_LOG(LogTemp, Warning, TEXT("PlayCharacterSound ECSS_UseWeapon"));
 			UGameplayStatics::PlaySound2D(this, EquippedWeapon->GetUsageSound());
 		}
 		break;
@@ -205,11 +206,17 @@ void AMainCharacter::StartAttackTimer(EWeaponType WeaponType) {
 }
 
 void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
+	const TEnumAsByte<EWeaponType> WeaponEnum = WeaponType;
+	FString EnumAsString = UEnum::GetValueAsString(WeaponEnum.GetValue());
+
+	UE_LOG(LogTemp, Warning, TEXT("Use Weapon By Type %s"), *EnumAsString);
+
 	switch (WeaponType) {
 	case EWeaponType::EWT_Melee: {
 	}
 	break;
 	case EWeaponType::EWT_Fire: {
+		UE_LOG(LogTemp, Warning, TEXT("Use Weapon By Type EWT_Fire"));
 		PlayCharacterSound(ECharacterSoundState::ECSS_UseWeapon);
 		PerformAttack();
 		PlayMontage(ECharacterMontage::ECM_UseWeapon, EquippedWeapon->GetWeaponType());
@@ -259,11 +266,12 @@ void AMainCharacter::ConstructRefFollowCameraArrowComponent() {
 }
 
 void AMainCharacter::UseWeapon() {
-	UE_LOG(LogTemp, Warning, TEXT("Use Weapon"));
 	if (Health <= 0.0f) return;
 	if (EquippedWeapon == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	if (!IsWeaponUsable()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Use Weapon"));
 
 	UseWeaponByType(EquippedWeapon->GetWeaponType());
 

@@ -79,6 +79,14 @@ void AItem::InitializeCustomDepth() {
 }
 
 void AItem::OnConstruction(const FTransform& Transform) {
+
+	//TODO: Set item rarity;
+	if (GetMaterialInstance()) {
+		SetDynamicMaterialInstance(UMaterialInstanceDynamic::Create(GetMaterialInstance(), this));
+		GetDynamicMaterialInstance()->SetVectorParameterValue(GlowMaterial.VectorParameterName, GlowMaterial.GlowColor);
+		GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
+		GlowMaterial.EnableGlowMaterial();
+	}
 }
 
 void AItem::PlayEquipSound(bool bForcePlaySound) {

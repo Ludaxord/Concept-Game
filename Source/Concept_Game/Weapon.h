@@ -114,16 +114,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	EWeaponType WeaponType;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "DataTable", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	UDataTable* WeaponDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FName ClipBoneName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "DataTable", meta =(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Weapon Properties", meta =(AllowPrivateAccess = "true"))
 	FName BoneToHide;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "DataTable", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	class USoundCue* UseSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
@@ -138,6 +138,14 @@ public:
 
 	EWeaponType GetWeaponType() const {
 		return WeaponType;
+	}
+
+	void SetWeaponType(EWeaponType InType) {
+		WeaponType = InType;
+	}
+
+	void SetClipBoneName(const FName& Name) {
+		ClipBoneName = Name;
 	}
 
 };

@@ -293,6 +293,10 @@ public:
 		return ItemRarity;
 	}
 
+	FORCEINLINE UMaterialInstanceDynamic* GetDynamicMaterialInstance() const {
+		return DynamicMaterialInstance;
+	}
+
 	FORCEINLINE void SetSlotIndexX(int32 Index) {
 		SlotIndexX = Index;
 	}
