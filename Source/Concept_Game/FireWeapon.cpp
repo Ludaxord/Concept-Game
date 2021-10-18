@@ -10,7 +10,15 @@ bool AFireWeapon::GetUsability() {
 	return GetAmmo() > 0 && GetItemRarity() != EItemRarity::EIR_Damaged;
 }
 
-void AFireWeapon::PerformAttack(ACharacter* RefCharacter) {
+void AFireWeapon::PerformAttack() {
+	const USkeletalMeshSocket* BarrelSocket = GetItemMesh()->GetSocketByName("BarrelSocket");
+	if (BarrelSocket) {
+				UE_LOG(LogTemp, Warning, TEXT("Perform Attack From Equipped Weapon Barrel Socket"));
+
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Perform Attack From Equipped Weapon Failed, No Barrel Socket found..."));
+	}
 
 }
 

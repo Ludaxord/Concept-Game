@@ -10,7 +10,7 @@ bool AThrowableWeapon::GetUsability() {
 	return false;
 }
 
-void AThrowableWeapon::PerformAttack(ACharacter* RefCharacter) {
+void AThrowableWeapon::PerformAttack() {
 	
 }
 

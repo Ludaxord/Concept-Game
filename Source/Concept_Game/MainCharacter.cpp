@@ -214,7 +214,7 @@ void AMainCharacter::PlayCharacterSound(ECharacterSoundState CharacterSoundState
 }
 
 void AMainCharacter::PerformAttack() {
-	EquippedWeapon->PerformAttack(this);
+	EquippedWeapon->PerformAttack();
 }
 
 void AMainCharacter::StartCrosshairMovement() {

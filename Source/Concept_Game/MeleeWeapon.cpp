@@ -10,7 +10,7 @@ bool AMeleeWeapon::GetUsability() {
 	return GetItemRarity() != EItemRarity::EIR_Damaged;
 }
 
-void AMeleeWeapon::PerformAttack(ACharacter* RefCharacter) {
+void AMeleeWeapon::PerformAttack() {
 
 }
 

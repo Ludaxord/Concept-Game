@@ -15,7 +15,7 @@ bool AWeapon::GetUsability() {
 	return false;
 }
 
-void AWeapon::PerformAttack(ACharacter* RefCharacter) {
+void AWeapon::PerformAttack() {
 }
 
 void AWeapon::DecreaseUsability() {

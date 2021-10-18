@@ -11,7 +11,7 @@ bool ACyberWeapon::GetUsability() {
 	return false;
 }
 
-void ACyberWeapon::PerformAttack(ACharacter* RefCharacter) {
+void ACyberWeapon::PerformAttack() {
 	
 }
 

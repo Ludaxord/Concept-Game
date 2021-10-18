@@ -47,7 +47,7 @@ public:
 
 	virtual bool GetUsability() override;
 
-	virtual void PerformAttack(ACharacter* RefCharacter) override;
+	virtual void PerformAttack() override;
 
 	virtual void DecreaseUsability() override;
 

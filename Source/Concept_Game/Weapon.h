@@ -94,7 +94,7 @@ public:
 
 	virtual bool GetUsability();
 
-	virtual void PerformAttack(ACharacter* RefCharacter);
+	virtual void PerformAttack();
 	virtual void DecreaseUsability();
 	virtual void StartWeaponAnimationTimer();
 	virtual void InitializeWeaponDataTable();
