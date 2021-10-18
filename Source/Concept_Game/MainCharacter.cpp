@@ -80,11 +80,15 @@ void AMainCharacter::BeginPlay() {
 	Super::BeginPlay();
 
 	SetDefaultCameras();
+
+	//TODO: Add Weapon and inventory (Depend on game progress)
 	EquipWeapon(SpawnDefaultWeapon());
 	EquippedWeapon->SetSlotIndexX(0);
 	EquippedWeapon->SetSlotIndexY(0);
-	//TODO: Add Weapon and inventory (Depend on game progress)
+	EquippedWeapon->SetCharacter(this);
 	//TODO: Add Ammo (Depend on game progress)
+
+	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 }
 
 // Called every frame
@@ -112,7 +116,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("DebugChangeCamera", IE_Pressed, this, &AMainCharacter::ChangeDebugCamera);
 	PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &AMainCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
@@ -350,7 +354,15 @@ void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
 }
 
 void AMainCharacter::Jump() {
-	Super::Jump();
+	if (PoseType != EPoseType::EPT_Stand) {
+		UE_LOG(LogTemp, Warning, TEXT("Jumping Not Stand"));
+		PoseType = EPoseType::EPT_Stand;
+		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Jumping Base"));
+		Super::Jump();
+	}
 }
 
 void AMainCharacter::Crouching() {

@@ -11,7 +11,7 @@
 #include "Weapon.generated.h"
 
 USTRUCT()
-struct FWeaponDataTable : public FTableRowBase {
+struct FWeaponDataTable : public FItemDataTable {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
