@@ -376,6 +376,21 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* DeathMontage;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	float CrosshairSpreadMultiplier;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	float CrosshairVelocityFactor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	float CrosshairInAirFactor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	float CrosshairAimFactor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	float CrosshairShootingFactor;
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;
@@ -401,13 +416,8 @@ public:
 		return PoseType;
 	}
 
-	// FORCEINLINE bool GetCrawling() const {
-	// 	return bCrawling;
-	// }
-
-	// FORCEINLINE bool GetCrouching() const {
-	// 	return bCrouching;
-	// }
+	UFUNCTION(BlueprintCallable)
+	float GetCrosshairSpreadMultiplier() const;
 
 	FORCEINLINE bool GetRunning() const {
 		return bRunning;

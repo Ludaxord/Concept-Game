@@ -40,6 +40,10 @@ AMainCharacter::AMainCharacter():
 	bSwitchToFollowCamera(false),
 	bEnableCameraTransition(false),
 	CombatState(ECombatState::ECS_Unoccupied),
+	CrosshairSpreadMultiplier(0.0f),
+	CrosshairVelocityFactor(0.0f),
+	CrosshairInAirFactor(0.0f),
+	CrosshairShootingFactor(0.0f),
 	CrouchMovementSpeed(300.0f),
 	RunningMovementSpeed(650.0f),
 	PoseAxisValueCounter(0),
@@ -475,6 +479,13 @@ void AMainCharacter::AutoFireReset() {
 
 void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType WeaponType) {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	const TEnumAsByte<EWeaponType> WeaponEnum = WeaponType;
+	FString WeaponEnumAsString = UEnum::GetValueAsString(WeaponEnum.GetValue());
+	const TEnumAsByte<ECharacterMontage> MontageEnum = CharacterMontage;
+	FString MontageEnumAsString = UEnum::GetValueAsString(MontageEnum.GetValue());
+	UE_LOG(LogTemp, Warning, TEXT("Montage Weapon Type: %s, Character Montage: %s"), *WeaponEnumAsString,
+	       *MontageEnumAsString);
 	if (AnimInstance) {
 		switch (CharacterMontage) {
 		case ECharacterMontage::ECM_UseWeapon: {
@@ -490,6 +501,11 @@ void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType
 				if (FireWeaponMontage) {
 					AnimInstance->Montage_Play(FireWeaponMontage);
 					AnimInstance->Montage_JumpToSection(FName("StartFire"));
+					UE_LOG(LogTemp, Warning, TEXT("Hip Fire Montage Run"))
+				}
+				else {
+					UE_LOG(LogTemp, Error, TEXT("NO Hip Fire Montage Run"))
+
 				}
 			}
 			break;
@@ -669,4 +685,8 @@ void AMainCharacter::OnCameraTimelineFinished() {
 		// EyesCamera->SetupAttachment(GetMesh(), "head");
 	}
 	EnableInput(Player);
+}
+
+float AMainCharacter::GetCrosshairSpreadMultiplier() const {
+	return CrosshairSpreadMultiplier;
 }

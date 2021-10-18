@@ -30,6 +30,7 @@ void AFireWeapon::PerformAttack() {
 		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult)) {
 			if (BeamHitResult.Actor.IsValid()) {
 				//TODO Add bullet hit interface
+				//TODO Add Damage to enemies && objects.
 			}
 			else {
 				if (ImpactParticles) {

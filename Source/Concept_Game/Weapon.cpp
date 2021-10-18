@@ -78,7 +78,7 @@ bool AWeapon::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLoca
 
 		if (OutHitResult.bBlockingHit) {
 			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
-			DrawDebugPoint(GetWorld(), OutHitResult.Location, 100.0f, FColor::Cyan, false, 2.0f);
+			DrawDebugPoint(GetWorld(), OutHitResult.Location, 50.0f, FColor::Cyan, false, 2.0f);
 			OutHitLocation = OutHitResult.Location;
 			return true;
 		}
