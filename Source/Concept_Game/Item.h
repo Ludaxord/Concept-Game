@@ -56,6 +56,17 @@ enum class EItemInventoryType: uint8 {
 };
 
 USTRUCT()
+struct FItemDataTable: public FTableRowBase {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ItemSpaceX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ItemSpaceY;
+};
+
+USTRUCT()
 struct FItemRarityTable : public FTableRowBase {
 	GENERATED_BODY()
 
@@ -271,6 +282,10 @@ public:
 
 	FORCEINLINE void SetEquipSound(USoundCue* InEquipSound) {
 		EquipSound = InEquipSound;
+	}
+
+	FORCEINLINE void SetItemState(EItemState InItemState) {
+		ItemState = InItemState;
 	}
 
 	FORCEINLINE int32 GetItemCount() const {

@@ -30,7 +30,7 @@ AMainCharacter::AMainCharacter():
 	bUseWeaponButtonPressed(false),
 	bAimingButtonPressed(false),
 	CrouchGroundFriction(100.0f),
-	CrawlingGroundFriction(100.0f),
+	CrawlingGroundFriction(50.0f),
 	BaseGroundFriction(2.0f),
 	bShouldAttack(false),
 	CameraDefaultFOV(0.0f),
@@ -69,7 +69,9 @@ AMainCharacter::AMainCharacter():
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
-	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+
+	ConstructCharacterMovement();
 
 }
 
@@ -77,32 +79,10 @@ AMainCharacter::AMainCharacter():
 void AMainCharacter::BeginPlay() {
 	Super::BeginPlay();
 
-	ChangeCameraTimeline->SetTimelineLength(0.1f);
-
-	if (bEnableCameraTransition)
-		UpdateCameraTimelineFloat.BindDynamic(this, &AMainCharacter::OnCameraTimelineFloatUpdate);
-	FinishCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineFinished);
-
-	ChangeCameraTimeline->AddInterpFloat(ChangeCameraFloatCurve, UpdateCameraTimelineFloat);
-	// ChangeCameraTimeline->SetTimelinePostUpdateFunc(UpdateCameraTimelineEvent);
-	ChangeCameraTimeline->SetTimelineFinishedFunc(FinishCameraTimelineEvent);
-	ChangeCameraTimeline->RegisterComponent();
-
-	if (FollowCamera) {
-		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
-		CameraCurrentFOV = CameraDefaultFOV;
-		FollowCamera->SetActive(false);
-	}
-
-	if (EyesCamera) {
-		EyesCamera->SetActive(true);
-	}
-
-	if (RefFollowCamera) {
-		RefFollowCamera->SetActive(false);
-	}
-
-	SpawnDefaultWeapon();
+	SetDefaultCameras();
+	EquipWeapon(SpawnDefaultWeapon());
+	EquippedWeapon->SetSlotIndexX(0);
+	EquippedWeapon->SetSlotIndexY(0);
 	//TODO: Add Weapon and inventory (Depend on game progress)
 	//TODO: Add Ammo (Depend on game progress)
 }
@@ -138,6 +118,40 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
 
+}
+
+void AMainCharacter::ConstructCharacterMovement() {
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+	GetCharacterMovement()->JumpZVelocity = 600.0f;
+	GetCharacterMovement()->AirControl = 0.2f;
+}
+
+void AMainCharacter::SetDefaultCameras() {
+	ChangeCameraTimeline->SetTimelineLength(0.1f);
+
+	if (bEnableCameraTransition)
+		UpdateCameraTimelineFloat.BindDynamic(this, &AMainCharacter::OnCameraTimelineFloatUpdate);
+	FinishCameraTimelineEvent.BindDynamic(this, &AMainCharacter::OnCameraTimelineFinished);
+
+	ChangeCameraTimeline->AddInterpFloat(ChangeCameraFloatCurve, UpdateCameraTimelineFloat);
+	// ChangeCameraTimeline->SetTimelinePostUpdateFunc(UpdateCameraTimelineEvent);
+	ChangeCameraTimeline->SetTimelineFinishedFunc(FinishCameraTimelineEvent);
+	ChangeCameraTimeline->RegisterComponent();
+
+	if (FollowCamera) {
+		CameraDefaultFOV = GetFollowCamera()->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
+		FollowCamera->SetActive(false);
+	}
+
+	if (EyesCamera) {
+		EyesCamera->SetActive(true);
+	}
+
+	if (RefFollowCamera) {
+		RefFollowCamera->SetActive(false);
+	}
 }
 
 void AMainCharacter::MoveForward(float Value) {
@@ -209,14 +223,11 @@ void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
 	const TEnumAsByte<EWeaponType> WeaponEnum = WeaponType;
 	FString EnumAsString = UEnum::GetValueAsString(WeaponEnum.GetValue());
 
-	UE_LOG(LogTemp, Warning, TEXT("Use Weapon By Type %s"), *EnumAsString);
-
 	switch (WeaponType) {
 	case EWeaponType::EWT_Melee: {
 	}
 	break;
 	case EWeaponType::EWT_Fire: {
-		UE_LOG(LogTemp, Warning, TEXT("Use Weapon By Type EWT_Fire"));
 		PlayCharacterSound(ECharacterSoundState::ECSS_UseWeapon);
 		PerformAttack();
 		PlayMontage(ECharacterMontage::ECM_UseWeapon, EquippedWeapon->GetWeaponType());
@@ -235,16 +246,15 @@ void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
 void AMainCharacter::ConstructCameraBoom() {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 180.f; // The camera follows at this distance behind the character
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	CameraBoom->TargetArmLength = 180.f;
+	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->SocketOffset = FVector(0.f, 50.f, 70.0f);
 }
 
 void AMainCharacter::ConstructFollowCamera() {
-	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach camera to end of boom
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
 	FollowCamera->SetActive(false);
 }
 
@@ -495,63 +505,75 @@ void AMainCharacter::GrapClip() {
 void AMainCharacter::ReleaseClip() {
 }
 
-void AMainCharacter::SpawnDefaultWeapon(EWeaponType WeaponType) {
-	bool WeaponCreated = false;
+AWeapon* AMainCharacter::SpawnDefaultWeapon(EWeaponType WeaponType) {
+	AWeapon* WeaponCreated = nullptr;
 	switch (WeaponType) {
 	case EWeaponType::EWT_Any: {
 		if (DefaultFireWeaponClass) {
-			WeaponCreated = CreateDefaultWeapon(DefaultFireWeaponClass, "RightHandSocket");
+			WeaponCreated = SpawnWeapon(DefaultFireWeaponClass);
 		}
 
 		if (!WeaponCreated) {
 			if (DefaultCyberWeaponClass) {
-				WeaponCreated = CreateDefaultWeapon(DefaultCyberWeaponClass, "RightHandSocket");
+				WeaponCreated = SpawnWeapon(DefaultCyberWeaponClass);
 			}
 		}
 
 		if (!WeaponCreated) {
 			if (DefaultMeleeWeaponClass) {
-				WeaponCreated = CreateDefaultWeapon(DefaultMeleeWeaponClass, "RightHandSocket");
+				WeaponCreated = SpawnWeapon(DefaultMeleeWeaponClass);
 			}
 		}
 	}
 	break;
 	case EWeaponType::EWT_Melee:
 		if (DefaultMeleeWeaponClass) {
-			WeaponCreated = CreateDefaultWeapon(DefaultMeleeWeaponClass, "RightHandSocket");
+			WeaponCreated = SpawnWeapon(DefaultMeleeWeaponClass);
 		}
 		break;
 	case EWeaponType::EWT_Fire:
 		if (DefaultFireWeaponClass) {
-			WeaponCreated = CreateDefaultWeapon(DefaultFireWeaponClass, "RightHandSocket");
+			WeaponCreated = SpawnWeapon(DefaultFireWeaponClass);
 		}
 		break;
 	case EWeaponType::EWT_Throwable:
 		if (DefaultThrowableWeaponClass) {
-			WeaponCreated = CreateDefaultWeapon(DefaultThrowableWeaponClass, "RightHandSocket");
+			WeaponCreated = SpawnWeapon(DefaultThrowableWeaponClass);
 		}
 		break;
 	case EWeaponType::EWT_Force:
 		if (DefaultCyberWeaponClass) {
-			WeaponCreated = CreateDefaultWeapon(DefaultCyberWeaponClass, "RightHandSocket");
+			WeaponCreated = SpawnWeapon(DefaultCyberWeaponClass);
 		}
 		break;
 	}
+
+	return WeaponCreated;
 }
 
 template <typename T>
-bool AMainCharacter::CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName) {
-	bool bWeaponCreated = false;
-	T* DefaultWeapon = GetWorld()->SpawnActor<T>(WeaponClass);
-	const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(SocketName);
-	if (Socket) {
-		Socket->AttachActor(DefaultWeapon, GetMesh());
-		bWeaponCreated = true;
+T* AMainCharacter::SpawnWeapon(TSubclassOf<T> WeaponClass) {
+	return GetWorld()->SpawnActor<T>(WeaponClass);
+}
+
+void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool bSwapping) {
+	if (WeaponToEquip) {
+		const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(SocketName);
+		if (Socket) {
+			Socket->AttachActor(WeaponToEquip, GetMesh());
+		}
+
+		//TODO: create delegate
+		if (EquippedWeapon == nullptr) {
+
+		}
+		else if (!bSwapping) {
+
+		}
+
+		EquippedWeapon = WeaponToEquip;
+		EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 	}
-
-	EquippedWeapon = DefaultWeapon;
-
-	return bWeaponCreated;
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,

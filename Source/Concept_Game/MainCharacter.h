@@ -69,6 +69,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void ConstructCharacterMovement();
+
+	void SetDefaultCameras();
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void TurnRate(float Rate);
@@ -134,10 +138,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReleaseClip();
 
-	void SpawnDefaultWeapon(EWeaponType WeaponType = EWeaponType::EWT_Any);
+	AWeapon* SpawnDefaultWeapon(EWeaponType WeaponType = EWeaponType::EWT_Any);
 
 	template <typename T>
-	bool CreateDefaultWeapon(TSubclassOf<T> WeaponClass, FName SocketName);
+	T* SpawnWeapon(TSubclassOf<T> WeaponClass);
+
+	void EquipWeapon(AWeapon* WeaponToEquip, FName SocketName = "RightHandSocket", bool bSwapping = false);
 
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
