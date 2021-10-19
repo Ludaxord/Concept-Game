@@ -66,7 +66,8 @@ public:
 
 	int32 GetAmmo() const {
 		return Ammo;
-	};
+	}
+
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))

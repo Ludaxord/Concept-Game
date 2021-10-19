@@ -51,8 +51,8 @@ bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult
 }
 
 bool AWeapon::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation) {
-	FVector2D ViewportSize;
 
+	FVector2D ViewportSize;
 	if (GEngine && GEngine->GameViewport) {
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 	}
@@ -75,10 +75,12 @@ bool AWeapon::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLoca
 		const FVector End = Start + CrosshairWorldDirection * 50000.0f;
 		OutHitLocation = End;
 		GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECC_Visibility);
-
+		
 		if (OutHitResult.bBlockingHit) {
+			UE_LOG(LogTemp, Warning, TEXT("Trace line position Start => %s End => %s Direction => %s, HIT: %s"),
+			       *Start.ToString(), *End.ToString(), *CrosshairWorldDirection.ToString(), *OutHitResult.Actor->GetName())
 			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
-			DrawDebugPoint(GetWorld(), OutHitResult.Location, 50.0f, FColor::Cyan, false, 2.0f);
+			DrawDebugPoint(GetWorld(), OutHitResult.Location, 5.0f, FColor::Cyan, false, 2.0f);
 			OutHitLocation = OutHitResult.Location;
 			return true;
 		}

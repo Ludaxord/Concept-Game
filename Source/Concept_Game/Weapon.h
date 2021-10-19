@@ -178,4 +178,11 @@ public:
 		ClipBoneName = Name;
 	}
 
+	UParticleSystem* GetImpactParticles() const {
+		return ImpactParticles;
+	}
+
+	UParticleSystem* GetBeamParticles() const {
+		return BeamParticles;
+	}
 };

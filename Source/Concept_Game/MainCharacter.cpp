@@ -484,8 +484,8 @@ void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType
 	FString WeaponEnumAsString = UEnum::GetValueAsString(WeaponEnum.GetValue());
 	const TEnumAsByte<ECharacterMontage> MontageEnum = CharacterMontage;
 	FString MontageEnumAsString = UEnum::GetValueAsString(MontageEnum.GetValue());
-	UE_LOG(LogTemp, Warning, TEXT("Montage Weapon Type: %s, Character Montage: %s"), *WeaponEnumAsString,
-	       *MontageEnumAsString);
+	// UE_LOG(LogTemp, Warning, TEXT("Montage Weapon Type: %s, Character Montage: %s"), *WeaponEnumAsString,
+	//        *MontageEnumAsString);
 	if (AnimInstance) {
 		switch (CharacterMontage) {
 		case ECharacterMontage::ECM_UseWeapon: {
@@ -501,11 +501,7 @@ void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType
 				if (FireWeaponMontage) {
 					AnimInstance->Montage_Play(FireWeaponMontage);
 					AnimInstance->Montage_JumpToSection(FName("StartFire"));
-					UE_LOG(LogTemp, Warning, TEXT("Hip Fire Montage Run"))
-				}
-				else {
-					UE_LOG(LogTemp, Error, TEXT("NO Hip Fire Montage Run"))
-
+					// UE_LOG(LogTemp, Warning, TEXT("Hip Fire Montage Run"))
 				}
 			}
 			break;
