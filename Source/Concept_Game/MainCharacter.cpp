@@ -148,16 +148,22 @@ void AMainCharacter::TraceForItems() {
 		}
 
 		if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
-			if (ItemGuids.Contains(TraceHitItem->GetGuid())) {
-				TraceHitItem->GetPickupWidget()->SetVisibility(true);
-			}
+			TraceHitItem->PerformInteraction();
+			// if (ItemGuids.Contains(TraceHitItem->GetGuid())) {
+			// 	TraceHitItem->GetPickupWidget()->SetVisibility(true);
+			// }
 		}
 
 		if (TraceHitItemLastFrame) {
 			if (TraceHitItem != TraceHitItemLastFrame) {
-				TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+				// TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+				TraceHitItemLastFrame->LeaveInteraction();
 			}
 		}
+
+		TraceHitItemLastFrame = TraceHitItem;
+	} else if (TraceHitItemLastFrame) {
+				TraceHitItemLastFrame->LeaveInteraction();
 	}
 }
 

@@ -146,6 +146,9 @@ void AItem::SetItemProperties(EItemState State) {
 void AItem::InteractWithItem() {
 }
 
+void AItem::PerformInteraction() {
+}
+
 void AItem::FinishInterp() {
 }
 

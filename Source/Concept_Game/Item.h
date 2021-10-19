@@ -100,6 +100,10 @@ public:
 
 	virtual void InteractWithItem();
 
+	virtual void PerformInteraction();
+
+	virtual void LeaveInteraction();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
