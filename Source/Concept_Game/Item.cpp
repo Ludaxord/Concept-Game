@@ -149,6 +149,9 @@ void AItem::InteractWithItem() {
 void AItem::PerformInteraction() {
 }
 
+void AItem::LeaveInteraction() {
+}
+
 void AItem::FinishInterp() {
 }
 

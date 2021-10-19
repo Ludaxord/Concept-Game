@@ -162,8 +162,9 @@ void AMainCharacter::TraceForItems() {
 		}
 
 		TraceHitItemLastFrame = TraceHitItem;
-	} else if (TraceHitItemLastFrame) {
-				TraceHitItemLastFrame->LeaveInteraction();
+	}
+	else if (TraceHitItemLastFrame) {
+		TraceHitItemLastFrame->LeaveInteraction();
 	}
 }
 
