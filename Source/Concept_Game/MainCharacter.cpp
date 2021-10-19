@@ -669,12 +669,14 @@ void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool 
 void AMainCharacter::DropWeapon() {
 	if (EquippedWeapon) {
 		EquippedWeapon->GetItemMesh()->DetachFromComponent({EDetachmentRule::KeepWorld, true});
-
+		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
 	}
 }
 
 void AMainCharacter::InteractButtonPressed() {
 	UE_LOG(LogTemp, Warning, TEXT("Interact Button"));
+	//TODO: Only for drop weapon testing, remove after successful implementation...
+	DropWeapon();
 }
 
 void AMainCharacter::InventoryButtonPressed() {
