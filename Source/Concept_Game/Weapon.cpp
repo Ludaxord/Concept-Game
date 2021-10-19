@@ -82,8 +82,8 @@ bool AWeapon::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLoca
 			UE_LOG(LogTemp, Warning, TEXT("Trace line position Start => %s End => %s Direction => %s, HIT: %s"),
 			       *Start.ToString(), *End.ToString(), *CrosshairWorldDirection.ToString(),
 			       *OutHitResult.Actor->GetName())
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
-			DrawDebugPoint(GetWorld(), OutHitResult.Location, 15.0f, FColor::Cyan, false, 50.0f);
+			// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
+			// DrawDebugPoint(GetWorld(), OutHitResult.Location, 15.0f, FColor::Cyan, false, 50.0f);
 			OutHitLocation = OutHitResult.Location;
 			return true;
 		}

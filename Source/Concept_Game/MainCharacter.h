@@ -149,6 +149,16 @@ public:
 
 	void EquipWeapon(AWeapon* WeaponToEquip, FName SocketName = "RightHandSocket", bool bSwapping = false);
 
+	void DropWeapon();
+
+	void InteractButtonPressed();
+
+	void InventoryButtonPressed();
+
+	void PauseButtonPressed();
+
+	void QuickSelectButtonPressed(float Value);
+
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
 	                              bool AttackComponent = false, USkeletalMeshComponent* Parent = nullptr) const;

@@ -56,7 +56,7 @@ enum class EItemInventoryType: uint8 {
 };
 
 USTRUCT()
-struct FItemDataTable: public FTableRowBase {
+struct FItemDataTable : public FTableRowBase {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -111,7 +111,7 @@ protected:
 	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
-	void SetItemProperties(EItemState State);
+	virtual void SetItemProperties(EItemState State);
 
 	void FinishInterp();
 
@@ -286,6 +286,7 @@ public:
 
 	FORCEINLINE void SetItemState(EItemState InItemState) {
 		ItemState = InItemState;
+		SetItemProperties(InItemState);
 	}
 
 	FORCEINLINE int32 GetItemCount() const {

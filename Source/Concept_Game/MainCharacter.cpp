@@ -158,6 +158,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("Running", this, &AMainCharacter::RunningButtonPressed);
 	PlayerInputComponent->BindAxis("Turn", this, &AMainCharacter::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
+	PlayerInputComponent->BindAxis("QuickSelect", this, &AMainCharacter::QuickSelectButtonPressed);
 
 	// PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AMainCharacter::RunningButtonPressed);
 	// PlayerInputComponent->BindAction("Running", IE_Released, this, &AMainCharacter::RunningButtonReleased);
@@ -169,6 +170,9 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacter::InteractButtonPressed);
+	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &AMainCharacter::InventoryButtonPressed);
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMainCharacter::PauseButtonPressed);
 
 }
 
@@ -642,8 +646,8 @@ T* AMainCharacter::SpawnWeapon(TSubclassOf<T> WeaponClass) {
 
 void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool bSwapping) {
 	if (WeaponToEquip) {
-		WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		WeaponToEquip->GetCollisionBox()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		// WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		// WeaponToEquip->GetCollisionBox()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(SocketName);
 		if (Socket) {
 			Socket->AttachActor(WeaponToEquip, GetMesh());
@@ -659,6 +663,31 @@ void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool 
 
 		EquippedWeapon = WeaponToEquip;
 		EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
+	}
+}
+
+void AMainCharacter::DropWeapon() {
+	if (EquippedWeapon) {
+		EquippedWeapon->GetItemMesh()->DetachFromComponent({EDetachmentRule::KeepWorld, true});
+
+	}
+}
+
+void AMainCharacter::InteractButtonPressed() {
+	UE_LOG(LogTemp, Warning, TEXT("Interact Button"));
+}
+
+void AMainCharacter::InventoryButtonPressed() {
+	UE_LOG(LogTemp, Warning, TEXT("Inventory Button"));
+}
+
+void AMainCharacter::PauseButtonPressed() {
+	UE_LOG(LogTemp, Warning, TEXT("Pause Button"));
+}
+
+void AMainCharacter::QuickSelectButtonPressed(float Value) {
+	if (Value > 0.0f) {
+		UE_LOG(LogTemp, Warning, TEXT("Quick Select Button"));
 	}
 }
 
