@@ -91,6 +91,8 @@ public:
 	void UseWeaponByType(EWeaponType WeaponType);
 	void UseWeapon();
 
+	virtual bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation);
+
 	void AimingButtonPressed();
 	void AimingButtonReleased();
 
@@ -171,6 +173,9 @@ protected:
 	void OnCameraTimelineFinished();
 
 private:
+	//TODO: Create inventory class to store informations like guids...
+	TArray<FGuid> ItemGuids;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
@@ -312,8 +317,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AMeleeWeapon> DefaultMeleeWeaponClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
 	class AItem* TraceHitItem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	AItem* TraceHitItemLastFrame;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	EPoseType PoseType;

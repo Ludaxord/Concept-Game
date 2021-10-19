@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/TimelineComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -131,9 +132,71 @@ void AMainCharacter::CalculateCrosshairSpread(float DeltaTime) {
 }
 
 void AMainCharacter::TraceForItems() {
-	if (bShouldTraceForItems) {
+	FHitResult ItemTraceHitResult;
+	FVector HitLocation;
+	TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
+	if (ItemTraceHitResult.bBlockingHit) {
+		TraceHitItem = Cast<AItem>(ItemTraceHitResult.Actor);
 
+		//TODO: If Trace hit item exists, switch between item types...
+		if (TraceHitItem) {
+			UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
+		}
+
+		if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterp) {
+			TraceHitItem = nullptr;
+		}
+
+		if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
+			if (ItemGuids.Contains(TraceHitItem->GetGuid())) {
+				TraceHitItem->GetPickupWidget()->SetVisibility(true);
+			}
+		}
+
+		if (TraceHitItemLastFrame) {
+			if (TraceHitItem != TraceHitItemLastFrame) {
+				TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+			}
+		}
 	}
+}
+
+
+bool AMainCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation) {
+
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport) {
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+
+	FVector2D CrosshairLocation = {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
+	CrosshairLocation.Y -= 50.0f;
+
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+		UGameplayStatics::GetPlayerController(this, 0),
+		CrosshairLocation,
+		CrosshairWorldPosition,
+		CrosshairWorldDirection
+	);
+
+	if (bScreenToWorld) {
+		const FVector Start = CrosshairWorldPosition;
+		const FVector End = Start + CrosshairWorldDirection * 50000.0f;
+		OutHitLocation = End;
+		GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECC_Visibility);
+
+		if (OutHitResult.bBlockingHit) {
+			// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
+			// DrawDebugPoint(GetWorld(), OutHitResult.Location, 15.0f, FColor::Cyan, false, 50.0f);
+			OutHitLocation = OutHitResult.Location;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 // Called every frame
@@ -675,8 +738,12 @@ void AMainCharacter::DropWeapon() {
 
 void AMainCharacter::InteractButtonPressed() {
 	UE_LOG(LogTemp, Warning, TEXT("Interact Button"));
-	//TODO: Only for drop weapon testing, remove after successful implementation...
-	DropWeapon();
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (TraceHitItem) {
+		TraceHitItem->InteractWithItem();
+		TraceHitItem = nullptr;
+	}
+	// DropWeapon();
 }
 
 void AMainCharacter::InventoryButtonPressed() {

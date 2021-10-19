@@ -105,8 +105,7 @@ public:
 	virtual void StartWeaponAnimationTimer();
 	virtual void InitializeWeaponDataTable();
 
-	virtual bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult);
-	virtual bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation);
+	virtual bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult, AMainCharacter* InCharacter = nullptr);
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 

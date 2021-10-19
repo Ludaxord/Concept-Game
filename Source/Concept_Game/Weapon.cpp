@@ -4,6 +4,7 @@
 #include "Weapon.h"
 
 #include "DrawDebugHelpers.h"
+#include "MainCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 AWeapon::AWeapon() {
@@ -30,66 +31,39 @@ void AWeapon::StartWeaponAnimationTimer() {
 void AWeapon::InitializeWeaponDataTable() {
 }
 
-bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult) {
+bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult,
+                                 AMainCharacter* InCharacter) {
 	FVector OutBeamLocation;
 	FHitResult CrosshairHitResult;
 
-	bool bCrosshairHit = TraceUnderCrosshairs(CrosshairHitResult, OutBeamLocation);
-	if (bCrosshairHit) {
-		OutBeamLocation = CrosshairHitResult.Location;
-	}
-	const FVector WeaponTraceStart = MuzzleSocketLocation;
-	const FVector WeaponTraceEnd = OutBeamLocation;
-
-	GetWorld()->LineTraceSingleByChannel(OutHitResult, WeaponTraceStart, WeaponTraceEnd,
-	                                     ECollisionChannel::ECC_Visibility);
-	if (!OutHitResult.bBlockingHit) {
-		OutHitResult.Location = OutBeamLocation;
-		return false;
+	if (Character == nullptr) {
+		Character = InCharacter;
 	}
 
-	return true;
+	if (Character) {
+		bool bCrosshairHit = Character->TraceUnderCrosshairs(CrosshairHitResult, OutBeamLocation);
+		if (bCrosshairHit) {
+			OutBeamLocation = CrosshairHitResult.Location;
+		}
+		const FVector WeaponTraceStart = MuzzleSocketLocation;
+		const FVector WeaponTraceEnd = OutBeamLocation;
 
-}
+		GetWorld()->LineTraceSingleByChannel(OutHitResult, WeaponTraceStart, WeaponTraceEnd,
+		                                     ECollisionChannel::ECC_Visibility);
+		if (OutHitResult.bBlockingHit)
+			UE_LOG(LogTemp, Warning, TEXT("Trace line position: %s HIT: %s"), *OutHitResult.Location.ToString(),
+		       *OutHitResult.Actor->GetName())
 
-bool AWeapon::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation) {
 
-	FVector2D ViewportSize;
-	if (GEngine && GEngine->GameViewport) {
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-	}
-
-	FVector2D CrosshairLocation = {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
-	CrosshairLocation.Y -= 50.0f;
-
-	FVector CrosshairWorldPosition;
-	FVector CrosshairWorldDirection;
-
-	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
-		UGameplayStatics::GetPlayerController(this, 0),
-		CrosshairLocation,
-		CrosshairWorldPosition,
-		CrosshairWorldDirection
-	);
-
-	if (bScreenToWorld) {
-		const FVector Start = CrosshairWorldPosition;
-		const FVector End = Start + CrosshairWorldDirection * 50000.0f;
-		OutHitLocation = End;
-		GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECC_Visibility);
-
-		if (OutHitResult.bBlockingHit) {
-			UE_LOG(LogTemp, Warning, TEXT("Trace line position Start => %s End => %s Direction => %s, HIT: %s"),
-			       *Start.ToString(), *End.ToString(), *CrosshairWorldDirection.ToString(),
-			       *OutHitResult.Actor->GetName())
-			// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
-			// DrawDebugPoint(GetWorld(), OutHitResult.Location, 15.0f, FColor::Cyan, false, 50.0f);
-			OutHitLocation = OutHitResult.Location;
-			return true;
+		if (!OutHitResult.bBlockingHit) {
+			OutHitResult.Location = OutBeamLocation;
+			return false;
 		}
 	}
 
-	return false;
+
+	return true;
+
 }
 
 void AWeapon::OnConstruction(const FTransform& Transform) {

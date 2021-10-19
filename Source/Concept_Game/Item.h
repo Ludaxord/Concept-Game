@@ -98,6 +98,8 @@ public:
 	// Sets default values for this actor's properties
 	AItem();
 
+	virtual void InteractWithItem();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -112,6 +114,7 @@ protected:
 	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 	virtual void SetItemProperties(EItemState State);
+
 
 	void FinishInterp();
 
@@ -131,6 +134,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void PlayEquipSound(bool bForcePlaySound = false);
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	class AMainCharacter* Character;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* ItemMesh;
@@ -177,9 +185,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	float ZCurveTime;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
-	class AMainCharacter* Character;
 
 	float ItemInterpX;
 
