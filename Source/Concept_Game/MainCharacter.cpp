@@ -28,9 +28,11 @@ AMainCharacter::AMainCharacter():
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
 	bUseWeaponButtonPressed(false),
+	bShouldTraceForItems(false),
 	bAimingButtonPressed(false),
 	CrouchGroundFriction(100.0f),
 	CrawlingGroundFriction(50.0f),
+	ZoomInterpolationSpeed(20.0f),
 	BaseGroundFriction(2.0f),
 	bShouldAttack(false),
 	CameraDefaultFOV(0.0f),
@@ -93,12 +95,52 @@ void AMainCharacter::BeginPlay() {
 	//TODO: Add Ammo (Depend on game progress)
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+
+	// HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComp"));
+}
+
+void AMainCharacter::SetLookUpRates(float DeltaTime) {
+	BaseTurnRate = bAiming ? AimingTurnRate : HipTurnRate;
+	BaseLookUpRate = bAiming ? AimingLookUpRate : HipLookUpRate;
+}
+
+void AMainCharacter::CalculateCrosshairSpread(float DeltaTime) {
+	FVector2D WalkSpeedRange = {0.0f, 600.0f};
+	FVector2D VelocityMultiplierRange = {0.0f, 1.0f};
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0.0f;
+
+	CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange,
+	                                                            Velocity.Size());
+	CrosshairInAirFactor = GetCharacterMovement()->IsFalling()
+		                       ? FMath::FInterpTo(CrosshairInAirFactor, 2.25f, DeltaTime, 2.25f)
+		                       : FMath::FInterpTo(CrosshairInAirFactor, 0.0f, DeltaTime, 30.0f);
+
+	CrosshairAimFactor = bAiming
+		                     ? FMath::FInterpTo(CrosshairAimFactor, 0.6f, DeltaTime, 30.0f)
+		                     : FMath::FInterpTo(CrosshairAimFactor, 0.0f, DeltaTime, 30.0f);
+
+	CrosshairShootingFactor = bFiringBullet
+		                          ? FMath::FInterpTo(CrosshairShootingFactor, 0.3f, DeltaTime, 60.0f)
+		                          : FMath::FInterpTo(CrosshairShootingFactor, 0.0f, DeltaTime, 60.0f);
+
+	CrosshairSpreadMultiplier = 0.5f + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor +
+		CrosshairShootingFactor;
+}
+
+void AMainCharacter::TraceForItems() {
+	if (bShouldTraceForItems) {
+
+	}
 }
 
 // Called every frame
 void AMainCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
-
+	AimingFieldOfView(DeltaTime);
+	SetLookUpRates(DeltaTime);
+	CalculateCrosshairSpread(DeltaTime);
+	TraceForItems();
 	InterpCapsuleHalfHeight(DeltaTime);
 }
 
@@ -218,10 +260,13 @@ void AMainCharacter::PlayCharacterSound(ECharacterSoundState CharacterSoundState
 }
 
 void AMainCharacter::PerformAttack() {
-	EquippedWeapon->PerformAttack();
+	// EquippedWeapon->PerformAttack();
 }
 
 void AMainCharacter::StartCrosshairMovement() {
+	bFiringBullet = true;
+	GetWorldTimerManager().SetTimer(CrosshairShootTimer, this, &AMainCharacter::FinishCrosshairMovement,
+	                                ShootFireDuration);
 }
 
 void AMainCharacter::StartAttackTimer(EWeaponType WeaponType) {
@@ -281,6 +326,10 @@ void AMainCharacter::ConstructRefFollowCamera() {
 void AMainCharacter::ConstructRefFollowCameraArrowComponent() {
 	RefFollowCameraRotation = CreateDefaultSubobject<UArrowComponent>(TEXT("RefFollowCameraRotation"));
 	RefFollowCameraRotation->SetupAttachment(GetCapsuleComponent());
+}
+
+void AMainCharacter::FinishCrosshairMovement() {
+	bFiringBullet = false;
 }
 
 void AMainCharacter::UseWeapon() {
@@ -401,7 +450,16 @@ void AMainCharacter::Aim() {
 void AMainCharacter::StopAiming() {
 }
 
-void AMainCharacter::AimingFieldOfView() {
+void AMainCharacter::AimingFieldOfView(float DeltaTime) {
+	if (bSwitchToFollowCamera) {
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, bAiming ? CameraZoomedFOV : CameraDefaultFOV, DeltaTime,
+		                                    ZoomInterpolationSpeed);
+		GetFollowCamera()->SetFieldOfView(CameraCurrentFOV);
+	}
+	else {
+		//TODO: Create aiming in EyesCamera FOV
+	}
+
 }
 
 void AMainCharacter::UseWeaponButtonPressed() {

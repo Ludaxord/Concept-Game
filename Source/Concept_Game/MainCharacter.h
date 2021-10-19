@@ -63,6 +63,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	void SetLookUpRates(float DeltaTime);
+	void CalculateCrosshairSpread(float DeltaTime);
+	void TraceForItems();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -107,7 +110,7 @@ public:
 
 	void StopAiming();
 
-	void AimingFieldOfView();
+	void AimingFieldOfView(float DeltaTime);
 
 	void UseWeaponButtonPressed();
 	void UseWeaponButtonReleased();
@@ -129,6 +132,7 @@ public:
 	void ConstructEyesCamera();
 	void ConstructRefFollowCamera();
 	void ConstructRefFollowCameraArrowComponent();
+	void FinishCrosshairMovement();
 
 	void PlayMontage(ECharacterMontage CharacterMontage, EWeaponType WeaponType);
 
@@ -251,6 +255,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* HandSceneComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	float ZoomInterpolationSpeed;
+
 	bool bUseWeaponButtonPressed;
 
 	bool bAimingButtonPressed;
@@ -259,9 +269,13 @@ private:
 
 	FTimerHandle AutoFireTimer;
 
+	FTimerHandle CrosshairShootTimer;
+
 	float ShootFireDuration;
 
 	bool bFiringBullet;
+
+	bool bShouldTraceForItems;
 
 	float PoseAxisValueCounter;
 

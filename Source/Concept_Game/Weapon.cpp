@@ -33,7 +33,9 @@ void AWeapon::InitializeWeaponDataTable() {
 bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult) {
 	FVector OutBeamLocation;
 	FHitResult CrosshairHitResult;
-	if (TraceUnderCrosshairs(CrosshairHitResult, OutBeamLocation)) {
+
+	bool bCrosshairHit = TraceUnderCrosshairs(CrosshairHitResult, OutBeamLocation);
+	if (bCrosshairHit) {
 		OutBeamLocation = CrosshairHitResult.Location;
 	}
 	const FVector WeaponTraceStart = MuzzleSocketLocation;
@@ -75,12 +77,13 @@ bool AWeapon::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLoca
 		const FVector End = Start + CrosshairWorldDirection * 50000.0f;
 		OutHitLocation = End;
 		GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECC_Visibility);
-		
+
 		if (OutHitResult.bBlockingHit) {
 			UE_LOG(LogTemp, Warning, TEXT("Trace line position Start => %s End => %s Direction => %s, HIT: %s"),
-			       *Start.ToString(), *End.ToString(), *CrosshairWorldDirection.ToString(), *OutHitResult.Actor->GetName())
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
-			DrawDebugPoint(GetWorld(), OutHitResult.Location, 5.0f, FColor::Cyan, false, 2.0f);
+			       *Start.ToString(), *End.ToString(), *CrosshairWorldDirection.ToString(),
+			       *OutHitResult.Actor->GetName())
+			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
+			DrawDebugPoint(GetWorld(), OutHitResult.Location, 15.0f, FColor::Cyan, false, 50.0f);
 			OutHitLocation = OutHitResult.Location;
 			return true;
 		}
@@ -95,6 +98,9 @@ void AWeapon::OnConstruction(const FTransform& Transform) {
 
 void AWeapon::BeginPlay() {
 	Super::BeginPlay();
+	if (BoneToHide != FName("")) {
+		GetItemMesh()->HideBoneByName(BoneToHide, PBO_None);
+	}
 }
 
 void AWeapon::StopFalling() {

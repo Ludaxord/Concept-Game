@@ -21,9 +21,6 @@ void AFireWeapon::PerformAttack() {
 		if (GetMuzzleFlash()) {
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetMuzzleFlash(), SocketTransform);
 		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("Perform Attack From Equipped Weapon Failed, No Muzzle Flash found..."));
-		}
 
 		FHitResult BeamHitResult;
 		//TODO: Add Types of actor that is able to be hit by BeamHitResult...
