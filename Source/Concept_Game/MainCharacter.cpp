@@ -5,7 +5,9 @@
 
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -260,7 +262,7 @@ void AMainCharacter::PlayCharacterSound(ECharacterSoundState CharacterSoundState
 }
 
 void AMainCharacter::PerformAttack() {
-	// EquippedWeapon->PerformAttack();
+	EquippedWeapon->PerformAttack();
 }
 
 void AMainCharacter::StartCrosshairMovement() {
@@ -640,6 +642,8 @@ T* AMainCharacter::SpawnWeapon(TSubclassOf<T> WeaponClass) {
 
 void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool bSwapping) {
 	if (WeaponToEquip) {
+		WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		WeaponToEquip->GetCollisionBox()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(SocketName);
 		if (Socket) {
 			Socket->AttachActor(WeaponToEquip, GetMesh());
