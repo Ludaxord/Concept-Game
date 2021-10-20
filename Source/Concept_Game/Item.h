@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+class AMainCharacter;
 UENUM(BlueprintType)
 enum class EItemRarity : uint8 {
 	EIR_Unspecified UMETA(DisplayName = "Unspecified"),
@@ -100,9 +101,9 @@ public:
 
 	virtual void InteractWithItem();
 
-	virtual void PerformInteraction();
+	virtual void PerformInteraction(AMainCharacter* InMainCharacter);
 
-	virtual void LeaveInteraction();
+	virtual void LeaveInteraction(AMainCharacter* InMainCharacter);
 
 protected:
 	// Called when the game starts or when spawned
@@ -172,6 +173,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	EItemState ItemState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	FString ItemInteractionName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	class UCurveFloat* ItemZCurve;

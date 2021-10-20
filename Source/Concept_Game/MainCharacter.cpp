@@ -132,40 +132,44 @@ void AMainCharacter::CalculateCrosshairSpread(float DeltaTime) {
 }
 
 void AMainCharacter::TraceForItems() {
-	FHitResult ItemTraceHitResult;
-	FVector HitLocation;
-	TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
-	if (ItemTraceHitResult.bBlockingHit) {
-		TraceHitItem = Cast<AItem>(ItemTraceHitResult.Actor);
+	if (bShouldTraceForItems) {
+		FHitResult ItemTraceHitResult;
+		FVector HitLocation;
+		TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
+		if (ItemTraceHitResult.bBlockingHit) {
+			TraceHitItem = Cast<AItem>(ItemTraceHitResult.Actor);
 
-		//TODO: If Trace hit item exists, switch between item types...
-		if (TraceHitItem) {
-			UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
-		}
-
-		if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterp) {
-			TraceHitItem = nullptr;
-		}
-
-		if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
-			TraceHitItem->PerformInteraction();
-			// if (ItemGuids.Contains(TraceHitItem->GetGuid())) {
-			// 	TraceHitItem->GetPickupWidget()->SetVisibility(true);
-			// }
-		}
-
-		if (TraceHitItemLastFrame) {
-			if (TraceHitItem != TraceHitItemLastFrame) {
-				// TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
-				TraceHitItemLastFrame->LeaveInteraction();
+			//TODO: If Trace hit item exists, switch between item types...
+			if (TraceHitItem) {
+				UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
 			}
-		}
 
-		TraceHitItemLastFrame = TraceHitItem;
+			if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterp) {
+				TraceHitItem = nullptr;
+			}
+
+			if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
+				UE_LOG(LogTemp, Error, TEXT("perform interaction"))
+				TraceHitItem->PerformInteraction(this);
+			}
+
+			if (TraceHitItemLastFrame) {
+				if (TraceHitItem != TraceHitItemLastFrame) {
+					UE_LOG(LogTemp, Error, TEXT("leave interaction"))
+					TraceHitItemLastFrame->LeaveInteraction(this);
+				}
+			}
+
+			TraceHitItemLastFrame = TraceHitItem;
+		}
+		else if (TraceHitItemLastFrame) {
+			TraceHitItemLastFrame->LeaveInteraction(this);
+		}
 	}
 	else if (TraceHitItemLastFrame) {
-		TraceHitItemLastFrame->LeaveInteraction();
+		TraceHitItemLastFrame->LeaveInteraction(this);
 	}
+
 }
 
 
@@ -765,6 +769,14 @@ void AMainCharacter::QuickSelectButtonPressed(float Value) {
 	if (Value > 0.0f) {
 		UE_LOG(LogTemp, Warning, TEXT("Quick Select Button"));
 	}
+}
+
+void AMainCharacter::SphereOverlapBegin() {
+	bShouldTraceForItems = true;
+}
+
+void AMainCharacter::SphereOverlapEnd() {
+	bShouldTraceForItems = false;
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,

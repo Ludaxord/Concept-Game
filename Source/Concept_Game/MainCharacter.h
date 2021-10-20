@@ -160,6 +160,8 @@ public:
 	void PauseButtonPressed();
 
 	void QuickSelectButtonPressed(float Value);
+	void SphereOverlapBegin();
+	void SphereOverlapEnd();
 
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",

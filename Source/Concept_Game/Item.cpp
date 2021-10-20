@@ -12,7 +12,8 @@
 AItem::AItem(): ItemName(FString("Default")),
                 ItemCount(0),
                 ItemRarity(EItemRarity::EIR_Common),
-                ItemState(EItemState::EIS_Pickup) {
+                ItemState(EItemState::EIS_Pickup),
+                ItemInteractionName("Pickup") {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -34,6 +35,10 @@ AItem::AItem(): ItemName(FString("Default")),
 // Called when the game starts or when spawned
 void AItem::BeginPlay() {
 	Super::BeginPlay();
+
+	if (PickupWidget)
+		PickupWidget->SetVisibility(false);
+
 	ID = FGuid::NewGuid();
 
 	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
@@ -48,7 +53,9 @@ void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
-			// OtherCharacter->IncrementOverlappedItemCount(1, ID);
+			UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin item %s"), * GetName());
+			// SphereOverlapBegin();
+			OtherCharacter->SphereOverlapBegin();
 		}
 	}
 }
@@ -58,6 +65,8 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s"), * GetName());
+			OtherCharacter->SphereOverlapEnd();
 			// OtherCharacter->IncrementOverlappedItemCount(-1, ID);
 			// OtherCharacter->UnHighlightInventorySlot();
 		}
@@ -80,6 +89,8 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		ItemInteractionName = "Pickup";
 	}
 	break;
 	case EItemState::EIS_EquipInterp: {
@@ -99,6 +110,8 @@ void AItem::SetItemProperties(EItemState State) {
 
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		ItemInteractionName = "";
 	}
 	break;
 	case EItemState::EIS_Equipped: {
@@ -115,6 +128,7 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+		ItemInteractionName = "";
 	}
 	break;
 	case EItemState::EIS_Falling: {
@@ -132,12 +146,18 @@ void AItem::SetItemProperties(EItemState State) {
 		// Set CollisionBox properties
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		ItemInteractionName = "Pickup";
 	}
 	break;
 	case EItemState::EIS_Interact: {
+
+		ItemInteractionName = "Use";
 	}
 	break;
 	case EItemState::EIS_Static: {
+
+		ItemInteractionName = "Use";
 	}
 	break;
 	}
@@ -146,10 +166,13 @@ void AItem::SetItemProperties(EItemState State) {
 void AItem::InteractWithItem() {
 }
 
-void AItem::PerformInteraction() {
+void AItem::PerformInteraction(AMainCharacter* InMainCharacter) {
+	PickupWidget->SetVisibility(true);
+	UE_LOG(LogTemp, Warning, TEXT("Interaction Name: %s Item Name: %s"), *ItemInteractionName, *ItemName)
 }
 
-void AItem::LeaveInteraction() {
+void AItem::LeaveInteraction(AMainCharacter* InMainCharacter) {
+	PickupWidget->SetVisibility(false);
 }
 
 void AItem::FinishInterp() {

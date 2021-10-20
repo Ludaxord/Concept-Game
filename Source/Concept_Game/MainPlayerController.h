@@ -10,8 +10,18 @@
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API AMainPlayerController : public APlayerController
-{
+class CONCEPT_GAME_API AMainPlayerController : public APlayerController {
 	GENERATED_BODY()
-	
+public:
+	AMainPlayerController();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widgets", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class UUserWidget> HUDOverlayClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widgets", meta=(AllowPrivateAccess = "true"))
+	UUserWidget* HUDOverlay;
 };

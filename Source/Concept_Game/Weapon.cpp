@@ -66,6 +66,18 @@ bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult
 
 }
 
+void AWeapon::InteractWithItem() {
+	Super::InteractWithItem();
+}
+
+void AWeapon::PerformInteraction(AMainCharacter* InMainCharacter) {
+	Super::PerformInteraction(InMainCharacter);
+}
+
+void AWeapon::LeaveInteraction(AMainCharacter* InMainCharacter) {
+	Super::LeaveInteraction(InMainCharacter);
+}
+
 void AWeapon::OnConstruction(const FTransform& Transform) {
 	Super::OnConstruction(Transform);
 }

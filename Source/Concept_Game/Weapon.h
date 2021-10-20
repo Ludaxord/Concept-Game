@@ -106,6 +106,12 @@ public:
 	virtual void InitializeWeaponDataTable();
 
 	virtual bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult, AMainCharacter* InCharacter = nullptr);
+
+	virtual void InteractWithItem() override;
+
+	virtual void PerformInteraction(AMainCharacter* InMainCharacter) override;
+
+	virtual void LeaveInteraction(AMainCharacter* InMainCharacter) override;
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
