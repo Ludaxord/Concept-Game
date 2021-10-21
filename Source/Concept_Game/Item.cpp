@@ -12,7 +12,7 @@
 // Sets default values
 AItem::AItem(): ItemName(FString("Default")),
                 ItemCount(0),
-                ThrowItemTime(0.7f),
+                ThrowItemTime(1.0f),
                 ItemRarity(EItemRarity::EIR_Common),
                 ItemState(EItemState::EIS_Pickup),
                 ItemInteractionName("Pickup") {

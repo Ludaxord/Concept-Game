@@ -740,11 +740,13 @@ void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool 
 	}
 }
 
-void AMainCharacter::DropWeapon() {
-	if (EquippedWeapon) {
-		EquippedWeapon->GetItemMesh()->DetachFromComponent({EDetachmentRule::KeepWorld, true});
-		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
-		EquippedWeapon->ThrowItem();
+void AMainCharacter::DropItem(AItem* ItemToDrop) {
+	if (ItemToDrop) {
+		ItemToDrop->GetItemMesh()->DetachFromComponent({EDetachmentRule::KeepWorld, true});
+		ItemToDrop->SetItemState(EItemState::EIS_Falling);
+		ItemToDrop->ThrowItem();
+
+		ItemToDrop = nullptr;
 	}
 }
 
@@ -757,7 +759,8 @@ void AMainCharacter::InteractButtonPressed() {
 	}
 
 	//TEST
-	DropWeapon();
+	DropItem(EquippedWeapon);
+	EquippedWeapon = nullptr;
 }
 
 void AMainCharacter::InventoryButtonPressed() {

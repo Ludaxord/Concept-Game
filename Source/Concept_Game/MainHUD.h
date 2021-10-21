@@ -43,4 +43,19 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
 	FVector2D CrossHairBaseCenter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* CrosshairsMiddle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* CrosshairsLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* CrosshairsRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* CrosshairsBottom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* CrosshairsTop;
 };

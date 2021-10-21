@@ -151,7 +151,7 @@ public:
 
 	void EquipWeapon(AWeapon* WeaponToEquip, FName SocketName = "RightHandSocket", bool bSwapping = false);
 
-	void DropWeapon();
+	void DropItem(AItem* ItemToDrop);
 
 	void InteractButtonPressed();
 
@@ -410,21 +410,35 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* DeathMontage;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	float CrosshairSpreadMultiplier;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	float CrosshairVelocityFactor;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	float CrosshairInAirFactor;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	float CrosshairAimFactor;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= Crosshairs, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* DefaultCrosshairsMiddle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* DefaultCrosshairsLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* DefaultCrosshairsRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* DefaultCrosshairsBottom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
+	UTexture2D* DefaultCrosshairsTop;
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;
