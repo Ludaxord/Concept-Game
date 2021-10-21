@@ -759,8 +759,8 @@ void AMainCharacter::InteractButtonPressed() {
 	}
 
 	//TEST
-	DropItem(EquippedWeapon);
-	EquippedWeapon = nullptr;
+	// DropItem(EquippedWeapon);
+	// EquippedWeapon = nullptr;
 }
 
 void AMainCharacter::InventoryButtonPressed() {
