@@ -99,11 +99,11 @@ public:
 	// Sets default values for this actor's properties
 	AItem();
 
-	virtual void InteractWithItem();
+	virtual void InteractWithItem(AMainCharacter* InCharacter);
 
-	virtual void PerformInteraction(AMainCharacter* InMainCharacter);
+	virtual void PerformTrace(AMainCharacter* InMainCharacter);
 
-	virtual void LeaveInteraction(AMainCharacter* InMainCharacter);
+	virtual void LeaveTrace(AMainCharacter* InMainCharacter);
 
 protected:
 	// Called when the game starts or when spawned
@@ -140,9 +140,18 @@ public:
 
 	void PlayEquipSound(bool bForcePlaySound = false);
 
+	void ThrowItem();
+
+	void StopFalling();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	class AMainCharacter* Character;
+
+	FTimerHandle ThrowItemTimer;
+
+	float ThrowItemTime;
+
+	bool bFalling;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))

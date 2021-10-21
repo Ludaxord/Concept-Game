@@ -107,11 +107,11 @@ public:
 
 	virtual bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult, AMainCharacter* InCharacter = nullptr);
 
-	virtual void InteractWithItem() override;
+	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
 
-	virtual void PerformInteraction(AMainCharacter* InMainCharacter) override;
+	virtual void PerformTrace(AMainCharacter* InMainCharacter) override;
 
-	virtual void LeaveInteraction(AMainCharacter* InMainCharacter) override;
+	virtual void LeaveTrace(AMainCharacter* InMainCharacter) override;
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
@@ -122,8 +122,6 @@ protected:
 	FTimerHandle ThrowWeaponTimer;
 
 	float ThrowWeaponTime;
-
-	bool bFalling;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	EWeaponType WeaponType;

@@ -66,16 +66,16 @@ bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult
 
 }
 
-void AWeapon::InteractWithItem() {
-	Super::InteractWithItem();
+void AWeapon::InteractWithItem(AMainCharacter* InCharacter) {
+	Super::InteractWithItem(InCharacter);
 }
 
-void AWeapon::PerformInteraction(AMainCharacter* InMainCharacter) {
-	Super::PerformInteraction(InMainCharacter);
+void AWeapon::PerformTrace(AMainCharacter* InMainCharacter) {
+	Super::PerformTrace(InMainCharacter);
 }
 
-void AWeapon::LeaveInteraction(AMainCharacter* InMainCharacter) {
-	Super::LeaveInteraction(InMainCharacter);
+void AWeapon::LeaveTrace(AMainCharacter* InMainCharacter) {
+	Super::LeaveTrace(InMainCharacter);
 }
 
 void AWeapon::OnConstruction(const FTransform& Transform) {

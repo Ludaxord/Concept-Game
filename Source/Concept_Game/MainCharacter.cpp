@@ -150,24 +150,24 @@ void AMainCharacter::TraceForItems() {
 
 			if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
 				UE_LOG(LogTemp, Error, TEXT("perform interaction"))
-				TraceHitItem->PerformInteraction(this);
+				TraceHitItem->PerformTrace(this);
 			}
 
 			if (TraceHitItemLastFrame) {
 				if (TraceHitItem != TraceHitItemLastFrame) {
 					UE_LOG(LogTemp, Error, TEXT("leave interaction"))
-					TraceHitItemLastFrame->LeaveInteraction(this);
+					TraceHitItemLastFrame->LeaveTrace(this);
 				}
 			}
 
 			TraceHitItemLastFrame = TraceHitItem;
 		}
 		else if (TraceHitItemLastFrame) {
-			TraceHitItemLastFrame->LeaveInteraction(this);
+			TraceHitItemLastFrame->LeaveTrace(this);
 		}
 	}
 	else if (TraceHitItemLastFrame) {
-		TraceHitItemLastFrame->LeaveInteraction(this);
+		TraceHitItemLastFrame->LeaveTrace(this);
 	}
 
 }
@@ -744,6 +744,7 @@ void AMainCharacter::DropWeapon() {
 	if (EquippedWeapon) {
 		EquippedWeapon->GetItemMesh()->DetachFromComponent({EDetachmentRule::KeepWorld, true});
 		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
+		EquippedWeapon->ThrowItem();
 	}
 }
 
@@ -751,10 +752,12 @@ void AMainCharacter::InteractButtonPressed() {
 	UE_LOG(LogTemp, Warning, TEXT("Interact Button"));
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	if (TraceHitItem) {
-		TraceHitItem->InteractWithItem();
+		TraceHitItem->InteractWithItem(this);
 		TraceHitItem = nullptr;
 	}
-	// DropWeapon();
+
+	//TEST
+	DropWeapon();
 }
 
 void AMainCharacter::InventoryButtonPressed() {

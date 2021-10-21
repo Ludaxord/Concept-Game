@@ -3,6 +3,7 @@
 
 #include "Item.h"
 
+#include "DrawDebugHelpers.h"
 #include "MainCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
@@ -11,6 +12,7 @@
 // Sets default values
 AItem::AItem(): ItemName(FString("Default")),
                 ItemCount(0),
+                ThrowItemTime(0.7f),
                 ItemRarity(EItemRarity::EIR_Common),
                 ItemState(EItemState::EIS_Pickup),
                 ItemInteractionName("Pickup") {
@@ -163,15 +165,28 @@ void AItem::SetItemProperties(EItemState State) {
 	}
 }
 
-void AItem::InteractWithItem() {
+void AItem::InteractWithItem(AMainCharacter* InCharacter) {
+	Character = InCharacter;
 }
 
-void AItem::PerformInteraction(AMainCharacter* InMainCharacter) {
+void AItem::PerformTrace(AMainCharacter* InMainCharacter) {
+	Character = InMainCharacter;
+	FVector MeshPosition;
+	FVector WidgetPosition;
+	auto MeshWorldPosition = GetItemMesh()->GetComponentLocation();
+	auto WidgetWorldPosition = PickupWidget->GetComponentLocation();
+
 	PickupWidget->SetVisibility(true);
-	UE_LOG(LogTemp, Warning, TEXT("Interaction Name: %s Item Name: %s"), *ItemInteractionName, *ItemName)
+
+	FVector Difference = MeshWorldPosition - WidgetWorldPosition;
+	DrawDebugLine(GetWorld(), MeshWorldPosition, WidgetWorldPosition, FColor::Red, false, 50.0f);
+
+	UE_LOG(LogTemp, Warning, TEXT("Interaction Name: %s Item Name %s, Difference %s"),
+	       *ItemInteractionName, *ItemName, *Difference.ToString())
 }
 
-void AItem::LeaveInteraction(AMainCharacter* InMainCharacter) {
+void AItem::LeaveTrace(AMainCharacter* InMainCharacter) {
+	Character = InMainCharacter;
 	PickupWidget->SetVisibility(false);
 }
 
@@ -223,7 +238,42 @@ void AItem::OnConstruction(const FTransform& Transform) {
 void AItem::PlayEquipSound(bool bForcePlaySound) {
 }
 
+void AItem::ThrowItem() {
+	FRotator MeshRotation = {0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.0f};
+	GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+
+	FVector MeshForward = GetItemMesh()->GetForwardVector();
+	FVector MeshRight = GetItemMesh()->GetRightVector();
+	FVector ImpulseDirection = MeshRight.RotateAngleAxis(-40.0f, MeshForward);
+
+	float RandomRotation = FMath::FRandRange(0.0f, 100.0f);
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector(0.0f, 0.0f, 1.0f));
+	ImpulseDirection *= 200.0f;
+	GetItemMesh()->AddImpulse(ImpulseDirection);
+
+	bFalling = true;
+
+	GetWorldTimerManager().SetTimer(ThrowItemTimer, this, &AItem::StopFalling, ThrowItemTime);
+
+	//TODO: Enable glow material...
+}
+
+void AItem::StopFalling() {
+	bFalling = false;
+	SetItemState(EItemState::EIS_Pickup);
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
 
+	//TODO: Create falling rotation function
+	if (GetItemState() == EItemState::EIS_Falling && bFalling) {
+		FRotator MeshRotation = {
+			GetItemMesh()->GetComponentRotation().Pitch,
+			GetItemMesh()->GetComponentRotation().Yaw,
+			GetItemMesh()->GetComponentRotation().Roll
+		};
+		GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+	}
 }
