@@ -3,5 +3,9 @@
 
 #include "Ladder.h"
 
-ALadder::ALadder() {
+ALadder::ALadder(): RungsNumber(10) {
+}
+
+void ALadder::OnConstruction(const FTransform& Transform) {
+	Super::OnConstruction(Transform);
 }
