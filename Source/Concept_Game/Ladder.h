@@ -19,6 +19,27 @@ public:
 
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* LadderMeshComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	USphereComponent* LadderCollisionSphere;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	int RungsNumber;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMesh* LadderMesh;
+
+public:
+	FORCEINLINE UStaticMeshComponent* GetLadderMeshComponent() const {
+		return LadderMeshComponent;
+	}
+	FORCEINLINE UStaticMesh* GetLadderMesh() const {
+		return LadderMesh;
+	}
+
+	FORCEINLINE int GetRungsNumber() const {
+		return RungsNumber;
+	}
 };

@@ -270,6 +270,7 @@ public:
 		return ID;
 	}
 
+	//TODO: Change name to InteractWidget...
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const {
 		return PickupWidget;
 	}
