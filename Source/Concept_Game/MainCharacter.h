@@ -125,6 +125,7 @@ public:
 	//TODO: NOTE: Button need to be pressed to stick to cover, when only close to cover player will lean from cover. 
 	//TODO: NOTE: When stick to cover mode is on, there is no need to press aiming, only analog/mouse movement will give ability to aim. Like Deus Ex Aiming mechanic.
 	void ChangeDebugCamera();
+	void ChangeDebugTriggerRotationYaw();
 
 	UFUNCTION()
 	void AutoFireReset();
@@ -153,6 +154,8 @@ public:
 
 	void DropItem(AItem* ItemToDrop);
 
+	void SwapWeapon(AWeapon* WeaponToSwap);
+
 	void InteractButtonPressed();
 
 	void InventoryButtonPressed();
@@ -177,6 +180,8 @@ protected:
 private:
 	//TODO: Create inventory class to store informations like guids...
 	TArray<FGuid> ItemGuids;
+
+	bool bRotationYaw;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -477,5 +482,9 @@ public:
 
 	FORCEINLINE AWeapon* GetEquippedWeapon() const {
 		return EquippedWeapon;
+	}
+
+	void SetEquippedWeapon(AWeapon* InNewWeapon) {
+		EquippedWeapon = InNewWeapon;
 	}
 };

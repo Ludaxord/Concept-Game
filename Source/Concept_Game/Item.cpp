@@ -167,6 +167,18 @@ void AItem::SetItemProperties(EItemState State) {
 
 void AItem::InteractWithItem(AMainCharacter* InCharacter) {
 	Character = InCharacter;
+	AWeapon* NewWeapon = Cast<AWeapon>(this);
+	if (NewWeapon) {
+		//TODO: create inventory and check if there is place in inventory
+		//TODO: If there is a place then swap weapon and currently equipped store in inventory
+		//TODO: If there is no place in inventory, show error message.
+		Character->SwapWeapon(NewWeapon);
+	}
+	//TODO: If item is not weapon, then check if it is a usable item or story item.
+	//TODO: If it is story Item, then store in story items backpack
+	//TODO: If it is usable item, check if there is a space in inventory
+	//TODO: If there is no place, show error message.
+
 }
 
 void AItem::PerformTrace(AMainCharacter* InMainCharacter) {
@@ -239,7 +251,11 @@ void AItem::PlayEquipSound(bool bForcePlaySound) {
 }
 
 void AItem::ThrowItem() {
-	FRotator MeshRotation = {0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.0f};
+	FRotator MeshRotation = {
+		GetItemMesh()->GetComponentRotation().Pitch,
+		GetItemMesh()->GetComponentRotation().Yaw,
+		GetItemMesh()->GetComponentRotation().Roll
+	};
 	GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
 
 	FVector MeshForward = GetItemMesh()->GetForwardVector();

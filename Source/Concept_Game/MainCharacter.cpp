@@ -32,6 +32,7 @@ AMainCharacter::AMainCharacter():
 	bAiming(false),
 	bUseWeaponButtonPressed(false),
 	bShouldTraceForItems(false),
+	bRotationYaw(false),
 	bAimingButtonPressed(false),
 	CrouchGroundFriction(100.0f),
 	CrawlingGroundFriction(50.0f),
@@ -236,7 +237,12 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	// PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AMainCharacter::RunningButtonPressed);
 	// PlayerInputComponent->BindAction("Running", IE_Released, this, &AMainCharacter::RunningButtonReleased);
+	//NOTE, Debug bindings, remove in production
 	PlayerInputComponent->BindAction("DebugChangeCamera", IE_Pressed, this, &AMainCharacter::ChangeDebugCamera);
+	PlayerInputComponent->BindAction("DebugTriggerRotationYaw", IE_Pressed, this,
+	                                 &AMainCharacter::ChangeDebugTriggerRotationYaw);
+
+
 	PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
@@ -599,17 +605,27 @@ void AMainCharacter::ChangeDebugCamera() {
 		if (!bSwitchToFollowCamera) {
 			FollowCameraTransform = SetCameraTransform(FollowCamera);
 			ChangeCameraTimeline->PlayFromStart();
-			bUseControllerRotationYaw = false;
-			// UE_LOG(LogTemp, Warning, TEXT("Camera Timeline: Play From Start"));
+
+			bUseControllerRotationPitch = false;
+			bUseControllerRotationYaw = true;
+			bUseControllerRotationRoll = false;
 		}
 		else {
 			SetActiveCameras(true);
 			FollowCameraTransform = RefFollowCamera->GetComponentTransform();
 			ChangeCameraTimeline->ReverseFromEnd();
-			bUseControllerRotationYaw = true;
-			// UE_LOG(LogTemp, Warning, TEXT("Camera Timeline: Reverse From End"));
+			//TODO: Fix animation when change controller rotation Yaw to false;
+			bUseControllerRotationPitch = false;
+			bUseControllerRotationYaw = bRotationYaw;
+			bUseControllerRotationRoll = false;
+
 		}
 	}
+}
+
+void AMainCharacter::ChangeDebugTriggerRotationYaw() {
+	bRotationYaw = !bRotationYaw;
+	UE_LOG(LogTemp, Warning, TEXT("Change Debug Trigger Rotation Yaw %s"), bRotationYaw ? TEXT("true") : TEXT("false"));
 }
 
 void AMainCharacter::AutoFireReset() {
@@ -728,6 +744,7 @@ void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool 
 		}
 
 		//TODO: create delegate
+		//TODO: Create animation for picking up weapon.
 		if (EquippedWeapon == nullptr) {
 
 		}
@@ -750,17 +767,18 @@ void AMainCharacter::DropItem(AItem* ItemToDrop) {
 	}
 }
 
+void AMainCharacter::SwapWeapon(AWeapon* WeaponToSwap) {
+	DropItem(EquippedWeapon);
+	SetEquippedWeapon(nullptr);
+	EquipWeapon(WeaponToSwap);
+}
+
 void AMainCharacter::InteractButtonPressed() {
-	UE_LOG(LogTemp, Warning, TEXT("Interact Button"));
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	if (TraceHitItem) {
 		TraceHitItem->InteractWithItem(this);
 		TraceHitItem = nullptr;
 	}
-
-	//TEST
-	// DropItem(EquippedWeapon);
-	// EquippedWeapon = nullptr;
 }
 
 void AMainCharacter::InventoryButtonPressed() {
@@ -841,7 +859,6 @@ void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
 }
 
 void AMainCharacter::OnCameraTimelineFinished() {
-	UE_LOG(LogTemp, Warning, TEXT("Camera Timeline Finished"))
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
 	if (bSwitchToFollowCamera) {
 		FollowCamera->AttachToComponent(CameraBoom,
@@ -854,6 +871,10 @@ void AMainCharacter::OnCameraTimelineFinished() {
 		if (RefFollowCameraRotation) {
 			Player->SetControlRotation(RefFollowCameraRotation->GetComponentRotation());
 		}
+
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = bRotationYaw;
+		bUseControllerRotationPitch = false;
 	}
 	else {
 		SetActiveCameras(false);
