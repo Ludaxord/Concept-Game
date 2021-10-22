@@ -3,3 +3,5 @@
 
 #include "Ladder.h"
 
+ALadder::ALadder() {
+}

@@ -13,5 +13,6 @@ UCLASS()
 class CONCEPT_GAME_API ALadder : public AInteractiveItem
 {
 	GENERATED_BODY()
-	
+public:
+	ALadder();
 };
