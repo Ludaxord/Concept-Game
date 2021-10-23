@@ -15,12 +15,16 @@ class CONCEPT_GAME_API ALadder : public AInteractiveItem {
 public:
 	ALadder();
 
-	virtual void OnConstruction(const FTransform& Transform) override;
-
+protected:
+	UFUNCTION(BlueprintCallable)
+	void SetupLadderRungs();
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* LadderMeshComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMesh* LadderMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	UInstancedStaticMeshComponent* RootLadderMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* LadderCollisionSphere;
@@ -29,12 +33,16 @@ private:
 	int RungsNumber;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
-	UStaticMesh* LadderMesh;
+	float SpaceBetweenRungs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	FString LadderMeshName;
 
 public:
-	FORCEINLINE UStaticMeshComponent* GetLadderMeshComponent() const {
-		return LadderMeshComponent;
+	FORCEINLINE UInstancedStaticMeshComponent* GetRootLadderMeshComponent() const {
+		return RootLadderMeshComponent;
 	}
+
 	FORCEINLINE UStaticMesh* GetLadderMesh() const {
 		return LadderMesh;
 	}
