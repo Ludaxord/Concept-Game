@@ -24,8 +24,6 @@ ALadder::ALadder(): RungsNumber(10),
 
 	LadderCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("LadderCollisionSphere"));
 	LadderCollisionSphere->SetupAttachment(GetRootComponent());
-
-	// SetupLadderRungs();
 }
 
 void ALadder::SetupLadderRungs() {
@@ -36,21 +34,7 @@ void ALadder::SetupLadderRungs() {
 
 	for (int i = 0; i <= RungsNumber - 1; i++) {
 		FString FStaticMeshComponentName = "LadderMeshComponent_" + FString::FromInt(i);
-		// UStaticMeshComponent* LadderMeshComponent = NewObject<UStaticMeshComponent>(this, *FStaticMeshComponentName);
-		// FVector MeshLocation = {
-		// 	GetRootComponent()->GetComponentLocation().X,
-		// 	GetRootComponent()->GetComponentLocation().Y,
-		// 	GetRootComponent()->GetComponentLocation().Z + (i * SpaceBetweenRungs)
-		// };
-		// FRotator MeshRotation = {
-		// 	GetRootComponent()->GetComponentRotation().Pitch,
-		// 	GetRootComponent()->GetComponentRotation().Yaw,
-		// 	GetRootComponent()->GetComponentRotation().Roll
-		// };
-		//
-		// FTransform LadderTransform = FTransform(MeshRotation, MeshLocation);
 
-		///
 		FTransform LadderTransform = GetTransformFromRootComponent(GetRootComponent());
 		FVector FixedLadderLocation = LadderTransform.GetTranslation();
 		FixedLadderLocation.Z = FixedLadderLocation.Z + (i * SpaceBetweenRungs);
@@ -58,23 +42,6 @@ void ALadder::SetupLadderRungs() {
 		UStaticMeshComponent* LadderMeshComponent = RegisterNewComponent<UStaticMeshComponent>(
 			*FStaticMeshComponentName, LadderTransform);
 		LadderMeshComponent->SetStaticMesh(LadderMesh);
-
-		///
-
-		//
-		// // LadderMeshComponent->SetWorldLocation(MeshLocation, false, nullptr, ETeleportType::TeleportPhysics);
-		// // LadderMeshComponent->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
-		// LadderMeshComponent->SetWorldTransform(LadderTransform, false, nullptr, ETeleportType::TeleportPhysics);
-		//
-		// // UStaticMeshComponent* LadderMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(*FStaticMeshComponentName);
-		// // ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(*LadderMeshName);
-		// // LadderMeshComponent->SetStaticMesh(Mesh.Object);
-		//
-		// LadderMeshComponent->SetStaticMesh(LadderMesh);
-		// LadderMeshComponent->RegisterComponent();
-		// LadderMeshComponent->OnComponentCreated();
-		//
-		// LadderMeshComponent->SetRelativeTransform(LadderTransform);
 		LadderMeshComponent->SetupAttachment(GetRootComponent());
 		if (LadderRungsComponents.Num() < i + 1)
 			LadderRungsComponents.Add(LadderMeshComponent);
