@@ -19,6 +19,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetupLadderRungs();
 
+	UFUNCTION(BlueprintCallable)
+	void SetupClimbLadderBoxCollision();
+
 	void ReinitLadderSubComponents();
 
 private:

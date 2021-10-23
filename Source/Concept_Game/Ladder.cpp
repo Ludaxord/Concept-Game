@@ -47,6 +47,10 @@ void ALadder::SetupLadderRungs() {
 	}
 }
 
+//TODO: Init
+void ALadder::SetupClimbLadderBoxCollision() {
+}
+
 void ALadder::ReinitLadderSubComponents() {
 	RootLadderMeshComponent = RegisterNewComponent<UInstancedStaticMeshComponent>(
 		FName("RootLadderMeshComponent"), GetTransformFromRootComponent(GetRootComponent())
