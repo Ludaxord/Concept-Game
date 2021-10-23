@@ -105,6 +105,11 @@ public:
 
 	virtual void LeaveTrace(AMainCharacter* InMainCharacter);
 
+	template <typename T>
+	T* RegisterNewComponent(FName ComponentName, FTransform MeshTransform);
+
+	FTransform GetTransformFromRootComponent(const USceneComponent* InRootComponent);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -283,6 +288,18 @@ public:
 		return CollisionBox;
 	}
 
+	void SetPickupWidget(UWidgetComponent* InPickupWidget) {
+		PickupWidget = InPickupWidget;
+	}
+
+	void SetAreaSphere(USphereComponent* InAreaSphere) {
+		AreaSphere = InAreaSphere;
+	}
+
+	void SetCollisionBox(UBoxComponent* InCollisionBox) {
+		CollisionBox = InCollisionBox;
+	}
+
 	FORCEINLINE EItemState GetItemState() const {
 		return ItemState;
 	}
@@ -380,3 +397,17 @@ public:
 		bCharacterInventoryFull = bFull;
 	}
 };
+
+template <typename T>
+T* AItem::RegisterNewComponent(FName ComponentName, FTransform MeshTransform) {
+	T* Component = NewObject<T>(this, ComponentName);
+
+	Component->SetWorldTransform(MeshTransform, false, nullptr, ETeleportType::TeleportPhysics);
+
+	Component->RegisterComponent();
+	Component->OnComponentCreated();
+
+	Component->SetRelativeTransform(MeshTransform);
+
+	return Component;
+}

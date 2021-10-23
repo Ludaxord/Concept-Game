@@ -19,6 +19,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetupLadderRungs();
 
+	void ReinitLadderSubComponents();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* LadderMesh;
@@ -32,11 +34,16 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	int RungsNumber;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	int PreviousRungsNumber;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	float SpaceBetweenRungs;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	FString LadderMeshName;
+
+	TArray<UStaticMeshComponent*> LadderRungsComponents;
 
 public:
 	FORCEINLINE UInstancedStaticMeshComponent* GetRootLadderMeshComponent() const {

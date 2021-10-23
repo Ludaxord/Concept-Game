@@ -34,6 +34,21 @@ AItem::AItem(): ItemName(FString("Default")),
 	AreaSphere->SetupAttachment(GetRootComponent());
 }
 
+FTransform AItem::GetTransformFromRootComponent(const USceneComponent* InRootComponent) {
+	FVector Location = {
+		InRootComponent->GetComponentLocation().X,
+		InRootComponent->GetComponentLocation().Y,
+		InRootComponent->GetComponentLocation().Z
+	};
+	FRotator Rotation = {
+		InRootComponent->GetComponentRotation().Pitch,
+		InRootComponent->GetComponentRotation().Yaw,
+		InRootComponent->GetComponentRotation().Roll
+	};
+
+	return FTransform(Rotation, Location);
+}
+
 // Called when the game starts or when spawned
 void AItem::BeginPlay() {
 	Super::BeginPlay();
