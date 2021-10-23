@@ -9,7 +9,6 @@
 #include "GameFramework/SpringArmComponent.h"
 
 ALadder::ALadder(): RungsNumber(10),
-                    PreviousRungsNumber(0),
                     SpaceBetweenRungs(40.0f),
                     LadderMeshName("'/Game/_Game/Assets/Meshes/Ladder/ladder_part_pivot_center_static_mesh'") {
 	LadderMesh = CreateDefaultSubobject<UStaticMesh>(TEXT("LadderMesh"));
@@ -46,8 +45,6 @@ void ALadder::SetupLadderRungs() {
 		if (LadderRungsComponents.Num() < i + 1)
 			LadderRungsComponents.Add(LadderMeshComponent);
 	}
-
-	// PreviousRungsNumber = RungsNumber;
 }
 
 void ALadder::ReinitLadderSubComponents() {
