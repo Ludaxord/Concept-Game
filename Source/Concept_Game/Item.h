@@ -110,10 +110,6 @@ public:
 
 	FTransform GetTransformFromRootComponent(const USceneComponent* InRootComponent);
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	UFUNCTION()
 	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
@@ -122,6 +118,10 @@ protected:
 	UFUNCTION()
 	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 
 	virtual void SetItemProperties(EItemState State);
 

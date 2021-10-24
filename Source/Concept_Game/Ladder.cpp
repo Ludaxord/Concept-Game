@@ -4,6 +4,7 @@
 #include "Ladder.h"
 
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -21,8 +22,15 @@ ALadder::ALadder(): RungsNumber(10),
 	GetPickupWidget()->SetupAttachment(GetRootComponent());
 	GetAreaSphere()->SetupAttachment(GetRootComponent());
 
-	LadderCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("LadderCollisionSphere"));
-	LadderCollisionSphere->SetupAttachment(GetRootComponent());
+	LadderCollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("LadderCollisionCapsule"));
+	LadderCollisionCapsule->SetupAttachment(GetRootComponent());
+}
+
+void ALadder::BeginPlay() {
+	Super::BeginPlay();
+
+	LadderCollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
+	LadderCollisionCapsule->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 }
 
 void ALadder::SetupLadderMeshSize() {
@@ -62,18 +70,31 @@ void ALadder::SetupClimbLadderBoxCollision() {
 	                                                GetCollisionBox()->GetRelativeRotation().Roll));
 }
 
+void ALadder::SetupAreaCapsule() {
+	float AreaSphereLocationZ = (RungsNumber * SpaceBetweenRungs) / 2;
+	LadderCollisionCapsule->SetCapsuleHalfHeight(AreaSphereLocationZ);
+	LadderCollisionCapsule->SetCapsuleRadius(GetAreaSphere()->GetScaledSphereRadius());
+	LadderCollisionCapsule->SetRelativeLocation(FVector(LadderCollisionCapsule->GetRelativeLocation().X,
+	                                                    LadderCollisionCapsule->GetRelativeLocation().Y,
+	                                                    AreaSphereLocationZ));
+
+	LadderCollisionCapsule->SetRelativeRotation(FRotator(LadderCollisionCapsule->GetRelativeRotation().Pitch,
+	                                                     LadderCollisionCapsule->GetRelativeRotation().Yaw,
+	                                                     LadderCollisionCapsule->GetRelativeRotation().Roll));
+}
+
 void ALadder::ReinitLadderSubComponents() {
 	RootLadderMeshComponent = RegisterNewComponent<UInstancedStaticMeshComponent>(
 		FName("RootLadderMeshComponent"), GetTransformFromRootComponent(GetRootComponent())
 	);
 	SetRootComponent(RootLadderMeshComponent);
 
-	SetAreaSphere(
-		RegisterNewComponent<USphereComponent>(
-			TEXT("AreaSphere"), GetTransformFromRootComponent(GetRootComponent())
-		)
-	);
-	GetAreaSphere()->SetupAttachment(GetRootComponent());
+	// SetAreaSphere(
+	// 	RegisterNewComponent<USphereComponent>(
+	// 		TEXT("AreaSphere"), GetTransformFromRootComponent(GetRootComponent())
+	// 	)
+	// );
+	// GetAreaSphere()->SetupAttachment(GetRootComponent());
 
 	SetCollisionBox(
 		RegisterNewComponent<UBoxComponent>(
@@ -88,4 +109,12 @@ void ALadder::ReinitLadderSubComponents() {
 			TEXT("PickupWidget"), GetTransformFromRootComponent(GetRootComponent())
 		));
 	GetPickupWidget()->SetupAttachment(GetRootComponent());
+}
+
+void ALadder::EnableClimbing() {
+}
+
+void ALadder::InteractWithItem(AMainCharacter* InCharacter) {
+	Super::InteractWithItem(InCharacter);
+	EnableClimbing();
 }

@@ -68,6 +68,10 @@ bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult
 
 void AWeapon::InteractWithItem(AMainCharacter* InCharacter) {
 	Super::InteractWithItem(InCharacter);
+	//TODO: create inventory and check if there is place in inventory
+	//TODO: If there is a place then swap weapon and currently equipped store in inventory
+	//TODO: If there is no place in inventory, show error message.
+	Character->SwapWeapon(this);
 }
 
 void AWeapon::PerformTrace(AMainCharacter* InMainCharacter) {

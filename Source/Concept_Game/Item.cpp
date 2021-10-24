@@ -67,6 +67,7 @@ void AItem::BeginPlay() {
 void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                  const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Error, TEXT("Overlapping %s"), * OverlappedComponent->GetName());
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
@@ -182,13 +183,6 @@ void AItem::SetItemProperties(EItemState State) {
 
 void AItem::InteractWithItem(AMainCharacter* InCharacter) {
 	Character = InCharacter;
-	AWeapon* NewWeapon = Cast<AWeapon>(this);
-	if (NewWeapon) {
-		//TODO: create inventory and check if there is place in inventory
-		//TODO: If there is a place then swap weapon and currently equipped store in inventory
-		//TODO: If there is no place in inventory, show error message.
-		Character->SwapWeapon(NewWeapon);
-	}
 	//TODO: If item is not weapon, then check if it is a usable item or story item.
 	//TODO: If it is story Item, then store in story items backpack
 	//TODO: If it is usable item, check if there is a space in inventory

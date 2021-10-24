@@ -15,6 +15,10 @@ class CONCEPT_GAME_API ALadder : public AInteractiveItem {
 public:
 	ALadder();
 
+	virtual void BeginPlay() override;
+
+	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	void SetupLadderMeshSize();
@@ -25,8 +29,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetupClimbLadderBoxCollision();
 
+	UFUNCTION(BlueprintCallable)
+	void SetupAreaCapsule();
+
 	void ReinitLadderSubComponents();
 
+	void EnableClimbing();
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* LadderMesh;
@@ -35,7 +43,7 @@ private:
 	UInstancedStaticMeshComponent* RootLadderMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
-	USphereComponent* LadderCollisionSphere;
+	class UCapsuleComponent* LadderCollisionCapsule;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	int RungsNumber;
