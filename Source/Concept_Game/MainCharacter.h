@@ -126,6 +126,7 @@ public:
 	//TODO: NOTE: When stick to cover mode is on, there is no need to press aiming, only analog/mouse movement will give ability to aim. Like Deus Ex Aiming mechanic.
 	void ChangeDebugCamera();
 	void ChangeDebugTriggerRotationYaw();
+	void TriggerFPSCounter();
 
 	UFUNCTION()
 	void AutoFireReset();
@@ -182,6 +183,8 @@ private:
 	TArray<FGuid> ItemGuids;
 
 	bool bRotationYaw;
+
+	bool bFPSCounter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;

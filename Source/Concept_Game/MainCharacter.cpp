@@ -45,6 +45,7 @@ AMainCharacter::AMainCharacter():
 	bRunning(false),
 	bSwitchToFollowCamera(false),
 	bEnableCameraTransition(false),
+	bFPSCounter(false),
 	CombatState(ECombatState::ECS_Unoccupied),
 	CrosshairSpreadMultiplier(0.0f),
 	CrosshairVelocityFactor(0.0f),
@@ -235,10 +236,9 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
 	PlayerInputComponent->BindAxis("QuickSelect", this, &AMainCharacter::QuickSelectButtonPressed);
 
-	// PlayerInputComponent->BindAction("Running", IE_Pressed, this, &AMainCharacter::RunningButtonPressed);
-	// PlayerInputComponent->BindAction("Running", IE_Released, this, &AMainCharacter::RunningButtonReleased);
 	//NOTE, Debug bindings, remove in production
 	PlayerInputComponent->BindAction("DebugChangeCamera", IE_Pressed, this, &AMainCharacter::ChangeDebugCamera);
+	PlayerInputComponent->BindAction("FPSCounterTrigger", IE_Pressed, this, &AMainCharacter::TriggerFPSCounter);
 	PlayerInputComponent->BindAction("DebugTriggerRotationYaw", IE_Pressed, this,
 	                                 &AMainCharacter::ChangeDebugTriggerRotationYaw);
 
@@ -626,6 +626,11 @@ void AMainCharacter::ChangeDebugCamera() {
 void AMainCharacter::ChangeDebugTriggerRotationYaw() {
 	bRotationYaw = !bRotationYaw;
 	UE_LOG(LogTemp, Warning, TEXT("Change Debug Trigger Rotation Yaw %s"), bRotationYaw ? TEXT("true") : TEXT("false"));
+}
+
+void AMainCharacter::TriggerFPSCounter() {
+	bFPSCounter = !bFPSCounter;
+	UKismetSystemLibrary::ExecuteConsoleCommand(this, "stat fps");
 }
 
 void AMainCharacter::AutoFireReset() {

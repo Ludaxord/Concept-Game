@@ -47,8 +47,15 @@ void ALadder::SetupLadderRungs() {
 	}
 }
 
-//TODO: Init
 void ALadder::SetupClimbLadderBoxCollision() {
+	float BoxLocationZ = (RungsNumber * SpaceBetweenRungs) / 2;
+	GetCollisionBox()->SetBoxExtent(FVector(40.0f, 20.0f, BoxLocationZ));
+	GetCollisionBox()->SetRelativeLocation(FVector(GetCollisionBox()->GetRelativeLocation().X,
+	                                               GetCollisionBox()->GetRelativeLocation().Y,
+	                                               BoxLocationZ));
+	GetCollisionBox()->SetRelativeRotation(FRotator(GetCollisionBox()->GetRelativeRotation().Pitch,
+	                                                GetCollisionBox()->GetRelativeRotation().Yaw,
+	                                                GetCollisionBox()->GetRelativeRotation().Roll));
 }
 
 void ALadder::ReinitLadderSubComponents() {
