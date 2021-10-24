@@ -143,7 +143,7 @@ void AMainCharacter::TraceForItems() {
 
 			//TODO: If Trace hit item exists, switch between item types...
 			if (TraceHitItem) {
-				UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
+				// UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
 			}
 
 			if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterp) {
@@ -151,13 +151,13 @@ void AMainCharacter::TraceForItems() {
 			}
 
 			if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
-				UE_LOG(LogTemp, Error, TEXT("perform interaction"))
+				// UE_LOG(LogTemp, Error, TEXT("perform interaction"))
 				TraceHitItem->PerformTrace(this);
 			}
 
 			if (TraceHitItemLastFrame) {
 				if (TraceHitItem != TraceHitItemLastFrame) {
-					UE_LOG(LogTemp, Error, TEXT("leave interaction"))
+					// UE_LOG(LogTemp, Error, TEXT("leave interaction"))
 					TraceHitItemLastFrame->LeaveTrace(this);
 				}
 			}

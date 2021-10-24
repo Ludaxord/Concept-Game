@@ -3,6 +3,7 @@
 
 #include "Ladder.h"
 
+#include "MainCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -11,7 +12,11 @@
 
 ALadder::ALadder(): RungsNumber(10),
                     SpaceBetweenRungs(40.0f),
+                    bTouchingLadder(false),
                     LadderMeshName("'/Game/_Game/Assets/Meshes/Ladder/ladder_part_pivot_center_static_mesh'") {
+	ItemInteractionName = "Climb";
+	ItemName = "Ladder";
+
 	LadderMesh = CreateDefaultSubobject<UStaticMesh>(TEXT("LadderMesh"));
 
 	RootLadderMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(
@@ -31,6 +36,9 @@ void ALadder::BeginPlay() {
 
 	LadderCollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
 	LadderCollisionCapsule->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+
+	GetCollisionBox()->OnComponentBeginOverlap.AddDynamic(this, &ALadder::OnCollisionBoxBeginOverlap);
+	GetCollisionBox()->OnComponentEndOverlap.AddDynamic(this, &ALadder::OnCollisionBoxEndOverlap);
 }
 
 void ALadder::SetupLadderMeshSize() {
@@ -96,22 +104,50 @@ void ALadder::ReinitLadderSubComponents() {
 	// );
 	// GetAreaSphere()->SetupAttachment(GetRootComponent());
 
-	SetCollisionBox(
-		RegisterNewComponent<UBoxComponent>(
-			TEXT("CollisionBox"), GetTransformFromRootComponent(GetRootComponent())
-		));
-	GetCollisionBox()->SetCollisionResponseToAllChannels(ECR_Ignore);
-	GetCollisionBox()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	GetCollisionBox()->SetupAttachment(GetRootComponent());
+	// SetCollisionBox(
+	// 	RegisterNewComponent<UBoxComponent>(
+	// 		TEXT("CollisionBox"), GetTransformFromRootComponent(GetRootComponent())
+	// 	));
+	// GetCollisionBox()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	// GetCollisionBox()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	// GetCollisionBox()->SetupAttachment(GetRootComponent());
 
-	SetPickupWidget(
-		RegisterNewComponent<UWidgetComponent>(
-			TEXT("PickupWidget"), GetTransformFromRootComponent(GetRootComponent())
-		));
-	GetPickupWidget()->SetupAttachment(GetRootComponent());
+	// SetPickupWidget(
+	// 	RegisterNewComponent<UWidgetComponent>(
+	// 		TEXT("PickupWidget"), GetTransformFromRootComponent(GetRootComponent())
+	// 	));
+	// GetPickupWidget()->SetupAttachment(GetRootComponent());
 }
 
 void ALadder::EnableClimbing() {
+	UE_LOG(LogTemp, Error, TEXT("Touching Ladder: %s"), bTouchingLadder ? TEXT("true") : TEXT("false"));
+	if (!bTouchingLadder) {
+		//TODO: Move Player to enable climbing
+	}
+}
+
+void ALadder::OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                         const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap Collision Box By: %s"), *OtherActor->GetName());
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			bTouchingLadder = true;
+		}
+	}
+
+}
+
+void ALadder::OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	UE_LOG(LogTemp, Warning, TEXT("eND oVERLAP"));
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			bTouchingLadder = false;
+		}
+	}
 }
 
 void ALadder::InteractWithItem(AMainCharacter* InCharacter) {

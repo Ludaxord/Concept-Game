@@ -35,6 +35,15 @@ protected:
 	void ReinitLadderSubComponents();
 
 	void EnableClimbing();
+
+	UFUNCTION()
+	void OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                                const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                              UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* LadderMesh;
@@ -55,6 +64,8 @@ private:
 	FString LadderMeshName;
 
 	TArray<UStaticMeshComponent*> LadderRungsComponents;
+
+	bool bTouchingLadder;
 
 public:
 	FORCEINLINE UInstancedStaticMeshComponent* GetRootLadderMeshComponent() const {
