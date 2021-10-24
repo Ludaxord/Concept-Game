@@ -8,11 +8,13 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 ALadder::ALadder(): RungsNumber(10),
                     SpaceBetweenRungs(40.0f),
                     bTouchingLadder(false),
+                    bOnSphereOverlap(false),
                     LadderMeshName("'/Game/_Game/Assets/Meshes/Ladder/ladder_part_pivot_center_static_mesh'") {
 	ItemInteractionName = "Climb";
 	ItemName = "Ladder";
@@ -29,6 +31,8 @@ ALadder::ALadder(): RungsNumber(10),
 
 	LadderCollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("LadderCollisionCapsule"));
 	LadderCollisionCapsule->SetupAttachment(GetRootComponent());
+
+	SetItemState(EItemState::EIS_Interact);
 }
 
 void ALadder::BeginPlay() {
@@ -36,9 +40,6 @@ void ALadder::BeginPlay() {
 
 	LadderCollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
 	LadderCollisionCapsule->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
-
-	GetCollisionBox()->OnComponentBeginOverlap.AddDynamic(this, &ALadder::OnCollisionBoxBeginOverlap);
-	GetCollisionBox()->OnComponentEndOverlap.AddDynamic(this, &ALadder::OnCollisionBoxEndOverlap);
 }
 
 void ALadder::SetupLadderMeshSize() {
@@ -69,7 +70,7 @@ void ALadder::SetupLadderRungs() {
 
 void ALadder::SetupClimbLadderBoxCollision() {
 	float BoxLocationZ = (RungsNumber * SpaceBetweenRungs) / 2;
-	GetCollisionBox()->SetBoxExtent(FVector(40.0f, 20.0f, BoxLocationZ));
+	GetCollisionBox()->SetBoxExtent(FVector(40.0f, 50.0f, BoxLocationZ));
 	GetCollisionBox()->SetRelativeLocation(FVector(GetCollisionBox()->GetRelativeLocation().X,
 	                                               GetCollisionBox()->GetRelativeLocation().Y,
 	                                               BoxLocationZ));
@@ -89,6 +90,57 @@ void ALadder::SetupAreaCapsule() {
 	LadderCollisionCapsule->SetRelativeRotation(FRotator(LadderCollisionCapsule->GetRelativeRotation().Pitch,
 	                                                     LadderCollisionCapsule->GetRelativeRotation().Yaw,
 	                                                     LadderCollisionCapsule->GetRelativeRotation().Roll));
+}
+
+void ALadder::OnSphereBeginOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* OtherActor,
+                                   UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                   const FHitResult& SweepResult) {
+	Super::OnSphereBeginOverlap(MovieSceneBlends, OtherActor, OtherComponent, OtherBodyIndex, bFromSweep, SweepResult);
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			bOnSphereOverlap = true;
+		}
+	}
+}
+
+void ALadder::OnSphereEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* OtherActor,
+                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	Super::OnSphereEndOverlap(MovieSceneBlends, OtherActor, OtherComponent, OtherBodyIndex);
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			bTouchingLadder = false;
+			bOnSphereOverlap = false;
+			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+			Character->SetPoseType(EPoseType::EPT_Stand);
+		}
+	}
+}
+
+void ALadder::OnBoxBeginOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* OtherActor,
+                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                const FHitResult& SweepResult) {
+	Super::OnBoxBeginOverlap(MovieSceneBlends, OtherActor, OtherComponent, OtherBodyIndex, bFromSweep, SweepResult);
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			bTouchingLadder = true;
+		}
+	}
+}
+
+void ALadder::OnBoxEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* OtherActor,
+                              UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	Super::OnBoxEndOverlap(MovieSceneBlends, OtherActor, OtherComponent, OtherBodyIndex);
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			bTouchingLadder = false;
+			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+			Character->SetPoseType(EPoseType::EPT_Stand);
+		}
+	}
 }
 
 void ALadder::ReinitLadderSubComponents() {
@@ -120,34 +172,49 @@ void ALadder::ReinitLadderSubComponents() {
 }
 
 void ALadder::EnableClimbing() {
-	UE_LOG(LogTemp, Error, TEXT("Touching Ladder: %s"), bTouchingLadder ? TEXT("true") : TEXT("false"));
-	if (!bTouchingLadder) {
-		//TODO: Move Player to enable climbing
+	if (bTouchingLadder && bOnSphereOverlap) {
+		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+		Character->SetPoseType(EPoseType::EPT_Climb);
 	}
-}
+	else if (bOnSphereOverlap) {
+		//TODO: Move closer to ladder to trigger TouchingLadder bool && enable moving
+		//TODO: Create Animation for movement than just transform 
+		FVector Loc = CollisionBox->GetComponentLocation();
+		FVector LocDiff = Character->GetActorLocation() - Loc;
 
-void ALadder::OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-                                         const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap Collision Box By: %s"), *OtherActor->GetName());
-	if (OtherActor) {
-		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
-		if (OtherCharacter != nullptr) {
-			bTouchingLadder = true;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("ActorLoc %s"), *Character->GetActorLocation().ToString())
+		UE_LOG(LogTemp, Warning, TEXT("BoxLoc %s"), *Loc.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("Loc Difference %s"), *LocDiff.ToString());
+
+		float NewLocX = (Character->GetActorLocation().X > LocDiff.X)
+			                ? Character->GetActorLocation().X + LocDiff.X
+			                : Character->GetActorLocation().X - LocDiff.X;
+
+		float NewLocY = (Character->GetActorLocation().Y > LocDiff.Y)
+			                ? Character->GetActorLocation().Y + LocDiff.Y
+			                : Character->GetActorLocation().Y - LocDiff.Y;
+
+		float NewLocZ = (Character->GetActorLocation().Z > LocDiff.Z)
+			                ? Character->GetActorLocation().Z + LocDiff.Z
+			                : Character->GetActorLocation().Z - LocDiff.Z;
+
+
+		Character->SetActorRelativeLocation(FVector(
+			NewLocX ,
+			NewLocY,
+			NewLocZ
+		));
+
+		UE_LOG(LogTemp, Error, TEXT("Touching Ladder: %s and Sphere Overlap: %s"),
+		       bTouchingLadder ? TEXT("true") : TEXT("false"), bOnSphereOverlap? TEXT("true") : TEXT("false"));
+		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+		Character->SetPoseType(EPoseType::EPT_Climb);
+	}
+	else {
+		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		Character->SetPoseType(EPoseType::EPT_Stand);
 	}
 
-}
-
-void ALadder::OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                       UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("eND oVERLAP"));
-	if (OtherActor) {
-		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
-		if (OtherCharacter != nullptr) {
-			bTouchingLadder = false;
-		}
-	}
 }
 
 void ALadder::InteractWithItem(AMainCharacter* InCharacter) {

@@ -294,7 +294,13 @@ void AMainCharacter::MoveForward(float Value) {
 	if (Controller != nullptr && (Value != 0.0f)) {
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation = {0, Rotation.Yaw, 0};
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		FVector Direction;
+		if (PoseType == EPoseType::EPT_Climb) {
+			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
+		}
+		else {
+			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		}
 		AddMovementInput(Direction, Value);
 	}
 }
@@ -468,6 +474,14 @@ void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
 	case EPoseType::EPT_Crawl:
 		Crouching();
 		break;
+	case EPoseType::EPT_Run:
+		break;
+	case EPoseType::EPT_Aim:
+		break;
+	case EPoseType::EPT_Climb:
+		Climbing();
+		break;
+	case EPoseType::EPT_MAX: break;
 	default:
 		Standing();
 		break;
@@ -530,6 +544,12 @@ void AMainCharacter::Standing() {
 	LastPoseType = PoseType;
 }
 
+void AMainCharacter::Climbing() {
+	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+	GetCharacterMovement()->GroundFriction = BaseGroundFriction;
+	LastPoseType = PoseType;
+}
+
 void AMainCharacter::Aim() {
 }
 
@@ -581,6 +601,11 @@ void AMainCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
 		TargetCapsuleHalfHeight = 34.0f;
 		InterpSpeed = 1.f;
 		break;
+	case EPoseType::EPT_Climb:
+		TargetCapsuleHalfHeight = StandingCapsuleHalfHeight;
+		break;
+	case EPoseType::EPT_MAX: break;
+	default: ;
 	}
 
 	const float InterpHalfHeight = FMath::FInterpTo(GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),

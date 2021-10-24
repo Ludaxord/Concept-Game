@@ -32,18 +32,24 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetupAreaCapsule();
 
+	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                                  const FHitResult& SweepResult) override;
+	
+	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
+
+	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                          const FHitResult& SweepResult) override;
+
+	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
+
 	void ReinitLadderSubComponents();
 
 	void EnableClimbing();
 
-	UFUNCTION()
-	void OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-	                                const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                              UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMesh* LadderMesh;
@@ -66,6 +72,8 @@ private:
 	TArray<UStaticMeshComponent*> LadderRungsComponents;
 
 	bool bTouchingLadder;
+
+	bool bOnSphereOverlap;
 
 public:
 	FORCEINLINE UInstancedStaticMeshComponent* GetRootLadderMeshComponent() const {

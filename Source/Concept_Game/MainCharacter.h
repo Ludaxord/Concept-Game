@@ -107,6 +107,7 @@ public:
 	void Crouching();
 	void Crawling();
 	void Standing();
+	void Climbing();
 
 	void Aim();
 
@@ -489,5 +490,9 @@ public:
 
 	void SetEquippedWeapon(AWeapon* InNewWeapon) {
 		EquippedWeapon = InNewWeapon;
+	}
+
+	void SetPoseType(EPoseType InPoseType) {
+		PoseType = InPoseType;
 	}
 };

@@ -24,8 +24,8 @@ AItem::AItem(): ItemName(FString("Default")),
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetupAttachment(ItemMesh);
-	CollisionBox->SetCollisionResponseToAllChannels(ECR_Ignore);
-	CollisionBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	// CollisionBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+	// CollisionBox->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(GetRootComponent());
@@ -61,6 +61,9 @@ void AItem::BeginPlay() {
 	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
 	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 
+	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnBoxBeginOverlap);
+	CollisionBox->OnComponentEndOverlap.AddDynamic(this, &AItem::OnBoxEndOverlap);
+
 	SetItemProperties(ItemState);
 }
 
@@ -89,6 +92,18 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 			// OtherCharacter->UnHighlightInventorySlot();
 		}
 	}
+}
+
+void AItem::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                              UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                              const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("Box Overlapping BEGIN!!!!!"));
+}
+
+void AItem::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                            UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	UE_LOG(LogTemp, Warning, TEXT("Box Overlapping END!!!!!"));
+
 }
 
 void AItem::SetItemProperties(EItemState State) {
@@ -169,7 +184,21 @@ void AItem::SetItemProperties(EItemState State) {
 	}
 	break;
 	case EItemState::EIS_Interact: {
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		ItemMesh->SetSimulatePhysics(true);
+		ItemMesh->SetEnableGravity(true);
+		ItemMesh->SetVisibility(true);
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ItemMesh->SetCollisionResponseToChannel(
+			ECollisionChannel::ECC_WorldStatic,
+			ECollisionResponse::ECR_Block);
+		// Set AreaSphere properties
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// Set CollisionBox properties
 
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		ItemInteractionName = "Use";
 	}
 	break;
@@ -202,8 +231,8 @@ void AItem::PerformTrace(AMainCharacter* InMainCharacter) {
 	FVector Difference = MeshWorldPosition - WidgetWorldPosition;
 	DrawDebugLine(GetWorld(), MeshWorldPosition, WidgetWorldPosition, FColor::Red, false, 50.0f);
 
-	UE_LOG(LogTemp, Warning, TEXT("Interaction Name: %s Item Name %s, Difference %s"),
-	       *ItemInteractionName, *ItemName, *Difference.ToString())
+	// UE_LOG(LogTemp, Warning, TEXT("Interaction Name: %s Item Name %s, Difference %s"),
+	//        *ItemInteractionName, *ItemName, *Difference.ToString())
 }
 
 void AItem::LeaveTrace(AMainCharacter* InMainCharacter) {
