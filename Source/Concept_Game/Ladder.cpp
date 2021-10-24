@@ -25,6 +25,10 @@ ALadder::ALadder(): RungsNumber(10),
 	LadderCollisionSphere->SetupAttachment(GetRootComponent());
 }
 
+void ALadder::SetupLadderMeshSize() {
+	SpaceBetweenRungs = LadderMesh->GetBounds().BoxExtent.Z * 2;
+}
+
 void ALadder::SetupLadderRungs() {
 	if (LadderRungsComponents.Num() > RungsNumber) {
 		this->UnregisterAllComponents();
@@ -36,7 +40,7 @@ void ALadder::SetupLadderRungs() {
 
 		FTransform LadderTransform = GetTransformFromRootComponent(GetRootComponent());
 		FVector FixedLadderLocation = LadderTransform.GetTranslation();
-		FixedLadderLocation.Z = FixedLadderLocation.Z + (i * SpaceBetweenRungs);
+		FixedLadderLocation.Z = FixedLadderLocation.Z + (i * SpaceBetweenRungs) - LadderMesh->GetBoundingBox().Min.Z;
 		LadderTransform.SetTranslation(FixedLadderLocation);
 		UStaticMeshComponent* LadderMeshComponent = RegisterNewComponent<UStaticMeshComponent>(
 			*FStaticMeshComponentName, LadderTransform);

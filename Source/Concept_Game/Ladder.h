@@ -17,6 +17,9 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
+	void SetupLadderMeshSize();
+
+	UFUNCTION(BlueprintCallable)
 	void SetupLadderRungs();
 
 	UFUNCTION(BlueprintCallable)
@@ -37,7 +40,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	int RungsNumber;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	float SpaceBetweenRungs;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
