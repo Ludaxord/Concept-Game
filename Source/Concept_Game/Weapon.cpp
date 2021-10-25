@@ -74,12 +74,12 @@ void AWeapon::InteractWithItem(AMainCharacter* InCharacter) {
 	Character->SwapWeapon(this);
 }
 
-void AWeapon::PerformTrace(AMainCharacter* InMainCharacter) {
-	Super::PerformTrace(InMainCharacter);
+void AWeapon::PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
+	Super::PerformTrace(InMainCharacter, Guids);
 }
 
-void AWeapon::LeaveTrace(AMainCharacter* InMainCharacter) {
-	Super::LeaveTrace(InMainCharacter);
+void AWeapon::LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
+	Super::LeaveTrace(InMainCharacter, Guids);
 }
 
 void AWeapon::OnConstruction(const FTransform& Transform) {

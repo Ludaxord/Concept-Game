@@ -109,9 +109,9 @@ public:
 
 	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
 
-	virtual void PerformTrace(AMainCharacter* InMainCharacter) override;
+	virtual void PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) override;
 
-	virtual void LeaveTrace(AMainCharacter* InMainCharacter) override;
+	virtual void LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) override;
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 

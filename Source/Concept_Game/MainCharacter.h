@@ -165,8 +165,8 @@ public:
 	void PauseButtonPressed();
 
 	void QuickSelectButtonPressed(float Value);
-	void SphereOverlapBegin();
-	void SphereOverlapEnd();
+	void SphereOverlapBegin(FGuid Guid);
+	void SphereOverlapEnd(FGuid Guid);
 
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
@@ -186,6 +186,8 @@ private:
 	bool bRotationYaw;
 
 	bool bFPSCounter;
+
+	TArray<FGuid> OverlappedItemIDs;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;

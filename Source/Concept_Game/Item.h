@@ -101,9 +101,9 @@ public:
 
 	virtual void InteractWithItem(AMainCharacter* InCharacter);
 
-	virtual void PerformTrace(AMainCharacter* InMainCharacter);
+	virtual void PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids);
 
-	virtual void LeaveTrace(AMainCharacter* InMainCharacter);
+	virtual void LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids);
 
 	template <typename T>
 	T* RegisterNewComponent(FName ComponentName, FTransform MeshTransform);
@@ -112,21 +112,21 @@ public:
 
 	UFUNCTION()
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-	                          const FHitResult& SweepResult);
+	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                                  const FHitResult& SweepResult);
 
 	UFUNCTION()
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 	UFUNCTION()
 	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-	                          const FHitResult& SweepResult);
+	                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                               const FHitResult& SweepResult);
 
 	UFUNCTION()
 	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+	                             UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

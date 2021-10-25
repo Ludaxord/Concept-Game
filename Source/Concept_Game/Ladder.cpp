@@ -112,8 +112,8 @@ void ALadder::OnSphereEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* 
 		if (OtherCharacter != nullptr) {
 			bTouchingLadder = false;
 			bOnSphereOverlap = false;
-			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-			Character->SetPoseType(EPoseType::EPT_Stand);
+			OtherCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+			OtherCharacter->SetPoseType(EPoseType::EPT_Stand);
 		}
 	}
 }
@@ -137,8 +137,8 @@ void ALadder::OnBoxEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* Oth
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
 			bTouchingLadder = false;
-			Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-			Character->SetPoseType(EPoseType::EPT_Stand);
+			OtherCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+			OtherCharacter->SetPoseType(EPoseType::EPT_Stand);
 		}
 	}
 }
@@ -186,17 +186,17 @@ void ALadder::EnableClimbing() {
 		UE_LOG(LogTemp, Warning, TEXT("BoxLoc %s"), *Loc.ToString());
 		UE_LOG(LogTemp, Warning, TEXT("Loc Difference %s"), *LocDiff.ToString());
 
-		float NewLocX = (Character->GetActorLocation().X > LocDiff.X)
-			                ? Character->GetActorLocation().X + LocDiff.X
-			                : Character->GetActorLocation().X - LocDiff.X;
+		const float NewLocX = (Character->GetActorLocation().X > LocDiff.X)
+			                      ? Character->GetActorLocation().X + LocDiff.X
+			                      : Character->GetActorLocation().X - LocDiff.X;
 
-		float NewLocY = (Character->GetActorLocation().Y > LocDiff.Y)
-			                ? Character->GetActorLocation().Y + LocDiff.Y
-			                : Character->GetActorLocation().Y - LocDiff.Y;
+		const float NewLocY = (Character->GetActorLocation().Y > LocDiff.Y)
+			                      ? Character->GetActorLocation().Y + LocDiff.Y
+			                      : Character->GetActorLocation().Y - LocDiff.Y;
 
-		float NewLocZ = (Character->GetActorLocation().Z > LocDiff.Z)
-			                ? Character->GetActorLocation().Z + LocDiff.Z
-			                : Character->GetActorLocation().Z - LocDiff.Z;
+		const float NewLocZ = (Character->GetActorLocation().Z > LocDiff.Z)
+			                      ? Character->GetActorLocation().Z + LocDiff.Z
+			                      : Character->GetActorLocation().Z - LocDiff.Z;
 
 
 		Character->SetActorRelativeLocation(FVector(

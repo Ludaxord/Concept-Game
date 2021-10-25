@@ -74,9 +74,10 @@ void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
-			UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin item %s"), * GetName());
+			UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin item %s Overlapped Component %s"), *GetName(),
+			       *OverlappedComponent->GetName());
 			// SphereOverlapBegin();
-			OtherCharacter->SphereOverlapBegin();
+			OtherCharacter->SphereOverlapBegin(ID);
 		}
 	}
 }
@@ -86,8 +87,9 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
-			UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s"), * GetName());
-			OtherCharacter->SphereOverlapEnd();
+			UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s Overlapped Component %s"), * GetName(),
+			       *OverlappedComponent->GetName());
+			OtherCharacter->SphereOverlapEnd(ID);
 			// OtherCharacter->IncrementOverlappedItemCount(-1, ID);
 			// OtherCharacter->UnHighlightInventorySlot();
 		}
@@ -219,24 +221,27 @@ void AItem::InteractWithItem(AMainCharacter* InCharacter) {
 
 }
 
-void AItem::PerformTrace(AMainCharacter* InMainCharacter) {
+void AItem::PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
 	Character = InMainCharacter;
 	FVector MeshPosition;
 	FVector WidgetPosition;
 	auto MeshWorldPosition = GetItemMesh()->GetComponentLocation();
 	auto WidgetWorldPosition = PickupWidget->GetComponentLocation();
-
-	PickupWidget->SetVisibility(true);
+	UE_LOG(LogTemp, Warning, TEXT("Perform Traced Item => %s Contains Item => %s"), *ID.ToString(), Guids.Contains(ID) ? TEXT("Contains") : TEXT("Not Contains"))
+	if (Guids.Contains(ID)) {
+		PickupWidget->SetVisibility(true);
+	}
 
 	FVector Difference = MeshWorldPosition - WidgetWorldPosition;
-	DrawDebugLine(GetWorld(), MeshWorldPosition, WidgetWorldPosition, FColor::Red, false, 50.0f);
+	// DrawDebugLine(GetWorld(), MeshWorldPosition, WidgetWorldPosition, FColor::Red, false, 50.0f);
 
 	// UE_LOG(LogTemp, Warning, TEXT("Interaction Name: %s Item Name %s, Difference %s"),
 	//        *ItemInteractionName, *ItemName, *Difference.ToString())
 }
 
-void AItem::LeaveTrace(AMainCharacter* InMainCharacter) {
+void AItem::LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
 	Character = InMainCharacter;
+	UE_LOG(LogTemp, Warning, TEXT("Perform Traced Item => %s Contains Item => %s"), *ID.ToString(), Guids.Contains(ID) ? TEXT("Contains") : TEXT("Not Contains"))
 	PickupWidget->SetVisibility(false);
 }
 

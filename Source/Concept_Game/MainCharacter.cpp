@@ -83,7 +83,6 @@ AMainCharacter::AMainCharacter():
 	bUseControllerRotationRoll = false;
 
 	ConstructCharacterMovement();
-
 }
 
 // Called when the game starts or when spawned
@@ -134,7 +133,12 @@ void AMainCharacter::CalculateCrosshairSpread(float DeltaTime) {
 }
 
 void AMainCharacter::TraceForItems() {
-	if (bShouldTraceForItems) {
+	UE_LOG(LogClass, Log, TEXT("=================="));
+	for (int32 b = 0; b < OverlappedItemIDs.Num(); b++) {
+		UE_LOG(LogClass, Log, TEXT("OverlappedItemIDs: %s"), *OverlappedItemIDs[b].ToString());
+	}
+	// if (bShouldTraceForItems) {
+	if (OverlappedItemIDs.Num() > 0) {
 		FHitResult ItemTraceHitResult;
 		FVector HitLocation;
 		TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
@@ -151,25 +155,23 @@ void AMainCharacter::TraceForItems() {
 			}
 
 			if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
-				// UE_LOG(LogTemp, Error, TEXT("perform interaction"))
-				TraceHitItem->PerformTrace(this);
+				TraceHitItem->PerformTrace(this, OverlappedItemIDs);
 			}
 
 			if (TraceHitItemLastFrame) {
 				if (TraceHitItem != TraceHitItemLastFrame) {
-					// UE_LOG(LogTemp, Error, TEXT("leave interaction"))
-					TraceHitItemLastFrame->LeaveTrace(this);
+					TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
 				}
 			}
 
 			TraceHitItemLastFrame = TraceHitItem;
 		}
 		else if (TraceHitItemLastFrame) {
-			TraceHitItemLastFrame->LeaveTrace(this);
+			TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
 		}
 	}
 	else if (TraceHitItemLastFrame) {
-		TraceHitItemLastFrame->LeaveTrace(this);
+		TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
 	}
 
 }
@@ -825,12 +827,16 @@ void AMainCharacter::QuickSelectButtonPressed(float Value) {
 	}
 }
 
-void AMainCharacter::SphereOverlapBegin() {
+void AMainCharacter::SphereOverlapBegin(FGuid Guid) {
+	OverlappedItemIDs.Add(Guid);
 	bShouldTraceForItems = true;
+	UE_LOG(LogTemp, Warning, TEXT("SphereOverlapBegin %s"), *Guid.ToString());
 }
 
-void AMainCharacter::SphereOverlapEnd() {
+void AMainCharacter::SphereOverlapEnd(FGuid Guid) {
+	OverlappedItemIDs.Remove(Guid);
 	bShouldTraceForItems = false;
+	UE_LOG(LogTemp, Warning, TEXT("SphereOverlapEnd %s"), *Guid.ToString());
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,
