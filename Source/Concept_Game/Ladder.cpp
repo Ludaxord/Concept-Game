@@ -10,6 +10,7 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ALadder::ALadder(): RungsNumber(10),
                     SpaceBetweenRungs(40.0f),
@@ -172,41 +173,18 @@ void ALadder::ReinitLadderSubComponents() {
 }
 
 void ALadder::EnableClimbing() {
-	if (bTouchingLadder && bOnSphereOverlap) {
-		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-		Character->SetPoseType(EPoseType::EPT_Climb);
-	}
-	else if (bOnSphereOverlap) {
+	// if (bTouchingLadder && bOnSphereOverlap) {
+	// 	Character->SetActorLocationAndRotation(LadderForwardLoc, LadderForwardRot);
+	// 	Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
+	// 	Character->SetPoseType(EPoseType::EPT_Climb);
+	// }
+	// else
+	if (bOnSphereOverlap) {
 		//TODO: Move closer to ladder to trigger TouchingLadder bool && enable moving
 		//TODO: Create Animation for movement than just transform 
-		FVector Loc = CollisionBox->GetComponentLocation();
-		FVector LocDiff = Character->GetActorLocation() - Loc;
-
-		UE_LOG(LogTemp, Warning, TEXT("ActorLoc %s"), *Character->GetActorLocation().ToString())
-		UE_LOG(LogTemp, Warning, TEXT("BoxLoc %s"), *Loc.ToString());
-		UE_LOG(LogTemp, Warning, TEXT("Loc Difference %s"), *LocDiff.ToString());
-
-		const float NewLocX = (Character->GetActorLocation().X > LocDiff.X)
-			                      ? Character->GetActorLocation().X + LocDiff.X
-			                      : Character->GetActorLocation().X - LocDiff.X;
-
-		const float NewLocY = (Character->GetActorLocation().Y > LocDiff.Y)
-			                      ? Character->GetActorLocation().Y + LocDiff.Y
-			                      : Character->GetActorLocation().Y - LocDiff.Y;
-
-		const float NewLocZ = (Character->GetActorLocation().Z > LocDiff.Z)
-			                      ? Character->GetActorLocation().Z + LocDiff.Z
-			                      : Character->GetActorLocation().Z - LocDiff.Z;
-
-
-		Character->SetActorRelativeLocation(FVector(
-			NewLocX ,
-			NewLocY,
-			NewLocZ
-		));
-
-		UE_LOG(LogTemp, Error, TEXT("Touching Ladder: %s and Sphere Overlap: %s"),
-		       bTouchingLadder ? TEXT("true") : TEXT("false"), bOnSphereOverlap? TEXT("true") : TEXT("false"));
+		FRotator LadderForwardRot = UKismetMathLibrary::MakeRotFromX(-GetActorRightVector());
+		FVector LadderForwardLoc = FVector(GetActorLocation().X, GetActorLocation().Y, Character->GetActorLocation().Z);
+		Character->SetActorLocationAndRotation(LadderForwardLoc, LadderForwardRot);
 		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 		Character->SetPoseType(EPoseType::EPT_Climb);
 	}
