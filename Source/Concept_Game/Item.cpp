@@ -227,7 +227,7 @@ void AItem::PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
 	FVector WidgetPosition;
 	auto MeshWorldPosition = GetItemMesh()->GetComponentLocation();
 	auto WidgetWorldPosition = PickupWidget->GetComponentLocation();
-	UE_LOG(LogTemp, Warning, TEXT("Perform Traced Item => %s Contains Item => %s"), *ID.ToString(), Guids.Contains(ID) ? TEXT("Contains") : TEXT("Not Contains"))
+	// UE_LOG(LogTemp, Warning, TEXT("Perform Traced Item => %s Contains Item => %s"), *ID.ToString(), Guids.Contains(ID) ? TEXT("Contains") : TEXT("Not Contains"))
 	if (Guids.Contains(ID)) {
 		PickupWidget->SetVisibility(true);
 	}
@@ -241,7 +241,7 @@ void AItem::PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
 
 void AItem::LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
 	Character = InMainCharacter;
-	UE_LOG(LogTemp, Warning, TEXT("Perform Traced Item => %s Contains Item => %s"), *ID.ToString(), Guids.Contains(ID) ? TEXT("Contains") : TEXT("Not Contains"))
+	// UE_LOG(LogTemp, Warning, TEXT("Perform Traced Item => %s Contains Item => %s"), *ID.ToString(), Guids.Contains(ID) ? TEXT("Contains") : TEXT("Not Contains"))
 	PickupWidget->SetVisibility(false);
 }
 

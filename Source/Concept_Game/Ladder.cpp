@@ -20,12 +20,16 @@ ALadder::ALadder(): RungsNumber(10),
 	ItemInteractionName = "Climb";
 	ItemName = "Ladder";
 
+	LadderTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("LadderTransitionTimeline"));
+
 	LadderMesh = CreateDefaultSubobject<UStaticMesh>(TEXT("LadderMesh"));
+	InteractSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("InteractSceneComponent"));
 
 	RootLadderMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(
 		FName("RootLadderMeshComponent"));
 	SetRootComponent(RootLadderMeshComponent);
 
+	InteractSceneComponent->SetupAttachment(GetRootComponent());
 	GetCollisionBox()->SetupAttachment(GetRootComponent());
 	GetPickupWidget()->SetupAttachment(GetRootComponent());
 	GetAreaSphere()->SetupAttachment(GetRootComponent());
@@ -38,6 +42,11 @@ ALadder::ALadder(): RungsNumber(10),
 
 void ALadder::BeginPlay() {
 	Super::BeginPlay();
+
+	UpdateFunctionFloat.BindDynamic(this, &ALadder::UpdateLadderTransitionTimeline);
+	if (LadderTransitionFloatCurve) {
+		LadderTransitionTimeline->AddInterpFloat(LadderTransitionFloatCurve, UpdateFunctionFloat);
+	}
 
 	LadderCollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
 	LadderCollisionCapsule->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
@@ -149,42 +158,15 @@ void ALadder::ReinitLadderSubComponents() {
 		FName("RootLadderMeshComponent"), GetTransformFromRootComponent(GetRootComponent())
 	);
 	SetRootComponent(RootLadderMeshComponent);
-
-	// SetAreaSphere(
-	// 	RegisterNewComponent<USphereComponent>(
-	// 		TEXT("AreaSphere"), GetTransformFromRootComponent(GetRootComponent())
-	// 	)
-	// );
-	// GetAreaSphere()->SetupAttachment(GetRootComponent());
-
-	// SetCollisionBox(
-	// 	RegisterNewComponent<UBoxComponent>(
-	// 		TEXT("CollisionBox"), GetTransformFromRootComponent(GetRootComponent())
-	// 	));
-	// GetCollisionBox()->SetCollisionResponseToAllChannels(ECR_Ignore);
-	// GetCollisionBox()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	// GetCollisionBox()->SetupAttachment(GetRootComponent());
-
-	// SetPickupWidget(
-	// 	RegisterNewComponent<UWidgetComponent>(
-	// 		TEXT("PickupWidget"), GetTransformFromRootComponent(GetRootComponent())
-	// 	));
-	// GetPickupWidget()->SetupAttachment(GetRootComponent());
 }
 
 void ALadder::EnableClimbing() {
-	// if (bTouchingLadder && bOnSphereOverlap) {
-	// 	Character->SetActorLocationAndRotation(LadderForwardLoc, LadderForwardRot);
-	// 	Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
-	// 	Character->SetPoseType(EPoseType::EPT_Climb);
-	// }
-	// else
 	if (bOnSphereOverlap) {
 		//TODO: Move closer to ladder to trigger TouchingLadder bool && enable moving
-		//TODO: Create Animation for movement than just transform 
-		FRotator LadderForwardRot = UKismetMathLibrary::MakeRotFromX(-GetActorRightVector());
-		FVector LadderForwardLoc = FVector(GetActorLocation().X, GetActorLocation().Y, Character->GetActorLocation().Z);
-		Character->SetActorLocationAndRotation(LadderForwardLoc, LadderForwardRot);
+		//TODO: Create Animation for movement than just transform
+		ActorLocationBeforeTransition = Character->GetActorLocation();
+		ActorRotationBeforeTransition = Character->GetActorRotation();
+		LadderTransitionTimeline->PlayFromStart();
 		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 		Character->SetPoseType(EPoseType::EPT_Climb);
 	}
@@ -193,6 +175,25 @@ void ALadder::EnableClimbing() {
 		Character->SetPoseType(EPoseType::EPT_Stand);
 	}
 
+}
+
+void ALadder::UpdateLadderTransitionTimeline(float Output) {
+
+	UE_LOG(LogTemp, Warning, TEXT("Updating Ladder Transition %s"), *FString::FromInt(Output));
+	FRotator LadderForwardRot = FMath::Lerp(ActorRotationBeforeTransition,
+	                                        UKismetMathLibrary::MakeRotFromX(
+		                                        -GetActorRightVector()
+	                                        ),
+	                                        Output);
+	FVector LadderForwardLoc = FMath::Lerp(ActorLocationBeforeTransition,
+	                                       FVector(
+		                                       InteractSceneComponent->GetComponentLocation().X,
+		                                       InteractSceneComponent->GetComponentLocation().Y,
+		                                       Character->GetActorLocation().Z
+	                                       ),
+	                                       Output);
+
+	Character->SetActorLocationAndRotation(LadderForwardLoc, LadderForwardRot, true);
 }
 
 void ALadder::InteractWithItem(AMainCharacter* InCharacter) {

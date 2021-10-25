@@ -134,10 +134,10 @@ void AMainCharacter::CalculateCrosshairSpread(float DeltaTime) {
 
 void AMainCharacter::TraceForItems() {
 
-	UE_LOG(LogClass, Log, TEXT("=================="));
-	for (int32 b = 0; b < OverlappedItemIDs.Num(); b++) {
-		UE_LOG(LogClass, Log, TEXT("OverlappedItemIDs: %s"), *OverlappedItemIDs[b].ToString());
-	}
+	// UE_LOG(LogClass, Log, TEXT("=================="));
+	// for (int32 b = 0; b < OverlappedItemIDs.Num(); b++) {
+	// 	UE_LOG(LogClass, Log, TEXT("OverlappedItemIDs: %s"), *OverlappedItemIDs[b].ToString());
+	// }
 
 	// if (bShouldTraceForItems) {
 	if (OverlappedItemIDs.Num() > 0) {

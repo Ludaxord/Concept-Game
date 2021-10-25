@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InteractiveItem.h"
+#include "Components/TimelineComponent.h"
 #include "Ladder.generated.h"
 
 /**
@@ -18,6 +19,9 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
+
+	UPROPERTY(EditAnywhere, Category="Ladder Properties")
+	UCurveFloat* LadderTransitionFloatCurve;
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -35,16 +39,16 @@ protected:
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 	                                  const FHitResult& SweepResult) override;
-	
+
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 
 	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-	                          const FHitResult& SweepResult) override;
+	                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                               const FHitResult& SweepResult) override;
 
 	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
+	                             UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 
 	void ReinitLadderSubComponents();
 
@@ -69,11 +73,26 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	FString LadderMeshName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	class UTimelineComponent* LadderTransitionTimeline;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* InteractSceneComponent;
+
 	TArray<UStaticMeshComponent*> LadderRungsComponents;
 
 	bool bTouchingLadder;
 
 	bool bOnSphereOverlap;
+
+	FOnTimelineFloat UpdateFunctionFloat;
+
+	FVector ActorLocationBeforeTransition;
+
+	FRotator ActorRotationBeforeTransition;
+
+	UFUNCTION()
+	void UpdateLadderTransitionTimeline(float Output);
 
 public:
 	FORCEINLINE UInstancedStaticMeshComponent* GetRootLadderMeshComponent() const {
