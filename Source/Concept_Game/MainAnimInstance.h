@@ -11,6 +11,7 @@
 UENUM(BlueprintType)
 enum class EActionState: uint8 {
 	EAS_Aiming UMETA(DisplayName = "Aiming"),
+	EAS_Climbing UMETA(DisplayName = "Climbing"),
 	EAS_Hip UMETA(DisplayName = "Hip"),
 	EAS_Reloading UMETA(DisplayName = "Reloading"),
 	EAS_InAir UMETA(DisplayName = "InAir"),
@@ -54,11 +55,17 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bEquipping;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	bool bClimbingLadderFromBottom;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta= (AllowPrivateAccess = "true"))
 	bool bIsAimingAvailable;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	bool bIsInAir;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	bool bClimbing;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	bool bIsAccelerating;
@@ -78,11 +85,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	bool bReloading;
 
-	// UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crouching", meta = (AllowPrivateAccess = "true"))
-	// bool bCrouching;
-	//
-	// UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crawling", meta = (AllowPrivateAccess = "true"))
-	// bool bCrawling;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crouching", meta = (AllowPrivateAccess = "true"))
+	bool bCrouching;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crawling", meta = (AllowPrivateAccess = "true"))
+	bool bCrawling;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	float MovementOffsetYaw;

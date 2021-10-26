@@ -12,11 +12,14 @@ UMainAnimInstance::UMainAnimInstance(): CurrentAttackType(EAttackType::EAT_Right
                                         bIsInAir(false),
                                         bIsAccelerating(false),
                                         bRunning(false),
+                                        bClimbing(false),
                                         bAiming(false),
                                         bReloading(false),
+                                        bClimbingLadderFromBottom(false),
                                         bTurnInPlace(false),
                                         PoseType(EPoseType::EPT_Stand),
                                         MovementOffsetYaw(0.0f),
+                                        RecoilWeight(1.0f),
                                         LastMovementOffsetYaw(0.0f),
                                         RootYawOffset(0.0f),
                                         Speed(0.0f) {
@@ -31,6 +34,9 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		PoseType = MainCharacter->GetCurrentPoseType();
 		bReloading = MainCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = MainCharacter->GetCombatState() == ECombatState::ECS_Equipping;
+		bClimbing = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
+		bCrawling = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Crawl;
+		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bRunning = MainCharacter->GetRunning();
 		//TODO: Add FABRIK
 
@@ -64,6 +70,9 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		}
 		else if (MainCharacter->GetAiming()) {
 			ActionState = EActionState::EAS_Aiming;
+		}
+		else if (bClimbing) {
+			ActionState = EActionState::EAS_Climbing;
 		}
 		else {
 			ActionState = EActionState::EAS_Hip;
