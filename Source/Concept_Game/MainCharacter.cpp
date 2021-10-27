@@ -3,6 +3,7 @@
 
 #include "MainCharacter.h"
 
+#include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
@@ -178,6 +179,26 @@ void AMainCharacter::TraceForItems() {
 
 }
 
+void AMainCharacter::TraceForLadder() {
+	FHitResult LadderTraceHitResult;
+	FVector HitLocation;
+	TraceForLevelChange(LadderTraceHitResult, HitLocation);
+}
+
+bool AMainCharacter::TraceForLevelChange(FHitResult& OutHitResult, FVector& OutHitLocation) {
+	const FVector Start = GetActorLocation();
+	const FVector End = GetActorUpVector() * (-150.0f) + GetActorLocation();
+	OutHitLocation = End;
+	GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECC_Visibility);
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
+	if (OutHitResult.bBlockingHit) {
+		OutHitLocation = OutHitResult.Location;
+		return true;
+	}
+
+	return false;
+}
+
 
 bool AMainCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation) {
 
@@ -223,6 +244,7 @@ void AMainCharacter::Tick(float DeltaTime) {
 	SetLookUpRates(DeltaTime);
 	CalculateCrosshairSpread(DeltaTime);
 	TraceForItems();
+	TraceForLadder();
 	InterpCapsuleHalfHeight(DeltaTime);
 }
 

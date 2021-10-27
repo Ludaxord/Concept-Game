@@ -115,13 +115,6 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
 		TurnInPlace();
 		Lean(DeltaTime);
-
-		UE_LOG(
-			LogTemp, Warning, TEXT("Movement Offset Yaw: %s Speed %s Level Speed %s"),
-			*FString::FromInt(MovementOffsetYaw),
-			*FString::FromInt(Speed),
-			*FString::FromInt(LevelChangeSpeed)
-		);
 	}
 }
 

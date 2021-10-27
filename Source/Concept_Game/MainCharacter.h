@@ -66,6 +66,7 @@ public:
 	void SetLookUpRates(float DeltaTime);
 	void CalculateCrosshairSpread(float DeltaTime);
 	void TraceForItems();
+	void TraceForLadder();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -91,6 +92,7 @@ public:
 	void UseWeaponByType(EWeaponType WeaponType);
 	void UseWeapon();
 
+	virtual bool TraceForLevelChange(FHitResult& OutHitResult, FVector& OutHitLocation);
 	virtual bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation);
 
 	void AimingButtonPressed();
