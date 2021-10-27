@@ -35,6 +35,10 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bReloading = MainCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = MainCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 		bClimbing = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
+		if (bClimbing) {
+			//NOTE: Temporary, detect if player use ladder from bottom or from top
+			bClimbingLadderFromBottom = true;
+		}
 		bCrawling = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Crawl;
 		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bRunning = MainCharacter->GetRunning();
