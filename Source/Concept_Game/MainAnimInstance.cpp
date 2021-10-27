@@ -16,6 +16,7 @@ UMainAnimInstance::UMainAnimInstance(): CurrentAttackType(EAttackType::EAT_Right
                                         bAiming(false),
                                         bReloading(false),
                                         bClimbingLadderFromBottom(false),
+                                        bClimbingLadderToBottom(false),
                                         bTurnInPlace(false),
                                         PoseType(EPoseType::EPT_Stand),
                                         MovementOffsetYaw(0.0f),
@@ -35,10 +36,18 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bReloading = MainCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = MainCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 		bClimbing = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
+
+		const TEnumAsByte<EPoseType> PoseEnum = MainCharacter->GetCurrentPoseType();
+		FString PoseEnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
+
+		//NOTE: Temporary, detect if player use ladder from bottom or from top
 		if (bClimbing) {
-			//NOTE: Temporary, detect if player use ladder from bottom or from top
 			bClimbingLadderFromBottom = true;
 		}
+		else {
+			bClimbingLadderFromBottom = false;
+		}
+
 		bCrawling = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Crawl;
 		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bRunning = MainCharacter->GetRunning();
@@ -47,6 +56,23 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		FVector Velocity = MainCharacter->GetVelocity();
 		Velocity.Z = 0;
 		Speed = Velocity.Size();
+
+		FVector VelocityLevel = MainCharacter->GetVelocity();
+		VelocityLevel.X = 0;
+		VelocityLevel.Y = 0;
+		if (VelocityLevel.Z > 0) {
+			LevelChangeSpeed = UKismetMathLibrary::NormalizeToRange(VelocityLevel.Size(),
+			                                                        0,
+			                                                        MainCharacter->GetCharacterMovement()->
+			                                                        GetMaxSpeed());
+		}
+		else {
+			LevelChangeSpeed = -UKismetMathLibrary::NormalizeToRange(VelocityLevel.Size(),
+			                                                         0,
+			                                                         MainCharacter->GetCharacterMovement()->
+			                                                         GetMaxSpeed());
+		}
+
 
 		bIsInAir = MainCharacter->GetCharacterMovement()->IsFalling();
 		if (MainCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0) {
@@ -89,6 +115,13 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
 		TurnInPlace();
 		Lean(DeltaTime);
+
+		UE_LOG(
+			LogTemp, Warning, TEXT("Movement Offset Yaw: %s Speed %s Level Speed %s"),
+			*FString::FromInt(MovementOffsetYaw),
+			*FString::FromInt(Speed),
+			*FString::FromInt(LevelChangeSpeed)
+		);
 	}
 }
 
