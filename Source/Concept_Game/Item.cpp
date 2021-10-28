@@ -214,6 +214,7 @@ void AItem::SetItemProperties(EItemState State) {
 
 void AItem::InteractWithItem(AMainCharacter* InCharacter) {
 	Character = InCharacter;
+	Character->SetCurrentInteractItem(this);
 	//TODO: If item is not weapon, then check if it is a usable item or story item.
 	//TODO: If it is story Item, then store in story items backpack
 	//TODO: If it is usable item, check if there is a space in inventory

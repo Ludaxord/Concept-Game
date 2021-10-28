@@ -336,6 +336,9 @@ private:
 	class AItem* TraceHitItem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	class AItem* CurrentInteractItem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
 	AItem* TraceHitItemLastFrame;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
@@ -492,8 +495,16 @@ public:
 		return EquippedWeapon;
 	}
 
+	FORCEINLINE AItem* GetCurrentInteractItem() const {
+		return CurrentInteractItem;
+	}
+
 	void SetEquippedWeapon(AWeapon* InNewWeapon) {
 		EquippedWeapon = InNewWeapon;
+	}
+
+	void SetCurrentInteractItem(AItem* InCurrentInteractItem) {
+		CurrentInteractItem = InCurrentInteractItem;
 	}
 
 	void SetPoseType(EPoseType InPoseType) {

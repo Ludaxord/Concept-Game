@@ -149,6 +149,7 @@ void ALadder::OnBoxEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* Oth
 			bTouchingLadder = false;
 			OtherCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 			OtherCharacter->SetPoseType(EPoseType::EPT_Stand);
+			OtherCharacter->SetCurrentInteractItem(nullptr);
 		}
 	}
 }

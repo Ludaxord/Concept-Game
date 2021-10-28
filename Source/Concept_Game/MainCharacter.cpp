@@ -16,6 +16,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetTextLibrary.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -240,6 +241,7 @@ bool AMainCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& Out
 // Called every frame
 void AMainCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+
 	AimingFieldOfView(DeltaTime);
 	SetLookUpRates(DeltaTime);
 	CalculateCrosshairSpread(DeltaTime);
@@ -333,10 +335,21 @@ void AMainCharacter::MoveForward(float Value) {
 
 void AMainCharacter::MoveRight(float Value) {
 	if (Controller != nullptr && (Value != 0.0f)) {
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation = {0, Rotation.Yaw, 0};
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		AddMovementInput(Direction, Value);
+		if (PoseType != EPoseType::EPT_Climb) {
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation = {0, Rotation.Yaw, 0};
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			AddMovementInput(Direction, Value);
+		}
+		else {
+			float LadderYaw = UKismetMathLibrary::MakeRotFromX(-CurrentInteractItem->GetActorRightVector()).Yaw;
+			float RotationYaw = GetBaseAimRotation().Yaw;
+			const FRotator Rotation = Controller->GetControlRotation();
+			if (RotationYaw < LadderYaw + 45.0f && RotationYaw > LadderYaw - 45.0f) {
+				UE_LOG(LogTemp, Warning, TEXT("From: %f To: %f"), Rotation.Yaw, Rotation.Yaw + (45.0f * Value))
+				AddControllerYawInput(Rotation.Yaw + (45.0f * Value));
+			}
+		}
 	}
 }
 
