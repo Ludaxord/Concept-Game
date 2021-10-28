@@ -131,6 +131,8 @@ public:
 	void ChangeDebugTriggerRotationYaw();
 	void TriggerFPSCounter();
 
+	void SwitchCamera(bool bFollowCamera);
+
 	UFUNCTION()
 	void AutoFireReset();
 
@@ -455,6 +457,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* DefaultCrosshairsTop;
+
+	float ClimbStartRotationYaw;
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;

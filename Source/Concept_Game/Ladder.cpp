@@ -123,6 +123,8 @@ void ALadder::OnSphereEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* 
 			bTouchingLadder = false;
 			bOnSphereOverlap = false;
 			OtherCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+			if (OtherCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb)
+				Character->SwitchCamera(false);
 			OtherCharacter->SetPoseType(EPoseType::EPT_Stand);
 		}
 	}
@@ -148,6 +150,8 @@ void ALadder::OnBoxEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* Oth
 		if (OtherCharacter != nullptr) {
 			bTouchingLadder = false;
 			OtherCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+			if (OtherCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb)
+				Character->SwitchCamera(false);
 			OtherCharacter->SetPoseType(EPoseType::EPT_Stand);
 			OtherCharacter->SetCurrentInteractItem(nullptr);
 		}
@@ -170,10 +174,15 @@ void ALadder::EnableClimbing() {
 		LadderTransitionTimeline->PlayFromStart();
 		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Flying);
 		Character->SetPoseType(EPoseType::EPT_Climb);
+		Character->SwitchCamera(true);
+		//TODO: Hide weapon if it is equipped
 	}
 	else {
 		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		if (Character->GetCurrentPoseType() == EPoseType::EPT_Climb)
+			Character->SwitchCamera(false);
 		Character->SetPoseType(EPoseType::EPT_Stand);
+		//TODO: Show weapon if it was equipped
 	}
 
 }

@@ -345,30 +345,43 @@ void AMainCharacter::MoveRight(float Value) {
 			float LadderYaw = UKismetMathLibrary::MakeRotFromX(-CurrentInteractItem->GetActorRightVector()).Yaw;
 			float RotationYaw = GetBaseAimRotation().Yaw;
 			const FRotator Rotation = Controller->GetControlRotation();
-			if (RotationYaw < LadderYaw + 45.0f && RotationYaw > LadderYaw - 45.0f) {
-				UE_LOG(LogTemp, Warning, TEXT("From: %f To: %f"), Rotation.Yaw, Rotation.Yaw + (45.0f * Value))
-				AddControllerYawInput(Rotation.Yaw + (45.0f * Value));
+			if (Value != 0) {
+				ClimbStartRotationYaw = Rotation.Yaw;
+				if (RotationYaw < LadderYaw + 30.0f && RotationYaw > LadderYaw - 30.0f) {
+					UE_LOG(LogTemp, Warning, TEXT("From: %f To: %f"), Rotation.Yaw, Rotation.Yaw + (45.0f * Value))
+					AddControllerYawInput(Rotation.Yaw + (45.0f * Value));
+				}
 			}
+			else {
+				AddControllerYawInput(ClimbStartRotationYaw);
+			}
+
 		}
 	}
 }
 
 void AMainCharacter::TurnRate(float Rate) {
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	if (PoseType != EPoseType::EPT_Climb)
+		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMainCharacter::Turn(float Value) {
-	float TurnScaleFactor = bAiming ? MouseAimingTurnRate : MouseHipTurnRate;
-	AddControllerYawInput(Value * TurnScaleFactor);
+	if (PoseType != EPoseType::EPT_Climb) {
+		float TurnScaleFactor = bAiming ? MouseAimingTurnRate : MouseHipTurnRate;
+		AddControllerYawInput(Value * TurnScaleFactor);
+	}
 }
 
 void AMainCharacter::LookUpAtRate(float Rate) {
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (PoseType != EPoseType::EPT_Climb)
+		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMainCharacter::LookUp(float Value) {
-	float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
-	AddControllerPitchInput(Value * LookUpScaleFactor);
+	if (PoseType != EPoseType::EPT_Climb) {
+		float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
+		AddControllerPitchInput(Value * LookUpScaleFactor);
+	}
 }
 
 bool AMainCharacter::IsWeaponUsable() {
@@ -695,6 +708,33 @@ void AMainCharacter::ChangeDebugTriggerRotationYaw() {
 void AMainCharacter::TriggerFPSCounter() {
 	bFPSCounter = !bFPSCounter;
 	UKismetSystemLibrary::ExecuteConsoleCommand(this, "stat fps");
+}
+
+void AMainCharacter::SwitchCamera(bool bFollowCamera) {
+	if (bSwitchToFollowCamera != bFollowCamera) {
+		DisableInput(UGameplayStatics::GetPlayerController(this, 0));
+		EyesCameraTransform = SetCameraTransform(EyesCamera, "head", true, GetMesh());
+		bSwitchToFollowCamera = bFollowCamera;
+		UE_LOG(LogTemp, Error, TEXT("Camera TPP: %s"), bSwitchToFollowCamera ? TEXT("true") : TEXT("false"))
+
+		if (!bSwitchToFollowCamera) {
+			FollowCameraTransform = SetCameraTransform(FollowCamera);
+			ChangeCameraTimeline->PlayFromStart();
+
+			bUseControllerRotationPitch = false;
+			bUseControllerRotationYaw = true;
+			bUseControllerRotationRoll = false;
+		}
+		else {
+			SetActiveCameras(true);
+			FollowCameraTransform = RefFollowCamera->GetComponentTransform();
+			ChangeCameraTimeline->ReverseFromEnd();
+			//TODO: Fix animation when change controller rotation Yaw to false;
+			bUseControllerRotationPitch = false;
+			bUseControllerRotationYaw = bRotationYaw;
+			bUseControllerRotationRoll = false;
+		}
+	}
 }
 
 void AMainCharacter::AutoFireReset() {
