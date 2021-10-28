@@ -256,6 +256,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMainCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("ClimbRight", this, &AMainCharacter::ClimbRight);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMainCharacter::TurnRate);
 	PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpAtRate);
 	PlayerInputComponent->BindAxis("PoseChange", this, &AMainCharacter::ChangePoseAxisButtonPressed);
@@ -333,7 +334,6 @@ void AMainCharacter::MoveForward(float Value) {
 	}
 }
 
-//TODO: Fix, maybe move climbing to own function.
 void AMainCharacter::MoveRight(float Value) {
 	if (Controller != nullptr && (Value != 0.0f)) {
 		if (PoseType != EPoseType::EPT_Climb) {
@@ -341,23 +341,26 @@ void AMainCharacter::MoveRight(float Value) {
 			const FRotator YawRotation = {0, Rotation.Yaw, 0};
 			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 			AddMovementInput(Direction, Value);
+			ClimbStartRotationYaw = Controller->GetControlRotation().Yaw;
 		}
-		else {
+	}
+}
+
+void AMainCharacter::ClimbRight(float Value) {
+	if (Controller != nullptr) {
+		if (PoseType == EPoseType::EPT_Climb) {
 			float LadderYaw = UKismetMathLibrary::MakeRotFromX(-CurrentInteractItem->GetActorRightVector()).Yaw;
 			float RotationYaw = GetBaseAimRotation().Yaw;
 			const FRotator Rotation = Controller->GetControlRotation();
 			if (Value != 0) {
-				ClimbStartRotationYaw = Rotation.Yaw;
-				if (RotationYaw < LadderYaw + 30.0f && RotationYaw > LadderYaw - 30.0f) {
-					UE_LOG(LogTemp, Warning, TEXT("From: %f To: %f"), Rotation.Yaw, Rotation.Yaw + (45.0f * Value))
-					AddControllerYawInput(Rotation.Yaw + (45.0f * Value));
-				}
-			}
-			else {
-				AddControllerYawInput(ClimbStartRotationYaw);
+				UE_LOG(LogTemp, Warning, TEXT("Value: %f From: %f To: %f"), Value, Rotation.Yaw,
+				       Rotation.Yaw + (45.0f * Value))
+				AddControllerYawInput(Rotation.Yaw + (45.0f * Value));
+			} else {
 			}
 		}
 	}
+
 }
 
 void AMainCharacter::TurnRate(float Rate) {
@@ -479,7 +482,8 @@ void AMainCharacter::FinishCrosshairMovement() {
 void AMainCharacter::UseWeapon() {
 	if (Health <= 0.0f) return;
 	if (EquippedWeapon == nullptr) return;
-	if (CombatState != ECombatState::ECS_Unoccupied && PoseType == EPoseType::EPT_Climb) return;
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (PoseType == EPoseType::EPT_Climb) return;
 	if (!IsWeaponUsable()) return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Use Weapon"));

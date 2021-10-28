@@ -79,6 +79,7 @@ public:
 
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+	void ClimbRight(float Value);
 	void TurnRate(float Rate);
 	void Turn(float Value);
 	void LookUpAtRate(float Rate);
@@ -459,6 +460,9 @@ private:
 	UTexture2D* DefaultCrosshairsTop;
 
 	float ClimbStartRotationYaw;
+
+	float ClimbStartRotationYawLeft;
+	float ClimbStartRotationYawRight;
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;
