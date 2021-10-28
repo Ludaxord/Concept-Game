@@ -333,6 +333,7 @@ void AMainCharacter::MoveForward(float Value) {
 	}
 }
 
+//TODO: Fix, maybe move climbing to own function.
 void AMainCharacter::MoveRight(float Value) {
 	if (Controller != nullptr && (Value != 0.0f)) {
 		if (PoseType != EPoseType::EPT_Climb) {
@@ -355,7 +356,6 @@ void AMainCharacter::MoveRight(float Value) {
 			else {
 				AddControllerYawInput(ClimbStartRotationYaw);
 			}
-
 		}
 	}
 }
@@ -479,7 +479,7 @@ void AMainCharacter::FinishCrosshairMovement() {
 void AMainCharacter::UseWeapon() {
 	if (Health <= 0.0f) return;
 	if (EquippedWeapon == nullptr) return;
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied && PoseType == EPoseType::EPT_Climb) return;
 	if (!IsWeaponUsable()) return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Use Weapon"));
