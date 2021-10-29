@@ -80,6 +80,8 @@ public:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void ClimbRight(float Value);
+	void ClimbRightActionPressed();
+	void ClimbRightActionReleased();
 	void TurnRate(float Rate);
 	void Turn(float Value);
 	void LookUpAtRate(float Rate);
@@ -185,6 +187,17 @@ protected:
 	void OnCameraTimelineFinished();
 
 private:
+	UFUNCTION()
+	void UpdateClimbingTransitionTimeline(float Output);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	class UTimelineComponent* ClimbingTransitionTimeline;
+
+	FOnTimelineFloat UpdateClimbingFunctionFloat;
+
+	UPROPERTY(EditAnywhere, Category="Camera")
+	UCurveFloat* ClimbingTransitionFloatCurve;
+
 	//TODO: Create inventory class to store informations like guids...
 	TArray<FGuid> ItemGuids;
 
@@ -463,6 +476,11 @@ private:
 
 	float ClimbStartRotationYawLeft;
 	float ClimbStartRotationYawRight;
+
+	float ClimbRightValue;
+
+	bool bPlayClimbTurnAnimation;
+	bool bClimbingButtonPressed;
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;

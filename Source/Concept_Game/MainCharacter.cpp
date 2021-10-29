@@ -32,6 +32,7 @@ AMainCharacter::AMainCharacter():
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
+	bPlayClimbTurnAnimation(false),
 	bUseWeaponButtonPressed(false),
 	bShouldTraceForItems(false),
 	bRotationYaw(false),
@@ -80,6 +81,8 @@ AMainCharacter::AMainCharacter():
 
 	ChangeCameraTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ChangeCameraTimeline"));
 
+	ClimbingTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ClimbingTransitionTimeline"));
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
@@ -102,6 +105,10 @@ void AMainCharacter::BeginPlay() {
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 
+	UpdateClimbingFunctionFloat.BindDynamic(this, &AMainCharacter::UpdateClimbingTransitionTimeline);
+	if (ClimbingTransitionFloatCurve) {
+		ClimbingTransitionTimeline->AddInterpFloat(ClimbingTransitionFloatCurve, UpdateClimbingFunctionFloat);
+	}
 	// HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComp"));
 }
 
@@ -273,6 +280,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 
 	PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
+	PlayerInputComponent->BindAction("ClimbRightAction", IE_Pressed, this, &AMainCharacter::ClimbRightActionPressed);
+	PlayerInputComponent->BindAction("ClimbRightAction", IE_Released, this, &AMainCharacter::ClimbRightActionReleased);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &AMainCharacter::AimingButtonPressed);
@@ -342,25 +351,65 @@ void AMainCharacter::MoveRight(float Value) {
 			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 			AddMovementInput(Direction, Value);
 			ClimbStartRotationYaw = Controller->GetControlRotation().Yaw;
+			ClimbStartRotationYawLeft = ClimbStartRotationYaw + 45.0f;
+			ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
 		}
 	}
+
 }
 
 void AMainCharacter::ClimbRight(float Value) {
 	if (Controller != nullptr) {
 		if (PoseType == EPoseType::EPT_Climb) {
-			float LadderYaw = UKismetMathLibrary::MakeRotFromX(-CurrentInteractItem->GetActorRightVector()).Yaw;
-			float RotationYaw = GetBaseAimRotation().Yaw;
-			const FRotator Rotation = Controller->GetControlRotation();
-			if (Value != 0) {
-				UE_LOG(LogTemp, Warning, TEXT("Value: %f From: %f To: %f"), Value, Rotation.Yaw,
-				       Rotation.Yaw + (45.0f * Value))
-				AddControllerYawInput(Rotation.Yaw + (45.0f * Value));
-			} else {
+			ClimbRightValue = Value;
+			if (bClimbingButtonPressed) {
+				if (bPlayClimbTurnAnimation)
+					ClimbingTransitionTimeline->PlayFromStart();
 			}
+			else {
+				if (bPlayClimbTurnAnimation)
+					ClimbingTransitionTimeline->PlayFromStart();
+			}
+
+			//TODO: Move to ClimbingTransitionTimeline function.
+			// float LadderYaw = UKismetMathLibrary::MakeRotFromX(-CurrentInteractItem->GetActorRightVector()).Yaw;
+			// float RotationYaw = GetBaseAimRotation().Yaw;
+			// FRotator Rotation = Controller->GetControlRotation();
+			// if (Value != 0) {
+			// 	float CurrentYaw = Rotation.Yaw + (45.0f * Value);
+			// 	if (Value > 0.0f) {
+			// 		float LerpYaw = FMath::Lerp(ClimbStartRotationYaw, ClimbStartRotationYawLeft, 0.1);
+			// 		CurrentYaw = ClimbStartRotationYawLeft;
+			// 		CurrentYaw = LerpYaw;
+			// 	}
+			// 	else if (Value < 0.0f) {
+			// 		float LerpYaw = FMath::Lerp(ClimbStartRotationYaw, ClimbStartRotationYawRight, 0.1);
+			// 		CurrentYaw = ClimbStartRotationYawRight;
+			// 		CurrentYaw = LerpYaw;
+			// 	}
+			// 	Rotation.Yaw = CurrentYaw;
+			// 	// AddControllerYawInput(CurrentYaw);
+			// 	// if (CurrentYaw <= ClimbStartRotationYawLeft && CurrentYaw >= ClimbStartRotationYawRight)
+			// 	// AddControllerYawInput(CurrentYaw);
+			// }
+			// else {
+			// 	Rotation.Yaw = ClimbStartRotationYaw;
+			// }
+			//
+			// Controller->SetControlRotation(Rotation);
 		}
 	}
 
+}
+
+void AMainCharacter::ClimbRightActionPressed() {
+	bPlayClimbTurnAnimation = true;
+	bClimbingButtonPressed = true;
+}
+
+void AMainCharacter::ClimbRightActionReleased() {
+	bPlayClimbTurnAnimation = true;
+	bClimbingButtonPressed = false;
 }
 
 void AMainCharacter::TurnRate(float Rate) {
@@ -1004,6 +1053,43 @@ void AMainCharacter::OnCameraTimelineFinished() {
 		// EyesCamera->SetupAttachment(GetMesh(), "head");
 	}
 	EnableInput(Player);
+}
+
+void AMainCharacter::UpdateClimbingTransitionTimeline(float Output) {
+	UE_LOG(LogTemp, Warning, TEXT("UpdateClimbingTransitionTimeline %f"), Output);
+	if (Controller) {
+		FRotator Rotation = Controller->GetControlRotation();
+		if (ClimbRightValue != 0) {
+			float CurrentYaw = Rotation.Yaw + (45.0f * ClimbRightValue);
+			float LerpYaw;
+			if (ClimbRightValue > 0.0f) {
+				if (bClimbingButtonPressed)
+					LerpYaw = FMath::Lerp(ClimbStartRotationYaw, ClimbStartRotationYawLeft, Output);
+				else
+					LerpYaw = FMath::Lerp(ClimbStartRotationYawLeft, ClimbStartRotationYaw, Output);
+				// CurrentYaw = ClimbStartRotationYawLeft;
+				CurrentYaw = LerpYaw;
+			}
+			else if (ClimbRightValue < 0.0f) {
+				if (bClimbingButtonPressed)
+					LerpYaw = FMath::Lerp(ClimbStartRotationYaw, ClimbStartRotationYawRight, Output);
+				else
+					LerpYaw = FMath::Lerp(ClimbStartRotationYawRight, ClimbStartRotationYaw, Output);
+				// CurrentYaw = ClimbStartRotationYawRight;
+				CurrentYaw = LerpYaw;
+			}
+			Rotation.Yaw = CurrentYaw;
+			// AddControllerYawInput(CurrentYaw);
+			// if (CurrentYaw <= ClimbStartRotationYawLeft && CurrentYaw >= ClimbStartRotationYawRight)
+			// AddControllerYawInput(CurrentYaw);
+		}
+		else {
+			Rotation.Yaw = ClimbStartRotationYaw;
+		}
+
+		Controller->SetControlRotation(Rotation);
+		bPlayClimbTurnAnimation = false;
+	}
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {
