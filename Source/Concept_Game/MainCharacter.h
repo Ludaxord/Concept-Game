@@ -323,6 +323,8 @@ private:
 
 	bool bShouldTraceForItems;
 
+	bool bJumpFromClimb;
+
 	float PoseAxisValueCounter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -484,6 +486,9 @@ private:
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;
+	}
+	FORCEINLINE bool GetJumpFromClimb() const {
+		return bJumpFromClimb;
 	}
 
 	FORCEINLINE UCameraComponent* GetFollowCamera() const {

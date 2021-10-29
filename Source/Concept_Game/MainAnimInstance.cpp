@@ -36,6 +36,9 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bReloading = MainCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 		bEquipping = MainCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 		bClimbing = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
+		bJumpFromClimb = MainCharacter->GetJumpFromClimb();
+
+		UE_LOG(LogTemp, Warning, TEXT("Jump From Climb %s"), bJumpFromClimb ? TEXT("true") : TEXT("false"));
 
 		const TEnumAsByte<EPoseType> PoseEnum = MainCharacter->GetCurrentPoseType();
 		FString PoseEnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());

@@ -82,6 +82,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	bool bRunning;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Climbing", meta = (AllowPrivateAccess = "true"))
+	bool bJumpFromClimb;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 

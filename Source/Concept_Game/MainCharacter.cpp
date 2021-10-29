@@ -32,6 +32,7 @@ AMainCharacter::AMainCharacter():
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
+	bJumpFromClimb(false),
 	bPlayClimbTurnAnimation(false),
 	bUseWeaponButtonPressed(false),
 	bShouldTraceForItems(false),
@@ -190,12 +191,14 @@ void AMainCharacter::TraceForItems() {
 void AMainCharacter::TraceForLadder() {
 	FHitResult LadderTraceHitResult;
 	FVector HitLocation;
-	TraceForLevelChange(LadderTraceHitResult, HitLocation);
+	bool Trace = TraceForLevelChange(LadderTraceHitResult, HitLocation);
+	bJumpFromClimb = !Trace;
+	UE_LOG(LogTemp, Warning, TEXT("Trace For Ladder %s"), Trace ? TEXT("true") : TEXT("false"));
 }
 
 bool AMainCharacter::TraceForLevelChange(FHitResult& OutHitResult, FVector& OutHitLocation) {
 	const FVector Start = GetActorLocation();
-	const FVector End = GetActorUpVector() * (-150.0f) + GetActorLocation();
+	const FVector End = GetActorUpVector() * (-100.0f) + GetActorLocation();
 	OutHitLocation = End;
 	GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECC_Visibility);
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
@@ -370,33 +373,6 @@ void AMainCharacter::ClimbRight(float Value) {
 				if (bPlayClimbTurnAnimation)
 					ClimbingTransitionTimeline->PlayFromStart();
 			}
-
-			//TODO: Move to ClimbingTransitionTimeline function.
-			// float LadderYaw = UKismetMathLibrary::MakeRotFromX(-CurrentInteractItem->GetActorRightVector()).Yaw;
-			// float RotationYaw = GetBaseAimRotation().Yaw;
-			// FRotator Rotation = Controller->GetControlRotation();
-			// if (Value != 0) {
-			// 	float CurrentYaw = Rotation.Yaw + (45.0f * Value);
-			// 	if (Value > 0.0f) {
-			// 		float LerpYaw = FMath::Lerp(ClimbStartRotationYaw, ClimbStartRotationYawLeft, 0.1);
-			// 		CurrentYaw = ClimbStartRotationYawLeft;
-			// 		CurrentYaw = LerpYaw;
-			// 	}
-			// 	else if (Value < 0.0f) {
-			// 		float LerpYaw = FMath::Lerp(ClimbStartRotationYaw, ClimbStartRotationYawRight, 0.1);
-			// 		CurrentYaw = ClimbStartRotationYawRight;
-			// 		CurrentYaw = LerpYaw;
-			// 	}
-			// 	Rotation.Yaw = CurrentYaw;
-			// 	// AddControllerYawInput(CurrentYaw);
-			// 	// if (CurrentYaw <= ClimbStartRotationYawLeft && CurrentYaw >= ClimbStartRotationYawRight)
-			// 	// AddControllerYawInput(CurrentYaw);
-			// }
-			// else {
-			// 	Rotation.Yaw = ClimbStartRotationYaw;
-			// }
-			//
-			// Controller->SetControlRotation(Rotation);
 		}
 	}
 
@@ -612,15 +588,26 @@ void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
 }
 
 void AMainCharacter::Jump() {
-	if (PoseType != EPoseType::EPT_Stand) {
-		UE_LOG(LogTemp, Warning, TEXT("Jumping Not Stand"));
-		PoseType = EPoseType::EPT_Stand;
-		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+	if (PoseType != EPoseType::EPT_Climb) {
+		if (PoseType != EPoseType::EPT_Stand) {
+			UE_LOG(LogTemp, Warning, TEXT("Jumping Not Stand"));
+			PoseType = EPoseType::EPT_Stand;
+			GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Jumping Base"));
+			Super::Jump();
+		}
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("Jumping Base"));
+		bJumpFromClimb = true;
+		PoseType = EPoseType::EPT_Stand;
+		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+		SwitchCamera(false);
+		UE_LOG(LogTemp, Warning, TEXT("Jumping From Climb %s"), bJumpFromClimb ? TEXT("true") : TEXT("false"));
 		Super::Jump();
 	}
+
 }
 
 void AMainCharacter::Crouching() {
