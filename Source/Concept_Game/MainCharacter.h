@@ -325,6 +325,8 @@ private:
 
 	bool bJumpFromClimb;
 
+	bool bTouchingFloor;
+
 	float PoseAxisValueCounter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -361,6 +363,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	EPoseType PoseType;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	bool bOverlappingLadderBottom;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	bool bOverlappingLadderTop;
 
 	EPoseType LastPoseType;
 
@@ -518,6 +526,14 @@ public:
 		return bRunning;
 	}
 
+	FORCEINLINE bool GetOverlappingLadderBottom() const {
+		return bOverlappingLadderBottom;
+	}
+
+	FORCEINLINE bool GetOverlappingLadderTop() const {
+		return bOverlappingLadderTop;
+	}
+
 	FORCEINLINE ECombatState GetCombatState() const {
 		return CombatState;
 	}
@@ -532,6 +548,14 @@ public:
 
 	void SetEquippedWeapon(AWeapon* InNewWeapon) {
 		EquippedWeapon = InNewWeapon;
+	}
+
+	void SetOverlappingLadderTop(bool OverlappingLadderTop) {
+		bOverlappingLadderTop = OverlappingLadderTop;
+	}
+
+	void SetOverlappingLadderBottom(bool OverlappingLadderBottom) {
+		bOverlappingLadderBottom = OverlappingLadderBottom;
 	}
 
 	void SetCurrentInteractItem(AItem* InCurrentInteractItem) {

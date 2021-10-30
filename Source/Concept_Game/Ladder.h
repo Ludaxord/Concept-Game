@@ -36,6 +36,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetupAreaCapsule();
 
+	UFUNCTION(BlueprintCallable)
+	void SetupBottomCapsule();
+
+	UFUNCTION(BlueprintCallable)
+	void SetupUpperCapsule();
+
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 	                                  const FHitResult& SweepResult) override;
@@ -50,6 +56,24 @@ protected:
 	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                             UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 
+	UFUNCTION()
+	virtual void OnSphereOverlapFromTopBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                                  const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnSphereOverlapFromTopEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	virtual void OnSphereOverlapFromBottomBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                                  const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnSphereOverlapFromBottomEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+
 	void ReinitLadderSubComponents();
 
 	void EnableClimbing();
@@ -63,6 +87,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* LadderCollisionCapsule;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	USphereComponent* LadderBottomCollisionSphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	USphereComponent* LadderUpperCollisionSphere;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	int RungsNumber;

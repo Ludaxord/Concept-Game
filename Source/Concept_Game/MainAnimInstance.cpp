@@ -15,8 +15,8 @@ UMainAnimInstance::UMainAnimInstance(): CurrentAttackType(EAttackType::EAT_Right
                                         bClimbing(false),
                                         bAiming(false),
                                         bReloading(false),
-                                        bClimbingLadderFromBottom(false),
-                                        bClimbingLadderToBottom(false),
+                                        bOverlappingLadderTop(false),
+                                        bOverlappingLadderBottom(false),
                                         bTurnInPlace(false),
                                         PoseType(EPoseType::EPT_Stand),
                                         MovementOffsetYaw(0.0f),
@@ -38,18 +38,20 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bClimbing = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bJumpFromClimb = MainCharacter->GetJumpFromClimb();
 
-		UE_LOG(LogTemp, Warning, TEXT("Jump From Climb %s"), bJumpFromClimb ? TEXT("true") : TEXT("false"));
+		// UE_LOG(LogTemp, Warning, TEXT("Jump From Climb %s"), bJumpFromClimb ? TEXT("true") : TEXT("false"));
 
 		const TEnumAsByte<EPoseType> PoseEnum = MainCharacter->GetCurrentPoseType();
 		FString PoseEnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
 
 		//NOTE: Temporary, detect if player use ladder from bottom or from top
-		if (bClimbing) {
-			bClimbingLadderFromBottom = true;
-		}
-		else {
-			bClimbingLadderFromBottom = false;
-		}
+		bOverlappingLadderBottom = MainCharacter->GetOverlappingLadderBottom();
+		bOverlappingLadderTop = MainCharacter->GetOverlappingLadderTop();
+		// if (bClimbing) {
+		// 	bClimbingLadderFromBottom = true;
+		// }
+		// else {
+		// 	bClimbingLadderFromBottom = false;
+		// }
 
 		bCrawling = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Crawl;
 		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;

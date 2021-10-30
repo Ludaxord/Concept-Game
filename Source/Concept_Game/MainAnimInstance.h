@@ -56,10 +56,10 @@ private:
 	bool bEquipping;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
-	bool bClimbingLadderFromBottom;
+	bool bOverlappingLadderBottom;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
-	bool bClimbingLadderToBottom;
+	bool bOverlappingLadderTop;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta= (AllowPrivateAccess = "true"))
 	bool bIsAimingAvailable;

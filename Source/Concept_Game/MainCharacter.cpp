@@ -32,6 +32,8 @@ AMainCharacter::AMainCharacter():
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
+	bOverlappingLadderBottom(false),
+	bOverlappingLadderTop(false),
 	bJumpFromClimb(false),
 	bPlayClimbTurnAnimation(false),
 	bUseWeaponButtonPressed(false),
@@ -192,8 +194,10 @@ void AMainCharacter::TraceForLadder() {
 	FHitResult LadderTraceHitResult;
 	FVector HitLocation;
 	bool Trace = TraceForLevelChange(LadderTraceHitResult, HitLocation);
-	bJumpFromClimb = !Trace;
-	UE_LOG(LogTemp, Warning, TEXT("Trace For Ladder %s"), Trace ? TEXT("true") : TEXT("false"));
+	if (PoseType == EPoseType::EPT_Climb) {
+		bJumpFromClimb = !Trace;
+		bTouchingFloor = Trace;
+	}
 }
 
 bool AMainCharacter::TraceForLevelChange(FHitResult& OutHitResult, FVector& OutHitLocation) {
@@ -201,7 +205,7 @@ bool AMainCharacter::TraceForLevelChange(FHitResult& OutHitResult, FVector& OutH
 	const FVector End = GetActorUpVector() * (-100.0f) + GetActorLocation();
 	OutHitLocation = End;
 	GetWorld()->LineTraceSingleByChannel(OutHitResult, Start, End, ECC_Visibility);
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
+	// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 50.0f);
 	if (OutHitResult.bBlockingHit) {
 		OutHitLocation = OutHitResult.Location;
 		return true;
@@ -338,6 +342,18 @@ void AMainCharacter::MoveForward(float Value) {
 		FVector Direction;
 		if (PoseType == EPoseType::EPT_Climb) {
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
+			if (Value < 0.0f) {
+				if (GetOverlappingLadderBottom() && bTouchingFloor) {
+					PoseType = EPoseType::EPT_Stand;
+					GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+					SwitchCamera(false);
+				}
+			}
+			else if (Value > 0.0f) {
+				if (GetOverlappingLadderTop()) {
+
+				}
+			}
 		}
 		else {
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
@@ -389,8 +405,8 @@ void AMainCharacter::ClimbRightActionReleased() {
 }
 
 void AMainCharacter::TurnRate(float Rate) {
-	if (PoseType != EPoseType::EPT_Climb)
-		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	// if (PoseType != EPoseType::EPT_Climb)
+	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMainCharacter::Turn(float Value) {
@@ -401,8 +417,8 @@ void AMainCharacter::Turn(float Value) {
 }
 
 void AMainCharacter::LookUpAtRate(float Rate) {
-	if (PoseType != EPoseType::EPT_Climb)
-		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	// if (PoseType != EPoseType::EPT_Climb)
+	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMainCharacter::LookUp(float Value) {

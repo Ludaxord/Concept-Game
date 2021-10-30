@@ -37,6 +37,12 @@ ALadder::ALadder(): RungsNumber(10),
 	LadderCollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("LadderCollisionCapsule"));
 	LadderCollisionCapsule->SetupAttachment(GetRootComponent());
 
+	LadderUpperCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("LadderUpperCollisionSphere"));
+	LadderUpperCollisionSphere->SetupAttachment(GetRootComponent());
+
+	LadderBottomCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("LadderBottomCollisionSphere"));
+	LadderBottomCollisionSphere->SetupAttachment(GetRootComponent());
+
 	SetItemState(EItemState::EIS_Interact);
 }
 
@@ -50,6 +56,12 @@ void ALadder::BeginPlay() {
 
 	LadderCollisionCapsule->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
 	LadderCollisionCapsule->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+
+	LadderUpperCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ALadder::OnSphereOverlapFromTopBegin);
+	LadderUpperCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &ALadder::OnSphereOverlapFromTopEnd);
+
+	LadderBottomCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ALadder::OnSphereOverlapFromBottomBegin);
+	LadderBottomCollisionSphere->OnComponentEndOverlap.AddDynamic(this, &ALadder::OnSphereOverlapFromBottomEnd);
 }
 
 void ALadder::SetupLadderMeshSize() {
@@ -100,6 +112,20 @@ void ALadder::SetupAreaCapsule() {
 	LadderCollisionCapsule->SetRelativeRotation(FRotator(LadderCollisionCapsule->GetRelativeRotation().Pitch,
 	                                                     LadderCollisionCapsule->GetRelativeRotation().Yaw,
 	                                                     LadderCollisionCapsule->GetRelativeRotation().Roll));
+}
+
+void ALadder::SetupBottomCapsule() {
+	float AreaSphereLocationZ = GetActorLocation().GetMin();
+	LadderBottomCollisionSphere->SetRelativeLocation(FVector(GetAreaSphere()->GetRelativeLocation().X,
+	                                                         GetAreaSphere()->GetRelativeLocation().Y,
+	                                                         GetAreaSphere()->GetRelativeLocation().Z));
+}
+
+void ALadder::SetupUpperCapsule() {
+	float AreaSphereLocationZ = (RungsNumber * SpaceBetweenRungs);
+	LadderUpperCollisionSphere->SetRelativeLocation(FVector(LadderCollisionCapsule->GetRelativeLocation().X,
+	                                                        LadderCollisionCapsule->GetRelativeLocation().Y,
+	                                                        AreaSphereLocationZ));
 }
 
 void ALadder::OnSphereBeginOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* OtherActor,
@@ -158,6 +184,60 @@ void ALadder::OnBoxEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* Oth
 	}
 }
 
+void ALadder::OnSphereOverlapFromTopBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                          const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromTopBegin"));
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			OtherCharacter->SetOverlappingLadderTop(true);
+			UE_LOG(LogTemp, Warning, TEXT("Begin GetOverlappingLadderTop %s"),
+			       OtherCharacter->GetOverlappingLadderTop() ? TEXT("true") : TEXT("false"));
+		}
+	}
+}
+
+void ALadder::OnSphereOverlapFromTopEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromTopEnd"));
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			OtherCharacter->SetOverlappingLadderTop(false);
+			UE_LOG(LogTemp, Warning, TEXT("End GetOverlappingLadderTop %s"),
+			       OtherCharacter->GetOverlappingLadderTop() ? TEXT("true") : TEXT("false"));
+		}
+	}
+}
+
+void ALadder::OnSphereOverlapFromBottomBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                             UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                             const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromBottomBegin"));
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			OtherCharacter->SetOverlappingLadderBottom(true);
+			UE_LOG(LogTemp, Warning, TEXT("Begin GetOverlappingLadderBottom %s"),
+			       OtherCharacter->GetOverlappingLadderBottom() ? TEXT("true") : TEXT("false"));
+		}
+	}
+}
+
+void ALadder::OnSphereOverlapFromBottomEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                           UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromBottomEnd"));
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			OtherCharacter->SetOverlappingLadderBottom(false);
+			UE_LOG(LogTemp, Warning, TEXT("End GetOverlappingLadderBottom %s"),
+			       OtherCharacter->GetOverlappingLadderBottom() ? TEXT("true") : TEXT("false"));
+		}
+	}
+}
+
 void ALadder::ReinitLadderSubComponents() {
 	RootLadderMeshComponent = RegisterNewComponent<UInstancedStaticMeshComponent>(
 		FName("RootLadderMeshComponent"), GetTransformFromRootComponent(GetRootComponent())
@@ -184,6 +264,7 @@ void ALadder::EnableClimbing() {
 		Character->SetPoseType(EPoseType::EPT_Stand);
 		//TODO: Show weapon if it was equipped
 	}
+	UE_LOG(LogTemp, Warning, TEXT("bOnSphereOverlap %s"), bOnSphereOverlap ? TEXT("true") : TEXT("false"));
 
 }
 
