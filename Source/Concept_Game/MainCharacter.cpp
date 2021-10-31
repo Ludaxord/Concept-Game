@@ -521,6 +521,8 @@ void AMainCharacter::ConstructEyesCameraHeadComponent() {
 	EyesCameraHeadComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EyesCameraHeadComponent"));
 	EyesCameraHeadComponent->SetupAttachment(GetMesh(), "head");
 	EyesCameraHeadComponent->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
+	EyesCameraHeadComponent->SetOwnerNoSee(true);
+	EyesCameraHeadComponent->bCastHiddenShadow = true;
 	// EyesCameraHeadComponent->SetupAttachment(GetCapsuleComponent());
 }
 
@@ -1008,6 +1010,8 @@ void AMainCharacter::SetActiveCameras(bool FollowCameraActive) const {
 	FollowCamera->SetActive(FollowCameraActive);
 	EyesCamera->SetActive(!FollowCameraActive);
 	RefFollowCamera->SetActive(false);
+	EyesCameraHeadComponent->SetOwnerNoSee(!FollowCameraActive);
+	EyesCameraHeadComponent->bCastHiddenShadow = !FollowCameraActive;
 }
 
 void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
