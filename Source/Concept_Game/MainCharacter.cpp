@@ -296,6 +296,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacter::InteractButtonPressed);
+	PlayerInputComponent->BindAction("DebugDropItem", IE_Pressed, this, &AMainCharacter::DebugDropItem);
 	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &AMainCharacter::InventoryButtonPressed);
 	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMainCharacter::PauseButtonPressed);
 
@@ -962,6 +963,12 @@ void AMainCharacter::InventoryButtonPressed() {
 
 void AMainCharacter::PauseButtonPressed() {
 	UE_LOG(LogTemp, Warning, TEXT("Pause Button"));
+}
+
+void AMainCharacter::DebugDropItem() {
+	DropItem(EquippedWeapon);
+	SetEquippedWeapon(nullptr);
+	UE_LOG(LogTemp, Warning, TEXT("Item Dropped"));
 }
 
 void AMainCharacter::QuickSelectButtonPressed(float Value) {

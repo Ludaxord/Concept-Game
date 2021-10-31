@@ -172,6 +172,8 @@ public:
 
 	void PauseButtonPressed();
 
+	void DebugDropItem();
+
 	void QuickSelectButtonPressed(float Value);
 	void SphereOverlapBegin(FGuid Guid);
 	void SphereOverlapEnd(FGuid Guid);
