@@ -504,6 +504,7 @@ void AMainCharacter::ConstructEyesCamera() {
 	EyesCamera->SetupAttachment(GetMesh(), "head");
 	EyesCamera->bUsePawnControlRotation = true;
 	EyesCamera->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
+	ConstructEyesCameraHeadComponent();
 }
 
 void AMainCharacter::ConstructRefFollowCamera() {
@@ -514,6 +515,13 @@ void AMainCharacter::ConstructRefFollowCamera() {
 void AMainCharacter::ConstructRefFollowCameraArrowComponent() {
 	RefFollowCameraRotation = CreateDefaultSubobject<UArrowComponent>(TEXT("RefFollowCameraRotation"));
 	RefFollowCameraRotation->SetupAttachment(GetCapsuleComponent());
+}
+
+void AMainCharacter::ConstructEyesCameraHeadComponent() {
+	EyesCameraHeadComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EyesCameraHeadComponent"));
+	EyesCameraHeadComponent->SetupAttachment(GetMesh(), "head");
+	EyesCameraHeadComponent->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
+	// EyesCameraHeadComponent->SetupAttachment(GetCapsuleComponent());
 }
 
 void AMainCharacter::FinishCrosshairMovement() {

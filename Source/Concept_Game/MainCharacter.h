@@ -144,6 +144,7 @@ public:
 	void ConstructEyesCamera();
 	void ConstructRefFollowCamera();
 	void ConstructRefFollowCameraArrowComponent();
+	void ConstructEyesCameraHeadComponent();
 	void FinishCrosshairMovement();
 
 	void PlayMontage(ECharacterMontage CharacterMontage, EWeaponType WeaponType);
@@ -221,6 +222,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class UArrowComponent* RefFollowCameraRotation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* EyesCameraHeadComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	FTransform EyesCameraTransform;
@@ -495,6 +499,7 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;
 	}
+
 	FORCEINLINE bool GetJumpFromClimb() const {
 		return bJumpFromClimb;
 	}
