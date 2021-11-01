@@ -105,6 +105,9 @@ private:
 	float MovementOffsetYaw;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float Yaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	float LastMovementOffsetYaw;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
@@ -125,6 +128,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	float RecoilWeight;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	float DistanceCurveValue;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	float DistanceCurveValueLastFrame;
+
 	float RotationCurve;
 
 	float RotationCurveValueLastFrame;
@@ -136,4 +145,6 @@ private:
 	FRotator CharacterRotation;
 
 	FRotator CharacterRotationLastFrame;
+
+	bool bCurveEqual;
 };

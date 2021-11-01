@@ -24,6 +24,8 @@ UMainAnimInstance::UMainAnimInstance(): CurrentAttackType(EAttackType::EAT_Right
                                         RecoilWeight(1.0f),
                                         LastMovementOffsetYaw(0.0f),
                                         RootYawOffset(0.0f),
+                                        Yaw(0.0f),
+                                        Pitch(0.0f),
                                         Speed(0.0f) {
 
 }
@@ -114,9 +116,9 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
 		}
 
-		// TurnInPlace();
 		AimOffsets(DeltaTime);
-		Lean(DeltaTime);
+		// TurnInPlace();
+		// Lean(DeltaTime);
 	}
 }
 
@@ -127,46 +129,76 @@ void UMainAnimInstance::NativeInitializeAnimation() {
 void UMainAnimInstance::TurnInPlace() {
 	if (MainCharacter == nullptr) return;
 
-	Pitch = MainCharacter->GetBaseAimRotation().Pitch;
+	LastMovementOffsetYaw = MovementOffsetYaw;
 
-	if (Speed > 0 || bIsInAir) {
-		RootYawOffset = 0.0f;
-		TIPCharacterYaw = MainCharacter->GetActorRotation().Yaw;
-		TIPCharacterYawLastFrame = TIPCharacterYaw;
-		RotationCurve = 0.0f;
-		RotationCurveValueLastFrame = RotationCurve;
+	float LocalPitch = 0;
+	float LocalRoll = 0;
+	float LocalYaw = 0;
+	//NOTE: Check if it is need to create new Yaw variable.
+	UKismetMathLibrary::BreakRotator(TryGetPawnOwner()->GetControlRotation(), LocalRoll, LocalPitch, LocalYaw);
+	MovementOffsetYaw = LocalYaw;
+
+	YawDelta = LastMovementOffsetYaw - MovementOffsetYaw;
+	RootYawOffset = IsAnyMontagePlaying() || bIsAccelerating
+		                ? 0.0f
+		                : UKismetMathLibrary::NormalizeAxis(YawDelta + RootYawOffset);
+
+	bool CurveEqual = UKismetMathLibrary::NearlyEqual_FloatFloat(GetCurveValue(FName("IsTurning")), 1.0f);
+	if (CurveEqual) {
+		if (bCurveEqual) {
+			DistanceCurveValue = RootYawOffset;
+			bCurveEqual = false;
+		}
+		DistanceCurveValueLastFrame = RootYawOffset;
+		DistanceCurveValue = UKismetMathLibrary::Clamp(GetCurveValue(FName("DistanceCurve")), -90, 0);
+		RootYawOffset = RootYawOffset - ((DistanceCurveValueLastFrame - DistanceCurveValue) *
+			UKismetMathLibrary::SelectFloat(-1.0f, 1.0f, RootYawOffset > 0));
 	}
 	else {
-		TIPCharacterYawLastFrame = TIPCharacterYaw;
-		TIPCharacterYaw = MainCharacter->GetActorRotation().Yaw;
-		const float TIPYawDelta = TIPCharacterYaw - TIPCharacterYawLastFrame;
-
-		RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPYawDelta);
-
-		const float Turning = GetCurveValue(TEXT("Turning"));
-		if (Turning > 0) {
-			bTurnInPlace = true;
-			RotationCurveValueLastFrame = RotationCurve;
-			RotationCurve = GetCurveValue(TEXT("Rotation"));
-			const float DeltaRotation = RotationCurve - RotationCurveValueLastFrame;
-			RootYawOffset > 0 ? RootYawOffset -= DeltaRotation : RootYawOffset += DeltaRotation;
-
-			const float ABSRootYawOffset = FMath::Abs(RootYawOffset);
-			if (ABSRootYawOffset > 90.0f) {
-				const float YawExcess = ABSRootYawOffset - 90.0f;
-				RootYawOffset > 0 ? RootYawOffset -= YawExcess : RootYawOffset += YawExcess;
-			}
-		}
-		else {
-			bTurnInPlace = false;
-		}
+		bCurveEqual = true;
 	}
 
-	RecoilWeight = bTurnInPlace
-		               ? (bReloading || bEquipping ? 1.0f : 0.0f)
-		               : (PoseType == EPoseType::EPT_Crouch
-			                  ? (bReloading || bEquipping ? 1.0f : 0.1f)
-			                  : (bAiming || bReloading || bEquipping ? 1.0f : 0.5f));
+
+	// Pitch = MainCharacter->GetBaseAimRotation().Pitch;
+	//
+	// if (Speed > 0 || bIsInAir) {
+	// 	RootYawOffset = 0.0f;
+	// 	TIPCharacterYaw = MainCharacter->GetActorRotation().Yaw;
+	// 	TIPCharacterYawLastFrame = TIPCharacterYaw;
+	// 	RotationCurve = 0.0f;
+	// 	RotationCurveValueLastFrame = RotationCurve;
+	// }
+	// else {
+	// 	TIPCharacterYawLastFrame = TIPCharacterYaw;
+	// 	TIPCharacterYaw = MainCharacter->GetActorRotation().Yaw;
+	// 	const float TIPYawDelta = TIPCharacterYaw - TIPCharacterYawLastFrame;
+	//
+	// 	RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPYawDelta);
+	//
+	// 	const float Turning = GetCurveValue(TEXT("Turning"));
+	// 	if (Turning > 0) {
+	// 		bTurnInPlace = true;
+	// 		RotationCurveValueLastFrame = RotationCurve;
+	// 		RotationCurve = GetCurveValue(TEXT("Rotation"));
+	// 		const float DeltaRotation = RotationCurve - RotationCurveValueLastFrame;
+	// 		RootYawOffset > 0 ? RootYawOffset -= DeltaRotation : RootYawOffset += DeltaRotation;
+	//
+	// 		const float ABSRootYawOffset = FMath::Abs(RootYawOffset);
+	// 		if (ABSRootYawOffset > 90.0f) {
+	// 			const float YawExcess = ABSRootYawOffset - 90.0f;
+	// 			RootYawOffset > 0 ? RootYawOffset -= YawExcess : RootYawOffset += YawExcess;
+	// 		}
+	// 	}
+	// 	else {
+	// 		bTurnInPlace = false;
+	// 	}
+	// }
+	//
+	// RecoilWeight = bTurnInPlace
+	// 	               ? (bReloading || bEquipping ? 1.0f : 0.0f)
+	// 	               : (PoseType == EPoseType::EPT_Crouch
+	// 		                  ? (bReloading || bEquipping ? 1.0f : 0.1f)
+	// 		                  : (bAiming || bReloading || bEquipping ? 1.0f : 0.5f));
 }
 
 void UMainAnimInstance::AimOffsets(float DeltaTime) {
@@ -179,7 +211,7 @@ void UMainAnimInstance::AimOffsets(float DeltaTime) {
 	float InterpRotPitch = 0.0f;
 	float InterpRotYaw = 0.0f;
 	UKismetMathLibrary::BreakRotator(InterpRot, InterpRotRoll, InterpRotPitch, InterpRotYaw);
-	RootYawOffset = UKismetMathLibrary::ClampAngle(InterpRotYaw, -90.0f, 90.0f);
+	Yaw = UKismetMathLibrary::ClampAngle(InterpRotYaw, -90.0f, 90.0f);
 	Pitch = UKismetMathLibrary::ClampAngle(InterpRotPitch, -90.0f, 90.0f);
 }
 
