@@ -114,7 +114,8 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
 		}
 
-		TurnInPlace();
+		// TurnInPlace();
+		AimOffsets(DeltaTime);
 		Lean(DeltaTime);
 	}
 }
@@ -166,6 +167,20 @@ void UMainAnimInstance::TurnInPlace() {
 		               : (PoseType == EPoseType::EPT_Crouch
 			                  ? (bReloading || bEquipping ? 1.0f : 0.1f)
 			                  : (bAiming || bReloading || bEquipping ? 1.0f : 0.5f));
+}
+
+void UMainAnimInstance::AimOffsets(float DeltaTime) {
+	FRotator PlayerControlRotation = MainCharacter->GetControlRotation();
+	FRotator PlayerActorRotation = MainCharacter->GetActorRotation();
+	FRotator DeltaRotation = PlayerControlRotation - PlayerActorRotation;
+	FRotator Rot = UKismetMathLibrary::MakeRotator(0.0f, Pitch, RootYawOffset);
+	FRotator InterpRot = UKismetMathLibrary::RInterpTo(Rot, DeltaRotation, DeltaTime, 10.0f);
+	float InterpRotRoll = 0.0f;
+	float InterpRotPitch = 0.0f;
+	float InterpRotYaw = 0.0f;
+	UKismetMathLibrary::BreakRotator(InterpRot, InterpRotRoll, InterpRotPitch, InterpRotYaw);
+	RootYawOffset = UKismetMathLibrary::ClampAngle(InterpRotYaw, -90.0f, 90.0f);
+	Pitch = UKismetMathLibrary::ClampAngle(InterpRotPitch, -90.0f, 90.0f);
 }
 
 void UMainAnimInstance::Lean(float DeltaTime) {

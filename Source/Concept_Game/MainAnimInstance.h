@@ -34,6 +34,7 @@ public:
 
 protected:
 	void TurnInPlace();
+	void AimOffsets(float DeltaTime);
 
 	void Lean(float DeltaTime);
 
