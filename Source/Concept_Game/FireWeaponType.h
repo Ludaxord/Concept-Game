@@ -21,3 +21,11 @@ enum class EFireWeaponType : uint8 {
 	EFWT_FuturaMP40 UMETA(DisplayName = "Futura MP 40"),
 	EFWT_MAX UMETA(DisplayName = "DefaultMAX")
 };
+
+UENUM(BlueprintType)
+enum class EFireWeaponAnimType : uint8 {
+	EFWAT_Pistol UMETA(DisplayName = "Pistol"),
+	EFWAT_AR UMETA(DisplayName = "AR"),
+	EFWAT_SMG UMETA(DisplayName = "SMG"),
+	EFWT_MAX UMETA(DisplayName = "DefaultMAX")
+};

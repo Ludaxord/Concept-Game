@@ -125,6 +125,7 @@ void AFireWeapon::InitializeWeaponDataTable() {
 		if (FireWeaponDataRow) {
 			UE_LOG(LogTemp, Warning, TEXT("Fire Weapon Data Row Loaded: %s"), *FireWeaponDataRow->ItemName);
 			AmmoType = FireWeaponDataRow->AmmoType;
+			FireWeaponAnimType = FireWeaponDataRow->FireWeaponAnimType;
 			SetWeaponType(FireWeaponDataRow->WeaponType);
 			Ammo = FireWeaponDataRow->WeaponAmmo;
 			MagazineCapacity = FireWeaponDataRow->MagazineCapacity;

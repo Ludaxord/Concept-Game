@@ -17,6 +17,9 @@ struct FFireWeaponDataTable : public FWeaponDataTable {
 	EFireWeaponType FireWeaponType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EFireWeaponAnimType FireWeaponAnimType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EAmmoType AmmoType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -75,6 +78,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	EFireWeaponType FireWeaponType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	EFireWeaponAnimType FireWeaponAnimType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	int32 Ammo;
