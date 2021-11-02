@@ -193,6 +193,9 @@ private:
 	UFUNCTION()
 	void UpdateClimbingTransitionTimeline(float Output);
 
+	UFUNCTION()
+	void UpdateAimTransitionTimeline(float Output);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	class UTimelineComponent* ClimbingTransitionTimeline;
 
@@ -239,6 +242,14 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
 	class UTimelineComponent* ChangeCameraTimeline;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Aim Properties", meta = (AllowPrivateAccess = "true"))
+	class UTimelineComponent* AimTransitionTimeline;
+
+	UPROPERTY(EditAnywhere, Category="Aim Properties")
+	UCurveFloat* AimTransitionFloatCurve;
+
+	FOnTimelineFloat AimUpdateFunctionFloat;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
 	class UCurveFloat* ChangeCameraFloatCurve;

@@ -82,6 +82,8 @@ AMainCharacter::AMainCharacter():
 	ConstructRefFollowCamera();
 	ConstructRefFollowCameraArrowComponent();
 
+	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
+
 	ChangeCameraTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ChangeCameraTimeline"));
 
 	ClimbingTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ClimbingTransitionTimeline"));
@@ -111,6 +113,11 @@ void AMainCharacter::BeginPlay() {
 	UpdateClimbingFunctionFloat.BindDynamic(this, &AMainCharacter::UpdateClimbingTransitionTimeline);
 	if (ClimbingTransitionFloatCurve) {
 		ClimbingTransitionTimeline->AddInterpFloat(ClimbingTransitionFloatCurve, UpdateClimbingFunctionFloat);
+	}
+
+	AimUpdateFunctionFloat.BindDynamic(this, &AMainCharacter::UpdateAimTransitionTimeline);
+	if (AimTransitionFloatCurve) {
+		AimTransitionTimeline->AddInterpFloat(AimTransitionFloatCurve, AimUpdateFunctionFloat);
 	}
 	// HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComp"));
 }
@@ -670,9 +677,11 @@ void AMainCharacter::Climbing() {
 }
 
 void AMainCharacter::Aim() {
+	AimTransitionTimeline->PlayFromStart();
 }
 
 void AMainCharacter::StopAiming() {
+	AimTransitionTimeline->ReverseFromEnd();
 }
 
 void AMainCharacter::AimingFieldOfView(float DeltaTime) {
@@ -1112,6 +1121,10 @@ void AMainCharacter::UpdateClimbingTransitionTimeline(float Output) {
 		Controller->SetControlRotation(Rotation);
 		bPlayClimbTurnAnimation = false;
 	}
+}
+
+void AMainCharacter::UpdateAimTransitionTimeline(float Output) {
+	UE_LOG(LogTemp, Warning, TEXT("Output: %f"), Output)
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {

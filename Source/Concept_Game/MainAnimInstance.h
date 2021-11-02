@@ -38,6 +38,8 @@ protected:
 
 	void Lean(float DeltaTime);
 
+	void SetFabrik();
+
 public:
 	FORCEINLINE EAttackType GetCurrentAttackType() const {
 		return CurrentAttackType;
@@ -130,6 +132,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta= (AllowPrivateAccess = "true"))
 	float LevelChangeSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	FTransform LeftHandTransform;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	float RecoilWeight;

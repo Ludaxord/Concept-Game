@@ -54,7 +54,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bCrawling = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Crawl;
 		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bRunning = MainCharacter->GetRunning();
-		UE_LOG(LogTemp, Warning, TEXT("Running: %s"), bRunning ? TEXT("true") : TEXT("false"));
+		// UE_LOG(LogTemp, Warning, TEXT("Running: %s"), bRunning ? TEXT("true") : TEXT("false"));
 		//TODO: Add FABRIK
 
 		FVector Velocity = MainCharacter->GetVelocity();
@@ -119,6 +119,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
 		AimOffsets(DeltaTime);
 		TurnInPlace();
+		SetFabrik();
 		// Lean(DeltaTime);
 	}
 }
@@ -135,7 +136,7 @@ void UMainAnimInstance::TurnInPlace() {
 	float LocalPitch = 0;
 	float LocalRoll = 0;
 	float LocalYaw = 0;
-	//NOTE: Check if it is need to create new Yaw variable.
+
 	UKismetMathLibrary::BreakRotator(TryGetPawnOwner()->GetControlRotation(), LocalRoll, LocalPitch, LocalYaw);
 	YawInPlace = LocalYaw;
 
@@ -154,10 +155,6 @@ void UMainAnimInstance::TurnInPlace() {
 		DistanceCurveValueLastFrame = RootYawOffset;
 		bExists = GetCurveValue(FName("DistanceCurve"), CValue);
 
-		UE_LOG(LogTemp, Warning, TEXT("DistanceCurve Curve Exists %s Curve Equal %s CValue %f"),
-		       bExists ? TEXT("true") : TEXT("false"),
-		       CurveEqual ? TEXT("true") : TEXT("false"), CValue);
-
 		DistanceCurveValue = UKismetMathLibrary::FClamp(CValue, -90.f, 0.f);
 		RootYawOffset = RootYawOffset - ((DistanceCurveValueLastFrame - DistanceCurveValue) *
 			UKismetMathLibrary::SelectFloat(-1.0f, 1.0f, RootYawOffset > 0));
@@ -166,50 +163,6 @@ void UMainAnimInstance::TurnInPlace() {
 		bCurveEqual = true;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("IsTurning Curve Exists %s Curve Equal %s CValue %f"),
-	       bExists ? TEXT("true") : TEXT("false"),
-	       CurveEqual ? TEXT("true") : TEXT("false"), CValue);
-
-	// Pitch = MainCharacter->GetBaseAimRotation().Pitch;
-	//
-	// if (Speed > 0 || bIsInAir) {
-	// 	RootYawOffset = 0.0f;
-	// 	TIPCharacterYaw = MainCharacter->GetActorRotation().Yaw;
-	// 	TIPCharacterYawLastFrame = TIPCharacterYaw;
-	// 	RotationCurve = 0.0f;
-	// 	RotationCurveValueLastFrame = RotationCurve;
-	// }
-	// else {
-	// 	TIPCharacterYawLastFrame = TIPCharacterYaw;
-	// 	TIPCharacterYaw = MainCharacter->GetActorRotation().Yaw;
-	// 	const float TIPYawDelta = TIPCharacterYaw - TIPCharacterYawLastFrame;
-	//
-	// 	RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPYawDelta);
-	//
-	// 	const float Turning = GetCurveValue(TEXT("Turning"));
-	// 	if (Turning > 0) {
-	// 		bTurnInPlace = true;
-	// 		RotationCurveValueLastFrame = RotationCurve;
-	// 		RotationCurve = GetCurveValue(TEXT("Rotation"));
-	// 		const float DeltaRotation = RotationCurve - RotationCurveValueLastFrame;
-	// 		RootYawOffset > 0 ? RootYawOffset -= DeltaRotation : RootYawOffset += DeltaRotation;
-	//
-	// 		const float ABSRootYawOffset = FMath::Abs(RootYawOffset);
-	// 		if (ABSRootYawOffset > 90.0f) {
-	// 			const float YawExcess = ABSRootYawOffset - 90.0f;
-	// 			RootYawOffset > 0 ? RootYawOffset -= YawExcess : RootYawOffset += YawExcess;
-	// 		}
-	// 	}
-	// 	else {
-	// 		bTurnInPlace = false;
-	// 	}
-	// }
-	//
-	// RecoilWeight = bTurnInPlace
-	// 	               ? (bReloading || bEquipping ? 1.0f : 0.0f)
-	// 	               : (PoseType == EPoseType::EPT_Crouch
-	// 		                  ? (bReloading || bEquipping ? 1.0f : 0.1f)
-	// 		                  : (bAiming || bReloading || bEquipping ? 1.0f : 0.5f));
 }
 
 void UMainAnimInstance::AimOffsets(float DeltaTime) {
@@ -237,4 +190,19 @@ void UMainAnimInstance::Lean(float DeltaTime) {
 	const float Interp = FMath::FInterpTo(YawDelta, Target, DeltaTime, 6.0f);
 
 	YawDelta = FMath::Clamp(Interp, -90.0f, 90.0f);
+}
+
+void UMainAnimInstance::SetFabrik() {
+	if (MainCharacter == nullptr) return;
+
+	if (MainCharacter->GetEquippedWeapon()) {
+		USkeletalMeshComponent* WeaponMeshComponent = MainCharacter->GetEquippedWeapon()->GetItemMesh();
+		USkeletalMeshComponent* PlayerMeshComponent = MainCharacter->GetMesh();
+		FTransform LeftHandPosition = WeaponMeshComponent->GetSocketTransform("LeftHandSocket");
+		FVector OutPosition;
+		FRotator OutRotation;
+		PlayerMeshComponent->TransformToBoneSpace(FName("hand_r"), LeftHandPosition.GetLocation(),
+		                                          LeftHandPosition.GetRotation().Rotator(), OutPosition, OutRotation);
+		LeftHandTransform = FTransform(OutRotation, OutPosition);
+	}
 }
