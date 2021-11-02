@@ -105,24 +105,24 @@ private:
 	float MovementOffsetYaw;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
-	float Yaw;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	float LastMovementOffsetYaw;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	float Yaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
 	float RootYawOffset;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
 	float YawInPlace;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
 	float LastYawInPlace;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
 	float YawDelta;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Turn In Place", meta= (AllowPrivateAccess = "true"))
 	float Pitch;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta= (AllowPrivateAccess = "true"))
