@@ -54,6 +54,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bCrawling = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Crawl;
 		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bRunning = MainCharacter->GetRunning();
+		UE_LOG(LogTemp, Warning, TEXT("Running: %s"), bRunning ? TEXT("true") : TEXT("false"));
 		//TODO: Add FABRIK
 
 		FVector Velocity = MainCharacter->GetVelocity();
