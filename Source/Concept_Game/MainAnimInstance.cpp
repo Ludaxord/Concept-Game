@@ -117,7 +117,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		}
 
 		AimOffsets(DeltaTime);
-		// TurnInPlace();
+		TurnInPlace();
 		// Lean(DeltaTime);
 	}
 }
@@ -129,28 +129,35 @@ void UMainAnimInstance::NativeInitializeAnimation() {
 void UMainAnimInstance::TurnInPlace() {
 	if (MainCharacter == nullptr) return;
 
-	LastMovementOffsetYaw = MovementOffsetYaw;
+	LastYawInPlace = YawInPlace;
 
 	float LocalPitch = 0;
 	float LocalRoll = 0;
 	float LocalYaw = 0;
 	//NOTE: Check if it is need to create new Yaw variable.
 	UKismetMathLibrary::BreakRotator(TryGetPawnOwner()->GetControlRotation(), LocalRoll, LocalPitch, LocalYaw);
-	MovementOffsetYaw = LocalYaw;
+	YawInPlace = LocalYaw;
 
-	YawDelta = LastMovementOffsetYaw - MovementOffsetYaw;
+	YawDelta = LastYawInPlace - YawInPlace;
 	RootYawOffset = IsAnyMontagePlaying() || bIsAccelerating
 		                ? 0.0f
 		                : UKismetMathLibrary::NormalizeAxis(YawDelta + RootYawOffset);
-
-	bool CurveEqual = UKismetMathLibrary::NearlyEqual_FloatFloat(GetCurveValue(FName("IsTurning")), 1.0f);
+	float CValue = 0.0f;
+	bool bExists = GetCurveValue(FName("IsTurning"), CValue);
+	bool CurveEqual = UKismetMathLibrary::NearlyEqual_FloatFloat(CValue, 1.0f, 0.001f);
 	if (CurveEqual) {
 		if (bCurveEqual) {
 			DistanceCurveValue = RootYawOffset;
 			bCurveEqual = false;
 		}
 		DistanceCurveValueLastFrame = RootYawOffset;
-		DistanceCurveValue = UKismetMathLibrary::Clamp(GetCurveValue(FName("DistanceCurve")), -90, 0);
+		bExists = GetCurveValue(FName("DistanceCurve"), CValue);
+
+		UE_LOG(LogTemp, Warning, TEXT("DistanceCurve Curve Exists %s Curve Equal %s CValue %f"),
+		       bExists ? TEXT("true") : TEXT("false"),
+		       CurveEqual ? TEXT("true") : TEXT("false"), CValue);
+
+		DistanceCurveValue = UKismetMathLibrary::FClamp(CValue, -90.f, 0.f);
 		RootYawOffset = RootYawOffset - ((DistanceCurveValueLastFrame - DistanceCurveValue) *
 			UKismetMathLibrary::SelectFloat(-1.0f, 1.0f, RootYawOffset > 0));
 	}
@@ -158,6 +165,9 @@ void UMainAnimInstance::TurnInPlace() {
 		bCurveEqual = true;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("IsTurning Curve Exists %s Curve Equal %s CValue %f"),
+	       bExists ? TEXT("true") : TEXT("false"),
+	       CurveEqual ? TEXT("true") : TEXT("false"), CValue);
 
 	// Pitch = MainCharacter->GetBaseAimRotation().Pitch;
 	//
