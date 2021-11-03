@@ -23,8 +23,10 @@ public:
 private:
 	FVector SwayIdle();
 	FVector SwayAim();
+	void UpdateCameraProperties();
 
 private:
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Properties", meta= (AllowPrivateAccess = "true"))
 	class AMainCharacter* MainCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera Properties", meta= (AllowPrivateAccess = "true"))

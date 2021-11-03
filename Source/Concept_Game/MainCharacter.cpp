@@ -336,6 +336,7 @@ void AMainCharacter::SetDefaultCameras() {
 	}
 
 	if (EyesCamera) {
+		CameraState = ECameraState::ECS_EyesCamera;
 		EyesCamera->SetActive(true);
 	}
 
@@ -1026,7 +1027,13 @@ FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName So
 	return CameraTransform;
 }
 
-void AMainCharacter::SetActiveCameras(bool FollowCameraActive) const {
+void AMainCharacter::SetActiveCameras(bool FollowCameraActive)  {
+	if (FollowCameraActive) {
+		CameraState = ECameraState::ECS_EyesCamera;
+	}
+	else {
+		CameraState = ECameraState::ECS_FollowCamera;
+	}
 	FollowCamera->SetActive(FollowCameraActive);
 	EyesCamera->SetActive(!FollowCameraActive);
 	RefFollowCamera->SetActive(false);

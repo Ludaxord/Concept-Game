@@ -17,6 +17,52 @@ void AMainCharacterCameraManager::DoUpdateCamera(float DeltaTime) {
 
 void AMainCharacterCameraManager::UpdateCamera(float DeltaTime) {
 	Super::UpdateCamera(DeltaTime);
+}
+
+void AMainCharacterCameraManager::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+
+	if (MainCharacter) {
+		if (MainCharacter->GetCameraState() == ECameraState::ECS_EyesCamera) {
+					SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset, FVector(0.0f), DeltaSeconds, 8.0f);
+		SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset,
+		                                           MainCharacter->GetAimingButtonPressed()
+			                                           ? SwayAim()
+			                                           : SwayIdle(),
+		                                           DeltaSeconds,
+		                                           5.0f);
+		}
+
+	}
+}
+
+FVector AMainCharacterCameraManager::SwayIdle() {
+	FVector SwayIdleVector;
+	if (MainCharacter) {
+		SwayIdleVector = SwayOffset + FVector(
+			0.0f,
+			UKismetMathLibrary::FClamp(MainCharacter->GetTurnValue() * SwayYawIntensity, -20.0f, 20.0f),
+			UKismetMathLibrary::FClamp(MainCharacter->GetLookValue() * SwayPitchIntensity, -10.0f, 10.0f)
+		);
+	}
+
+	return SwayIdleVector;
+}
+
+FVector AMainCharacterCameraManager::SwayAim() {
+	FVector SwayAimVector;
+	if (MainCharacter) {
+		SwayAimVector = SwayOffset + FVector(
+			0.0f,
+			UKismetMathLibrary::FClamp(MainCharacter->GetTurnValue() * SwayYawIntensity, -0.7f, 0.7f),
+			UKismetMathLibrary::FClamp(MainCharacter->GetLookValue() * SwayPitchIntensity * -1.0f, -0.7f, 0.7f)
+		);
+	}
+
+	return SwayAimVector;
+}
+
+void AMainCharacterCameraManager::UpdateCameraProperties() {
 	MainCharacter = Cast<AMainCharacter>(ViewTarget.GetTargetPawn());
 
 	if (!MainCharacter) return;
@@ -46,44 +92,4 @@ void AMainCharacterCameraManager::UpdateCamera(float DeltaTime) {
 		);
 
 	FinalCameraFOV = UKismetMathLibrary::Lerp(90.0f, 80.0f, MainCharacter->GetCurrentAimValue());
-}
-
-void AMainCharacterCameraManager::Tick(float DeltaSeconds) {
-	Super::Tick(DeltaSeconds);
-
-	if (MainCharacter) {
-		SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset, FVector(0.0f), DeltaSeconds, 8.0f);
-		SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset,
-		                                           MainCharacter->GetAimingButtonPressed()
-			                                           ? SwayAim()
-			                                           : SwayIdle(),
-		                                           DeltaSeconds,
-		                                           5.0f);
-	}
-}
-
-FVector AMainCharacterCameraManager::SwayIdle() {
-	FVector SwayIdleVector;
-	if (MainCharacter) {
-		SwayIdleVector = SwayOffset + FVector(
-			0.0f,
-			UKismetMathLibrary::FClamp(MainCharacter->GetTurnValue() * SwayYawIntensity, -20.0f, 20.0f),
-			UKismetMathLibrary::FClamp(MainCharacter->GetLookValue() * SwayPitchIntensity, -10.0f, 10.0f)
-		);
-	}
-
-	return SwayIdleVector;
-}
-
-FVector AMainCharacterCameraManager::SwayAim() {
-	FVector SwayAimVector;
-	if (MainCharacter) {
-		SwayAimVector = SwayOffset + FVector(
-			0.0f,
-			UKismetMathLibrary::FClamp(MainCharacter->GetTurnValue() * SwayYawIntensity, -0.7f, 0.7f),
-			UKismetMathLibrary::FClamp(MainCharacter->GetLookValue() * SwayPitchIntensity * -1.0f, -0.7f, 0.7f)
-		);
-	}
-
-	return SwayAimVector;
 }

@@ -39,6 +39,13 @@ enum class ECharacterMontage: uint8 {
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+UENUM(BlueprintType)
+enum class ECameraState: uint8 {
+	ECS_EyesCamera UMETA(DisplayName = "Eyes Camera"),
+	ECS_FollowCamera UMETA(DisplayName = "Follow Camera"),
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 USTRUCT(BlueprintType)
 struct FInterpLocation {
 	GENERATED_BODY()
@@ -181,7 +188,7 @@ public:
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
 	                              bool AttackComponent = false, USkeletalMeshComponent* Parent = nullptr) const;
-	void SetActiveCameras(bool FollowCameraActive) const;
+	void SetActiveCameras(bool FollowCameraActive);
 
 	UFUNCTION()
 	void OnCameraTimelineFloatUpdate(float Output);
@@ -239,6 +246,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	bool bEnableCameraTransition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	ECameraState CameraState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
 	class UTimelineComponent* ChangeCameraTimeline;
@@ -531,6 +541,10 @@ public:
 
 	FORCEINLINE float GetCurrentAimValue() const {
 		return CurrentAimValue;
+	}
+
+	FORCEINLINE ECameraState GetCameraState() const {
+		return CameraState;
 	}
 
 	FORCEINLINE UCameraComponent* GetFollowCamera() const {
