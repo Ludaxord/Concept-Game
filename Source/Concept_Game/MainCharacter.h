@@ -451,6 +451,15 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
 	float CrawlingCapsuleHalfHeight;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	float MoveRightValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	float TurnValue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	float LookValue;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Items", meta = (AllowPrivateAccess = "true"))
 	TArray<AItem*> Inventory;
 
@@ -483,6 +492,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Aim Properties", meta = (AllowPrivateAccess = "true"))
+	float CurrentAimValue;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* DefaultCrosshairsMiddle;
@@ -517,6 +529,10 @@ public:
 		return bJumpFromClimb;
 	}
 
+	FORCEINLINE float GetCurrentAimValue() const {
+		return CurrentAimValue;
+	}
+
 	FORCEINLINE UCameraComponent* GetFollowCamera() const {
 		return FollowCamera;
 	}
@@ -533,8 +549,24 @@ public:
 		return bAiming;
 	}
 
+	FORCEINLINE bool GetAimingButtonPressed() const {
+		return bAimingButtonPressed;
+	}
+
 	FORCEINLINE EPoseType GetCurrentPoseType() const {
 		return PoseType;
+	}
+
+	FORCEINLINE float GetMoveRightValue() const {
+		return MoveRightValue;
+	}
+
+	FORCEINLINE float GetTurnValue() const {
+		return TurnValue;
+	}
+
+	FORCEINLINE float GetLookValue() const {
+		return LookValue;
 	}
 
 	UFUNCTION(BlueprintCallable)

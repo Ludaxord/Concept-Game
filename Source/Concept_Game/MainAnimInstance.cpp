@@ -119,7 +119,8 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
 		AimOffsets(DeltaTime);
 		TurnInPlace();
-		SetFabrik();
+		SnapLeftHandToWeapon();
+		WeaponSway(DeltaTime);
 		// Lean(DeltaTime);
 	}
 }
@@ -192,7 +193,7 @@ void UMainAnimInstance::Lean(float DeltaTime) {
 	YawDelta = FMath::Clamp(Interp, -90.0f, 90.0f);
 }
 
-void UMainAnimInstance::SetFabrik() {
+void UMainAnimInstance::SnapLeftHandToWeapon() {
 	if (MainCharacter == nullptr) return;
 
 	if (MainCharacter->GetEquippedWeapon()) {
@@ -204,5 +205,23 @@ void UMainAnimInstance::SetFabrik() {
 		PlayerMeshComponent->TransformToBoneSpace(FName("hand_r"), LeftHandPosition.GetLocation(),
 		                                          LeftHandPosition.GetRotation().Rotator(), OutPosition, OutRotation);
 		LeftHandTransform = FTransform(OutRotation, OutPosition);
+	}
+}
+
+void UMainAnimInstance::WeaponSway(float DeltaTime) {
+
+	if (MainCharacter == nullptr) return;
+
+	if (MainCharacter->GetEquippedWeapon()) {
+		FRotator RightHandRot;
+		if (MainCharacter->GetAimingButtonPressed()) {
+			RightHandRot = FRotator(0.0f);
+		}
+		else {
+			float WeaponPitch = FMath::Clamp(MainCharacter->GetMoveRightValue() * 10.0f, -7.0f, 7.0f);
+			RightHandRot = FRotator(WeaponPitch, 0.0f, 0.0f);
+
+		}
+		RightHandRotation = UKismetMathLibrary::RInterpTo(RightHandRotation, RightHandRot, DeltaTime, 6.0f);
 	}
 }

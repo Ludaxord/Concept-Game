@@ -38,7 +38,9 @@ protected:
 
 	void Lean(float DeltaTime);
 
-	void SetFabrik();
+	void SnapLeftHandToWeapon();
+
+	void WeaponSway(float DeltaTime);
 
 public:
 	FORCEINLINE EAttackType GetCurrentAttackType() const {
@@ -135,6 +137,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	FTransform LeftHandTransform;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	FRotator RightHandRotation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	float RecoilWeight;

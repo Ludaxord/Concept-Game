@@ -118,6 +118,7 @@ void AMainCharacter::BeginPlay() {
 	AimUpdateFunctionFloat.BindDynamic(this, &AMainCharacter::UpdateAimTransitionTimeline);
 	if (AimTransitionFloatCurve) {
 		AimTransitionTimeline->AddInterpFloat(AimTransitionFloatCurve, AimUpdateFunctionFloat);
+		UE_LOG(LogTemp, Warning, TEXT("Setting Aim Transition"));
 	}
 	// HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComp"));
 }
@@ -371,6 +372,7 @@ void AMainCharacter::MoveForward(float Value) {
 }
 
 void AMainCharacter::MoveRight(float Value) {
+	MoveRightValue = Value;
 	if (Controller != nullptr && (Value != 0.0f)) {
 		if (PoseType != EPoseType::EPT_Climb) {
 			const FRotator Rotation = Controller->GetControlRotation();
@@ -414,6 +416,7 @@ void AMainCharacter::ClimbRightActionReleased() {
 
 void AMainCharacter::TurnRate(float Rate) {
 	// if (PoseType != EPoseType::EPT_Climb)
+	TurnValue = Rate;
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -426,6 +429,7 @@ void AMainCharacter::Turn(float Value) {
 
 void AMainCharacter::LookUpAtRate(float Rate) {
 	// if (PoseType != EPoseType::EPT_Climb)
+	LookValue = Rate;
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -1124,6 +1128,7 @@ void AMainCharacter::UpdateClimbingTransitionTimeline(float Output) {
 }
 
 void AMainCharacter::UpdateAimTransitionTimeline(float Output) {
+	CurrentAimValue = Output;
 	UE_LOG(LogTemp, Warning, TEXT("Output: %f"), Output)
 }
 
