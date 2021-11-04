@@ -19,6 +19,8 @@ public:
 
 	virtual void DrawHUD() override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Character", meta =(AllowPrivateAccess = "true"))
 	class ACharacter* Character;

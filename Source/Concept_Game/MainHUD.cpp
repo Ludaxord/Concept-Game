@@ -20,3 +20,9 @@ void AMainHUD::BeginPlay() {
 void AMainHUD::DrawHUD() {
 	Super::DrawHUD();
 }
+
+void AMainHUD::Tick(float DeltaSeconds) {
+	Super::Tick(DeltaSeconds);
+
+}
+
