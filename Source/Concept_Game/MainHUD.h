@@ -26,12 +26,6 @@ private:
 	class ACharacter* Character;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
-	FVector2D ScreenCenter;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
-	FVector2D CrossHairLocation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
 	float CrossHairSpreadMultiplier;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
@@ -42,6 +36,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
 	float CrossHairHalfWidth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	FVector2D ScreenCenter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	FVector2D CrossHairLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
 	FVector2D CrossHairBaseCenter;
@@ -60,4 +60,33 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Crosshairs", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* CrosshairsTop;
+
+public:
+	float GetCrossHairSpreadMultiplier() {
+		return CrossHairSpreadMultiplier;
+	};
+
+	float GetCrossHairSpreadMax() {
+		return CrossHairSpreadMax;
+	};
+
+	float GetCrossHairHalfHeight() {
+		return CrossHairHalfHeight;
+	};
+
+	float GetCrossHairHalfWidth() {
+		return CrossHairHalfWidth;
+	};
+
+	FVector2D GetScreenCenter() {
+		return ScreenCenter;
+	};
+
+	FVector2D GetCrossHairLocation() {
+		return CrossHairLocation;
+	};
+
+	FVector2D GetCrossHairBaseCenter() {
+		return CrossHairBaseCenter;
+	};
 };

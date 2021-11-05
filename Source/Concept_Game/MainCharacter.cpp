@@ -4,6 +4,7 @@
 #include "MainCharacter.h"
 
 #include "DrawDebugHelpers.h"
+#include "MainHUD.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
@@ -557,6 +558,15 @@ void AMainCharacter::UseWeapon() {
 }
 
 void AMainCharacter::AimingButtonPressed() {
+	AMainHUD* HUD = Cast<AMainHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
+	CrossHairSpreadMulti = HUD->GetCrossHairSpreadMultiplier();
+	CrossHairSpreadMax = HUD->GetCrossHairSpreadMax();
+	CrossHairHalfHeight = HUD->GetCrossHairHalfHeight();
+	CrossHairHalfWidth = HUD->GetCrossHairHalfWidth();
+	ScreenCenter = HUD->GetScreenCenter();
+	CrossHairLocation = HUD->GetCrossHairLocation();
+	CrossHairBaseCenter = HUD->GetCrossHairBaseCenter();
+
 	bAimingButtonPressed = true;
 	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping && CombatState !=
 		ECombatState::ECS_Stunned)
@@ -1027,7 +1037,7 @@ FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName So
 	return CameraTransform;
 }
 
-void AMainCharacter::SetActiveCameras(bool FollowCameraActive)  {
+void AMainCharacter::SetActiveCameras(bool FollowCameraActive) {
 	if (FollowCameraActive) {
 		CameraState = ECameraState::ECS_EyesCamera;
 	}

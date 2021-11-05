@@ -250,6 +250,27 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	ECameraState CameraState;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	float CrossHairSpreadMulti;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	float CrossHairSpreadMax;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	float CrossHairHalfHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	float CrossHairHalfWidth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	FVector2D ScreenCenter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	FVector2D CrossHairLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
+	FVector2D CrossHairBaseCenter;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
 	class UTimelineComponent* ChangeCameraTimeline;
 
@@ -336,6 +357,7 @@ private:
 
 	bool bUseWeaponButtonPressed;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAimingButtonPressed;
 
 	bool bShouldAttack;
