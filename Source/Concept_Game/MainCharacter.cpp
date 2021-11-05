@@ -121,7 +121,6 @@ void AMainCharacter::BeginPlay() {
 		AimTransitionTimeline->AddInterpFloat(AimTransitionFloatCurve, AimUpdateFunctionFloat);
 		UE_LOG(LogTemp, Warning, TEXT("Setting Aim Transition"));
 	}
-	// HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("HandSceneComp"));
 }
 
 void AMainCharacter::SetLookUpRates(float DeltaTime) {
@@ -154,11 +153,6 @@ void AMainCharacter::CalculateCrosshairSpread(float DeltaTime) {
 }
 
 void AMainCharacter::TraceForItems() {
-
-	// UE_LOG(LogClass, Log, TEXT("=================="));
-	// for (int32 b = 0; b < OverlappedItemIDs.Num(); b++) {
-	// 	UE_LOG(LogClass, Log, TEXT("OverlappedItemIDs: %s"), *OverlappedItemIDs[b].ToString());
-	// }
 
 	// if (bShouldTraceForItems) {
 	if (OverlappedItemIDs.Num() > 0) {
@@ -237,6 +231,7 @@ bool AMainCharacter::TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& Out
 	FVector CrosshairWorldPosition;
 	FVector CrosshairWorldDirection;
 
+
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
 		UGameplayStatics::GetPlayerController(this, 0),
 		CrosshairLocation,
@@ -300,6 +295,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("ClimbRightAction", IE_Released, this, &AMainCharacter::ClimbRightActionReleased);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Cover", IE_Pressed, this, &AMainCharacter::Cover);
 	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &AMainCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
 	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
@@ -440,6 +436,29 @@ void AMainCharacter::LookUp(float Value) {
 		float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
 		AddControllerPitchInput(Value * LookUpScaleFactor);
 	}
+}
+
+void AMainCharacter::Cover() {
+	UE_LOG(LogTemp, Warning, TEXT("Cover"));
+}
+
+void AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
+	FVector ActorLoc = GetActorLocation();
+	FVector RotFVector = GetActorRotation().Quaternion().GetForwardVector();
+	FVector MultipliedFVector = {RotFVector.X * 70.0f, RotFVector.Y * 70.0f, RotFVector.Z};
+	TArray<AActor*> IgnoredActors;
+	FHitResult OutHitResult;
+	UKismetSystemLibrary::SphereTraceSingle(this,
+	                                        ActorLoc,
+	                                        ActorLoc + MultipliedFVector,
+	                                        0.0f,
+	                                        ETraceTypeQuery::TraceTypeQuery1,
+	                                        false,
+	                                        IgnoredActors,
+	                                        EDrawDebugTrace::Type::ForOneFrame,
+	                                        OutHitResult,
+	                                        true
+	);
 }
 
 bool AMainCharacter::IsWeaponUsable() {

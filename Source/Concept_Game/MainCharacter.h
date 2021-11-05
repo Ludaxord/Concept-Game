@@ -94,6 +94,10 @@ public:
 	void LookUpAtRate(float Rate);
 	void LookUp(float Value);
 
+	void Cover();
+
+	void GetForwardTracers(FVector& OutStart, FVector& OutEnd);
+
 	bool IsWeaponUsable();
 	void PlayCharacterSound(ECharacterSoundState CharacterSoundState);
 	void PerformAttack();
@@ -217,6 +221,8 @@ private:
 	bool bRotationYaw;
 
 	bool bFPSCounter;
+
+	float InitialRightHandYaw;
 
 	TArray<FGuid> OverlappedItemIDs;
 
