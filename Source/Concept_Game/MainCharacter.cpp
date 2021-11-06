@@ -4,6 +4,7 @@
 #include "MainCharacter.h"
 
 #include "DrawDebugHelpers.h"
+#include "MainAnimInstance.h"
 #include "MainHUD.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
@@ -46,6 +47,7 @@ AMainCharacter::AMainCharacter():
 	ZoomInterpolationSpeed(20.0f),
 	BaseGroundFriction(2.0f),
 	bShouldAttack(false),
+	bCoverActive(false),
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
 	CameraCurrentFOV(0.0f),
@@ -266,6 +268,8 @@ void AMainCharacter::Tick(float DeltaTime) {
 	TraceForItems();
 	TraceForLadder();
 	InterpCapsuleHalfHeight(DeltaTime);
+
+	CoverSystem();
 }
 
 // Called to bind functionality to input
@@ -439,25 +443,66 @@ void AMainCharacter::LookUp(float Value) {
 }
 
 void AMainCharacter::Cover() {
-	UE_LOG(LogTemp, Warning, TEXT("Cover"));
+	UE_LOG(LogTemp, Warning, TEXT("In Cover: %s"), bCoverActive ? TEXT("true") : TEXT("false"));
+	if (bCanCover) {
+		if (!bCoverActive) {
+			FVector OutStart;
+			FVector OutEnd;
+			GetForwardTracers(OutStart, OutEnd);
+
+			TArray<AActor*> IgnoredActors;
+			FHitResult OutHitResult;
+			bool bTraced = UKismetSystemLibrary::SphereTraceSingle(this,
+			                                                       OutStart,
+			                                                       OutEnd,
+			                                                       20.0f,
+			                                                       ETraceTypeQuery::TraceTypeQuery1,
+			                                                       false,
+			                                                       IgnoredActors,
+			                                                       EDrawDebugTrace::Type::ForOneFrame,
+			                                                       OutHitResult,
+			                                                       true
+			);
+			if (bTraced) {
+				UE_LOG(LogTemp, Warning, TEXT("bTraced: %s, OutStart: %s, OutEnd: %s"),
+				       bTraced ? TEXT("true") : TEXT("false"), *OutStart.ToString(), *OutEnd.ToString());
+				if (OutHitResult.bBlockingHit) {
+					CoverLocation = OutHitResult.Location;
+					CoverNormal = OutHitResult.Normal;
+					EnterCover();
+					//TODO: Add anim montage And rotation Root Yaw.
+				}
+			}
+		}
+		else {
+			if (bInCover) {
+				ExitCover();
+				//TODO: Add anim montage And rotation Root Yaw.
+			}
+		}
+		bCoverActive = !bCoverActive;
+	}
+
 }
 
 void AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
-	FVector ActorLoc = GetActorLocation();
 	FVector RotFVector = GetActorRotation().Quaternion().GetForwardVector();
 	FVector MultipliedFVector = {RotFVector.X * 70.0f, RotFVector.Y * 70.0f, RotFVector.Z};
+	OutStart = GetActorLocation();
+	OutEnd = OutStart + MultipliedFVector;
+
 	TArray<AActor*> IgnoredActors;
 	FHitResult OutHitResult;
-	UKismetSystemLibrary::SphereTraceSingle(this,
-	                                        ActorLoc,
-	                                        ActorLoc + MultipliedFVector,
-	                                        0.0f,
-	                                        ETraceTypeQuery::TraceTypeQuery1,
-	                                        false,
-	                                        IgnoredActors,
-	                                        EDrawDebugTrace::Type::ForOneFrame,
-	                                        OutHitResult,
-	                                        true
+	bCanCover = UKismetSystemLibrary::SphereTraceSingle(this,
+	                                                    OutStart,
+	                                                    OutEnd,
+	                                                    20.0f,
+	                                                    ETraceTypeQuery::TraceTypeQuery1,
+	                                                    false,
+	                                                    IgnoredActors,
+	                                                    EDrawDebugTrace::Type::ForOneFrame,
+	                                                    OutHitResult,
+	                                                    true
 	);
 }
 
@@ -1032,6 +1077,38 @@ void AMainCharacter::SphereOverlapEnd(FGuid Guid) {
 	UE_LOG(LogTemp, Warning, TEXT("SphereOverlapEnd %s"), *Guid.ToString());
 }
 
+void AMainCharacter::CoverSystem() {
+	FVector OutStart;
+	FVector OutEnd;
+	GetForwardTracers(OutStart, OutEnd);
+}
+
+void AMainCharacter::EnterCover() {
+	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(true);
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	bInCover = true;
+	FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CoverNormal);
+	FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw - 180.0f, CoverRot.Roll);
+
+	FLatentActionInfo Info = FLatentActionInfo();
+	Info.CallbackTarget = this;
+	UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
+	                                      MoveToLocation(),
+	                                      TargetRot,
+	                                      false,
+	                                      false,
+	                                      0.2f,
+	                                      false,
+	                                      EMoveComponentAction::Type::Move,
+	                                      Info);
+}
+
+void AMainCharacter::ExitCover() {
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(false);
+	bInCover = false;
+}
+
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,
                                               USkeletalMeshComponent* Parent) const {
 	Camera->DetachFromComponent(
@@ -1166,6 +1243,17 @@ void AMainCharacter::UpdateClimbingTransitionTimeline(float Output) {
 void AMainCharacter::UpdateAimTransitionTimeline(float Output) {
 	CurrentAimValue = Output;
 	UE_LOG(LogTemp, Warning, TEXT("Output: %f"), Output)
+}
+
+FVector AMainCharacter::MoveToLocation() const {
+	FVector MultipliedCoverNormal = CoverNormal * FVector(22.0f, 22.0f, 0.0f);
+	float MultipliedCoverNormalX = MultipliedCoverNormal.X + CoverLocation.X;
+	float MultipliedCoverNormalY = MultipliedCoverNormal.Y + CoverLocation.Y;
+	return FVector(MultipliedCoverNormalX, MultipliedCoverNormalY, CoverLocation.Z);
+}
+
+void AMainCharacter::CanCover_Implementation(bool bCanCover) {
+
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {

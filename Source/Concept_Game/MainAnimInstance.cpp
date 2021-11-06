@@ -225,3 +225,7 @@ void UMainAnimInstance::WeaponSway(float DeltaTime) {
 		RightHandRotation = UKismetMathLibrary::RInterpTo(RightHandRotation, RightHandRot, DeltaTime, 6.0f);
 	}
 }
+
+void UMainAnimInstance::CanCover_Implementation(bool bCanCover) {
+
+}

@@ -6,6 +6,7 @@
 #include "AmmoType.h"
 #include "CyberWeapon.h"
 #include "FireWeapon.h"
+#include "MainCharacterInterface.h"
 #include "MeleeWeapon.h"
 #include "PoseType.h"
 #include "ThrowableWeapon.h"
@@ -58,7 +59,7 @@ struct FInterpLocation {
 
 
 UCLASS()
-class CONCEPT_GAME_API AMainCharacter : public ACharacter {
+class CONCEPT_GAME_API AMainCharacter : public ACharacter, public IMainCharacterInterface {
 	GENERATED_BODY()
 
 public:
@@ -189,6 +190,12 @@ public:
 	void SphereOverlapBegin(FGuid Guid);
 	void SphereOverlapEnd(FGuid Guid);
 
+	void CoverSystem();
+
+	void EnterCover();
+
+	void ExitCover();
+
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
 	                              bool AttackComponent = false, USkeletalMeshComponent* Parent = nullptr) const;
@@ -207,13 +214,10 @@ private:
 	UFUNCTION()
 	void UpdateAimTransitionTimeline(float Output);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
-	class UTimelineComponent* ClimbingTransitionTimeline;
+	UFUNCTION()
+	FVector MoveToLocation() const;
 
-	FOnTimelineFloat UpdateClimbingFunctionFloat;
-
-	UPROPERTY(EditAnywhere, Category="Camera")
-	UCurveFloat* ClimbingTransitionFloatCurve;
+	virtual void CanCover_Implementation(bool bCanCover) override;
 
 	//TODO: Create inventory class to store informations like guids...
 	TArray<FGuid> ItemGuids;
@@ -225,6 +229,28 @@ private:
 	float InitialRightHandYaw;
 
 	TArray<FGuid> OverlappedItemIDs;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	FVector CoverLocation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	FVector CoverNormal;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bInCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoverActive;
+
+	bool bCanCover;
+
+	UPROPERTY(EditAnywhere, Category="Camera")
+	UCurveFloat* ClimbingTransitionFloatCurve;
+
+	FOnTimelineFloat UpdateClimbingFunctionFloat;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	class UTimelineComponent* ClimbingTransitionTimeline;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Camera", meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;

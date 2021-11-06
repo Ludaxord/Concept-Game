@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "AttackType.h"
+#include "MainCharacterInterface.h"
 #include "PoseType.h"
 #include "MainAnimInstance.generated.h"
 
@@ -22,7 +23,7 @@ enum class EActionState: uint8 {
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UMainAnimInstance : public UAnimInstance {
+class CONCEPT_GAME_API UMainAnimInstance : public UAnimInstance, public IMainCharacterInterface {
 	GENERATED_BODY()
 public:
 	UMainAnimInstance();
@@ -31,6 +32,8 @@ public:
 	void UpdateAnimationProperties(float DeltaTime);
 
 	virtual void NativeInitializeAnimation() override;
+
+	virtual void CanCover_Implementation(bool bCanCover) override;
 
 protected:
 	void TurnInPlace();
@@ -101,7 +104,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crouching", meta = (AllowPrivateAccess = "true"))
 	bool bCrouching;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Crawling", meta = (AllowPrivateAccess = "true"))
 	bool bCrawling;
 
