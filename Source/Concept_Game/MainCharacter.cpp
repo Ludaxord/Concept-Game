@@ -482,6 +482,9 @@ void AMainCharacter::Cover() {
 		}
 		bCoverActive = !bCoverActive;
 	}
+	else {
+		bCoverActive = false;
+	}
 
 }
 
@@ -1081,12 +1084,19 @@ void AMainCharacter::CoverSystem() {
 	FVector OutStart;
 	FVector OutEnd;
 	GetForwardTracers(OutStart, OutEnd);
+	UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s"), bCanCover ? TEXT("true"): TEXT("false"),
+	       bCoverActive? TEXT("true"): TEXT("false"))
+	if (!bCanCover) {
+		bCoverActive = false;
+		SetActiveCameras(false);
+	}
 }
 
 void AMainCharacter::EnterCover() {
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(true);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	bInCover = true;
+	SetActiveCameras(true);
 	FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CoverNormal);
 	FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw - 180.0f, CoverRot.Roll);
 
@@ -1107,6 +1117,7 @@ void AMainCharacter::ExitCover() {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(false);
 	bInCover = false;
+	SetActiveCameras(false);
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,
@@ -1252,7 +1263,7 @@ FVector AMainCharacter::MoveToLocation() const {
 	return FVector(MultipliedCoverNormalX, MultipliedCoverNormalY, CoverLocation.Z);
 }
 
-void AMainCharacter::CanCover_Implementation(bool bCanCover) {
+void AMainCharacter::CanCover_Implementation(bool bCover) {
 
 }
 

@@ -217,7 +217,7 @@ private:
 	UFUNCTION()
 	FVector MoveToLocation() const;
 
-	virtual void CanCover_Implementation(bool bCanCover) override;
+	virtual void CanCover_Implementation(bool bCover) override;
 
 	//TODO: Create inventory class to store informations like guids...
 	TArray<FGuid> ItemGuids;
