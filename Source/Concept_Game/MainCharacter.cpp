@@ -470,7 +470,10 @@ void AMainCharacter::Cover() {
 				CoverNormal = OutHitResult.Normal;
 				EnterCover();
 				//TODO: Add anim montage And rotation Root Yaw.
-				PlayMontage(ECharacterMontage::ECM_TakeCover, EquippedWeapon->GetWeaponType());
+				PlayMontage(ECharacterMontage::ECM_TakeCover,
+				            EquippedWeapon != nullptr
+					            ? EquippedWeapon->GetWeaponType()
+					            : EWeaponType::EWT_Any);
 				bCoveringActive = true;
 			}
 		}
