@@ -443,69 +443,76 @@ void AMainCharacter::LookUp(float Value) {
 }
 
 void AMainCharacter::Cover() {
-	UE_LOG(LogTemp, Warning, TEXT("In Cover: %s"), bCoverActive ? TEXT("true") : TEXT("false"));
-	if (bCanCover) {
-		if (!bCoverActive) {
-			FVector OutStart;
-			FVector OutEnd;
-			GetForwardTracers(OutStart, OutEnd);
+	// if (bCanCover) {
+	if (!bCoverActive) {
+		FVector OutStart;
+		FVector OutEnd;
+		GetForwardTracers(OutStart, OutEnd);
 
-			TArray<AActor*> IgnoredActors;
-			FHitResult OutHitResult;
-			bool bTraced = UKismetSystemLibrary::SphereTraceSingle(this,
-			                                                       OutStart,
-			                                                       OutEnd,
-			                                                       20.0f,
-			                                                       ETraceTypeQuery::TraceTypeQuery1,
-			                                                       false,
-			                                                       IgnoredActors,
-			                                                       EDrawDebugTrace::Type::ForOneFrame,
-			                                                       OutHitResult,
-			                                                       true
-			);
-			if (bTraced) {
-				UE_LOG(LogTemp, Warning, TEXT("bTraced: %s, OutStart: %s, OutEnd: %s"),
-				       bTraced ? TEXT("true") : TEXT("false"), *OutStart.ToString(), *OutEnd.ToString());
-				if (OutHitResult.bBlockingHit) {
-					CoverLocation = OutHitResult.Location;
-					CoverNormal = OutHitResult.Normal;
-					EnterCover();
-					//TODO: Add anim montage And rotation Root Yaw.
-				}
+		TArray<AActor*> IgnoredActors;
+		FHitResult OutHitResult;
+		bool bTraced = UKismetSystemLibrary::SphereTraceSingle(this,
+		                                                       OutStart,
+		                                                       OutEnd,
+		                                                       80.0f,
+		                                                       ETraceTypeQuery::TraceTypeQuery1,
+		                                                       false,
+		                                                       IgnoredActors,
+		                                                       EDrawDebugTrace::Type::ForOneFrame,
+		                                                       OutHitResult,
+		                                                       true
+		);
+		if (bTraced) {
+			UE_LOG(LogTemp, Warning, TEXT("bTraced: %s, OutStart: %s, OutEnd: %s"),
+			       bTraced ? TEXT("true") : TEXT("false"), *OutStart.ToString(), *OutEnd.ToString());
+			if (OutHitResult.bBlockingHit) {
+				CoverLocation = OutHitResult.Location;
+				CoverNormal = OutHitResult.Normal;
+				EnterCover();
+				//TODO: Add anim montage And rotation Root Yaw.
+				PlayMontage(ECharacterMontage::ECM_TakeCover, EquippedWeapon->GetWeaponType());
+				bCoveringActive = true;
 			}
 		}
-		else {
-			if (bInCover) {
-				ExitCover();
-				//TODO: Add anim montage And rotation Root Yaw.
-			}   
-		}
-		bCoverActive = !bCoverActive;
 	}
 	else {
-		bCoverActive = false;
+		if (bInCover) {
+			ExitCover();
+			bCoveringActive = false;
+			// PlayMontage(ECharacterMontage::ECM_ExitCover);
+			//TODO: Add anim montage And rotation Root Yaw.
+		}
 	}
-
+	bCoverActive = !bCoverActive;
+	// }
+	// else {
+	// 	bCoverActive = false;
+	// }
+	UE_LOG(LogTemp, Warning, TEXT("CoverActive: %s InCover: %s CanCover: %s"),
+	       bCoverActive ? TEXT("true") : TEXT("false"),
+	       bInCover ? TEXT("true") : TEXT("false"),
+	       bCanCover ? TEXT("true") : TEXT("false"));
 }
 
-void AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
+bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
 	FVector RotFVector = GetActorRotation().Quaternion().GetForwardVector();
-	FVector MultipliedFVector = {RotFVector.X * 120.0f, RotFVector.Y * 120.0f, RotFVector.Z};
+	FVector MultipliedFVector = {RotFVector.X * 80.0f, RotFVector.Y * 80.0f, RotFVector.Z};
+	float CoverRadius = 20.0f;
 	OutStart = GetActorLocation();
 	OutEnd = OutStart + MultipliedFVector;
 
 	TArray<AActor*> IgnoredActors;
 	FHitResult OutHitResult;
-	bCanCover = UKismetSystemLibrary::SphereTraceSingle(this,
-	                                                    OutStart,
-	                                                    OutEnd,
-	                                                    20.0f,
-	                                                    ETraceTypeQuery::TraceTypeQuery1,
-	                                                    false,
-	                                                    IgnoredActors,
-	                                                    EDrawDebugTrace::Type::ForOneFrame,
-	                                                    OutHitResult,
-	                                                    true
+	return UKismetSystemLibrary::SphereTraceSingle(this,
+	                                               OutStart,
+	                                               OutEnd,
+	                                               CoverRadius,
+	                                               ETraceTypeQuery::TraceTypeQuery1,
+	                                               false,
+	                                               IgnoredActors,
+	                                               EDrawDebugTrace::Type::ForOneFrame,
+	                                               OutHitResult,
+	                                               true
 	);
 }
 
@@ -544,6 +551,7 @@ void AMainCharacter::StartAttackTimer(EWeaponType WeaponType) {
 void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
 	const TEnumAsByte<EWeaponType> WeaponEnum = WeaponType;
 	FString EnumAsString = UEnum::GetValueAsString(WeaponEnum.GetValue());
+	UE_LOG(LogTemp, Warning, TEXT("Weapon Type: %s"), *EnumAsString);
 
 	switch (WeaponType) {
 	case EWeaponType::EWT_Melee: {
@@ -562,6 +570,10 @@ void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
 	case EWeaponType::EWT_Force: {
 	}
 	break;
+	case EWeaponType::EWT_Any: break;
+	case EWeaponType::EWT_Throwable: break;
+	case EWeaponType::EWT_MAX: break;
+	default: ;
 	}
 }
 
@@ -831,6 +843,7 @@ void AMainCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
 }
 
 void AMainCharacter::ChangeDebugCamera() {
+
 	if (!GetCharacterMovement()->IsFalling()) {
 		DisableInput(UGameplayStatics::GetPlayerController(this, 0));
 		EyesCameraTransform = SetCameraTransform(EyesCamera, "head", true, GetMesh());
@@ -905,8 +918,8 @@ void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType
 	FString WeaponEnumAsString = UEnum::GetValueAsString(WeaponEnum.GetValue());
 	const TEnumAsByte<ECharacterMontage> MontageEnum = CharacterMontage;
 	FString MontageEnumAsString = UEnum::GetValueAsString(MontageEnum.GetValue());
-	// UE_LOG(LogTemp, Warning, TEXT("Montage Weapon Type: %s, Character Montage: %s"), *WeaponEnumAsString,
-	//        *MontageEnumAsString);
+	UE_LOG(LogTemp, Warning, TEXT("Montage Weapon Type: %s, Character Montage: %s"), *WeaponEnumAsString,
+	       *MontageEnumAsString);
 	if (AnimInstance) {
 		switch (CharacterMontage) {
 		case ECharacterMontage::ECM_UseWeapon: {
@@ -933,11 +946,29 @@ void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType
 				}
 			}
 			break;
+			case EWeaponType::EWT_Any: break;
+			case EWeaponType::EWT_Throwable: break;
+			case EWeaponType::EWT_MAX: break;
+			default: ;
 			}
 		}
 		break;
 		case ECharacterMontage::ECM_ReloadWeapon: break;
 		case ECharacterMontage::ECM_FixWeapon: break;
+		case ECharacterMontage::ECM_TakeCover: {
+			//TODO: Fix to weapon types
+			const FName SectionName = WeaponType == EWeaponType::EWT_Fire
+				                          ? FName("StartCover")
+				                          : FName("StartCoverTwoHandWeapon");
+			if (AnimInstance && TakeCoverMontage) {
+				AnimInstance->Montage_Play(TakeCoverMontage);
+				AnimInstance->Montage_JumpToSection(SectionName);
+			}
+		}
+		break;
+		case ECharacterMontage::ECM_ExitCover: {
+		}
+		break;
 		case ECharacterMontage::ECS_MAX: break;
 		default: ;
 		}
@@ -1083,15 +1114,22 @@ void AMainCharacter::SphereOverlapEnd(FGuid Guid) {
 void AMainCharacter::CoverSystem() {
 	FVector OutStart;
 	FVector OutEnd;
-	GetForwardTracers(OutStart, OutEnd);
-	UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s InCover: %s"), bCanCover ? TEXT("true"): TEXT("false"),
-	       bCoverActive? TEXT("true"): TEXT("false"), bInCover? TEXT("true"): TEXT("false"))
-	if (!bCanCover) {
-		bCoverActive = false;
-		bInCover = false;
-		if (PoseType != EPoseType::EPT_Climb)
-			SetActiveCameras(false);
+	bool bCovering = GetForwardTracers(OutStart, OutEnd);
+	if (bInCover && bCoverActive && bCoveringActive) {
+		bCanCover = bCovering;
+		if (!bCanCover) {
+			if (PoseType != EPoseType::EPT_Climb) {
+				bCoverActive = false;
+				bCoveringActive = false;
+				bInCover = false;
+				SetActiveCameras(false);
+			}
+		}
+
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s InCover: %s"), bCanCover ? TEXT("true"): TEXT("false"),
+	       bCoverActive ? TEXT("true"): TEXT("false"), bInCover ? TEXT("true"): TEXT("false"))
 }
 
 void AMainCharacter::EnterCover() {
@@ -1099,6 +1137,7 @@ void AMainCharacter::EnterCover() {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	bInCover = true;
 	SetActiveCameras(true);
+
 	FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CoverNormal);
 	FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw - 180.0f, CoverRot.Roll);
 

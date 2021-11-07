@@ -36,6 +36,8 @@ UENUM(BlueprintType)
 enum class ECharacterMontage: uint8 {
 	ECM_UseWeapon UMETA(DisplayName = "Use Weapon Montage"),
 	ECM_ReloadWeapon UMETA(DisplayName = "Reload Weapon Montage"),
+	ECM_TakeCover UMETA(DisplayName = "Take Cover Montage"),
+	ECM_ExitCover UMETA(DisplayName = "Exit Cover Montage"),
 	ECM_FixWeapon UMETA(DisplayName = "Fix Weapon Montage"),
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -98,7 +100,7 @@ public:
 	//TODO: Move systems like covers, using weapons, using environment and jumping/parkour to different class to make it usable for AI Character and Player Character
 	void Cover();
 
-	void GetForwardTracers(FVector& OutStart, FVector& OutEnd);
+	bool GetForwardTracers(FVector& OutStart, FVector& OutEnd);
 
 	bool IsWeaponUsable();
 	void PlayCharacterSound(ECharacterSoundState CharacterSoundState);
@@ -241,7 +243,13 @@ private:
 	bool bInCover;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoveringActive;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCoverActive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover", meta = (AllowPrivateAccess = "true"))
+	class UAnimMontage* TakeCoverMontage;
 
 	bool bCanCover;
 
@@ -418,6 +426,8 @@ private:
 	float CameraZoomedFOV;
 
 	float CameraCurrentFOV;
+
+	bool bDebugFollowCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	class AWeapon* EquippedWeapon;

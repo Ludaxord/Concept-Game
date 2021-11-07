@@ -42,7 +42,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bItemEquipped = MainCharacter->GetEquippedWeapon() != nullptr;
 		bJumpFromClimb = MainCharacter->GetJumpFromClimb();
 		bInCover = MainCharacter->GetInCover();
-		UE_LOG(LogTemp, Warning, TEXT("Animation In Cover %s"), bInCover ? TEXT("true") : TEXT("false"));
+		// UE_LOG(LogTemp, Warning, TEXT("Animation In Cover %s"), bInCover ? TEXT("true") : TEXT("false"));
 
 		const TEnumAsByte<EPoseType> PoseEnum = MainCharacter->GetCurrentPoseType();
 		FString PoseEnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
