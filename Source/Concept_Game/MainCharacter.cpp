@@ -490,7 +490,7 @@ void AMainCharacter::Cover() {
 
 void AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
 	FVector RotFVector = GetActorRotation().Quaternion().GetForwardVector();
-	FVector MultipliedFVector = {RotFVector.X * 70.0f, RotFVector.Y * 70.0f, RotFVector.Z};
+	FVector MultipliedFVector = {RotFVector.X * 120.0f, RotFVector.Y * 120.0f, RotFVector.Z};
 	OutStart = GetActorLocation();
 	OutEnd = OutStart + MultipliedFVector;
 
@@ -1088,7 +1088,8 @@ void AMainCharacter::CoverSystem() {
 	       bCoverActive? TEXT("true"): TEXT("false"))
 	if (!bCanCover) {
 		bCoverActive = false;
-		SetActiveCameras(false);
+		if (PoseType != EPoseType::EPT_Climb)
+			SetActiveCameras(false);
 	}
 }
 
