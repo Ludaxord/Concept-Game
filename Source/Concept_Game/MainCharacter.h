@@ -95,6 +95,7 @@ public:
 	void LookUpAtRate(float Rate);
 	void LookUp(float Value);
 
+	//TODO: Move systems like covers, using weapons, using environment and jumping/parkour to different class to make it usable for AI Character and Player Character
 	void Cover();
 
 	void GetForwardTracers(FVector& OutStart, FVector& OutEnd);
