@@ -618,6 +618,10 @@ public:
 		return bAiming;
 	}
 
+	FORCEINLINE bool GetInCover() const {
+		return bInCover;
+	}
+
 	FORCEINLINE bool GetAimingButtonPressed() const {
 		return bAimingButtonPressed;
 	}

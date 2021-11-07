@@ -478,7 +478,7 @@ void AMainCharacter::Cover() {
 			if (bInCover) {
 				ExitCover();
 				//TODO: Add anim montage And rotation Root Yaw.
-			}
+			}   
 		}
 		bCoverActive = !bCoverActive;
 	}
@@ -1084,10 +1084,11 @@ void AMainCharacter::CoverSystem() {
 	FVector OutStart;
 	FVector OutEnd;
 	GetForwardTracers(OutStart, OutEnd);
-	UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s"), bCanCover ? TEXT("true"): TEXT("false"),
-	       bCoverActive? TEXT("true"): TEXT("false"))
+	UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s InCover: %s"), bCanCover ? TEXT("true"): TEXT("false"),
+	       bCoverActive? TEXT("true"): TEXT("false"), bInCover? TEXT("true"): TEXT("false"))
 	if (!bCanCover) {
 		bCoverActive = false;
+		bInCover = false;
 		if (PoseType != EPoseType::EPT_Climb)
 			SetActiveCameras(false);
 	}
