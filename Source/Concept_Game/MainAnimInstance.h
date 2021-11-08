@@ -34,6 +34,7 @@ public:
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void CanCover_Implementation(bool bCanCover) override;
+	virtual void MoveLeftRight_Implementation(float Direction) override;
 
 protected:
 	void TurnInPlace();
@@ -98,6 +99,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
 	bool bInCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoveringActive;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Turn In Place", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;

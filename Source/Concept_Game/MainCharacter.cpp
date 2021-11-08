@@ -84,6 +84,7 @@ AMainCharacter::AMainCharacter():
 	ConstructEyesCamera();
 	ConstructRefFollowCamera();
 	ConstructRefFollowCameraArrowComponent();
+	ConstructCoverArrows();
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -123,6 +124,8 @@ void AMainCharacter::BeginPlay() {
 		AimTransitionTimeline->AddInterpFloat(AimTransitionFloatCurve, AimUpdateFunctionFloat);
 		UE_LOG(LogTemp, Warning, TEXT("Setting Aim Transition"));
 	}
+
+	InCoverMoving();
 }
 
 void AMainCharacter::SetLookUpRates(float DeltaTime) {
@@ -419,27 +422,32 @@ void AMainCharacter::ClimbRightActionReleased() {
 void AMainCharacter::TurnRate(float Rate) {
 	// if (PoseType != EPoseType::EPT_Climb)
 	TurnValue = Rate;
+	// if (bInCover || bCoverActive || bCoveringActive) return;
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMainCharacter::Turn(float Value) {
-	if (PoseType != EPoseType::EPT_Climb) {
-		float TurnScaleFactor = bAiming ? MouseAimingTurnRate : MouseHipTurnRate;
-		AddControllerYawInput(Value * TurnScaleFactor);
-	}
+	if (PoseType == EPoseType::EPT_Climb) return;
+	if (bInCover || bCoverActive || bCoveringActive) return;
+	float TurnScaleFactor = bAiming ? MouseAimingTurnRate : MouseHipTurnRate;
+	AddControllerYawInput(Value * TurnScaleFactor);
 }
 
 void AMainCharacter::LookUpAtRate(float Rate) {
 	// if (PoseType != EPoseType::EPT_Climb)
 	LookValue = Rate;
+	// if (bInCover || bCoverActive || bCoveringActive) return;
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AMainCharacter::LookUp(float Value) {
-	if (PoseType != EPoseType::EPT_Climb) {
-		float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
-		AddControllerPitchInput(Value * LookUpScaleFactor);
-	}
+	if (PoseType == EPoseType::EPT_Climb) return;
+	UE_LOG(LogTemp, Warning, TEXT("bInCover: %s"), bInCover ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("bCoverActive: %s"), bCoverActive ? TEXT("true") : TEXT("false"));
+	UE_LOG(LogTemp, Warning, TEXT("bCoveringActive: %s"), bCoveringActive ? TEXT("true") : TEXT("false"));
+	if (bInCover || bCoverActive || bCoveringActive) return;
+	float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
+	AddControllerPitchInput(Value * LookUpScaleFactor);
 }
 
 void AMainCharacter::Cover() {
@@ -611,6 +619,13 @@ void AMainCharacter::ConstructRefFollowCamera() {
 void AMainCharacter::ConstructRefFollowCameraArrowComponent() {
 	RefFollowCameraRotation = CreateDefaultSubobject<UArrowComponent>(TEXT("RefFollowCameraRotation"));
 	RefFollowCameraRotation->SetupAttachment(GetCapsuleComponent());
+}
+
+void AMainCharacter::ConstructCoverArrows() {
+	CoverLeftMovement = CreateDefaultSubobject<UArrowComponent>(TEXT("CoverLeftMovement"));
+	CoverLeftMovement->SetupAttachment(GetCapsuleComponent());
+	CoverRightMovement = CreateDefaultSubobject<UArrowComponent>(TEXT("CoverRightMovement"));
+	CoverRightMovement->SetupAttachment(GetCapsuleComponent());
 }
 
 void AMainCharacter::ConstructEyesCameraHeadComponent() {
@@ -964,6 +979,7 @@ void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType
 				                          ? FName("StartCover")
 				                          : FName("StartCoverTwoHandWeapon");
 			if (AnimInstance && TakeCoverMontage) {
+				UE_LOG(LogTemp, Warning, TEXT("Section Name Montage Play: %s"), *SectionName.ToString())
 				AnimInstance->Montage_Play(TakeCoverMontage);
 				AnimInstance->Montage_JumpToSection(SectionName);
 			}
@@ -1125,21 +1141,25 @@ void AMainCharacter::CoverSystem() {
 				bCoverActive = false;
 				bCoveringActive = false;
 				bInCover = false;
-				SetActiveCameras(false);
+				SwitchCamera(false);
 			}
 		}
-
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s InCover: %s"), bCanCover ? TEXT("true"): TEXT("false"),
-	       bCoverActive ? TEXT("true"): TEXT("false"), bInCover ? TEXT("true"): TEXT("false"))
+	if (bInCover) {
+		LeftTracer();
+		RightTracer();
+	}
+
+	// UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s InCover: %s"), bCanCover ? TEXT("true"): TEXT("false"),
+	//        bCoverActive ? TEXT("true"): TEXT("false"), bInCover ? TEXT("true"): TEXT("false"))
 }
 
 void AMainCharacter::EnterCover() {
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(true);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	bInCover = true;
-	SetActiveCameras(true);
+	SwitchCamera(true);
 
 	FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CoverNormal);
 	FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw - 180.0f, CoverRot.Roll);
@@ -1161,7 +1181,81 @@ void AMainCharacter::ExitCover() {
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(false);
 	bInCover = false;
-	SetActiveCameras(false);
+	SwitchCamera(false);
+}
+
+void AMainCharacter::LeftTracer() {
+	bMoveLeft = CoverTracer(CoverLeftMovement);
+}
+
+void AMainCharacter::RightTracer() {
+	bMoveRight = CoverTracer(CoverRightMovement);
+}
+
+bool AMainCharacter::CoverTracer(UArrowComponent* AComponent) {
+	TArray<AActor*> IgnoredActors;
+	FHitResult OutHitResult;
+	return UKismetSystemLibrary::CapsuleTraceSingle(this,
+	                                                AComponent->GetComponentLocation(),
+	                                                AComponent->GetComponentLocation(),
+	                                                20.0f,
+	                                                60.0f,
+	                                                ETraceTypeQuery::TraceTypeQuery1,
+	                                                false,
+	                                                IgnoredActors,
+	                                                EDrawDebugTrace::ForOneFrame,
+	                                                OutHitResult,
+	                                                true
+	);
+}
+
+void AMainCharacter::InCoverMoving() {
+	if (bInCover) {
+		UE_LOG(LogTemp, Warning, TEXT("Move Right Value: %f"), MoveRightValue)
+		MoveLeftRight_Implementation(MoveRightValue);
+		MoveInCover();
+	}
+	else {
+		bMoveRight = false;
+		bMoveLeft = false;
+	}
+}
+
+void AMainCharacter::MoveInCover() {
+	FVector Loc = GetActorLocation();
+
+	if (bMoveRight) {
+		if (MoveRightValue > 0) {
+			FVector Vec = UKismetMathLibrary::VInterpTo(Loc,
+			                                            (GetActorRotation().Quaternion().GetRightVector() * 20.0f) +
+			                                            Loc,
+			                                            GetWorld()->GetDeltaSeconds(),
+			                                            5.0f
+			);
+			SetActorLocation(Vec);
+			bMoveRight = true;
+			bMoveLeft = false;
+		}
+	}
+
+	if (bMoveLeft) {
+		if (MoveRightValue < 0) {
+			FVector Vec = UKismetMathLibrary::VInterpTo(Loc,
+			                                            (GetActorRotation().Quaternion().GetRightVector() * -20.0f) +
+			                                            Loc,
+			                                            GetWorld()->GetDeltaSeconds(),
+			                                            5.0f
+			);
+			SetActorLocation(Vec);
+			bMoveRight = true;
+			bMoveLeft = false;
+		}
+	}
+
+	if (MoveRightValue == 0.0f) {
+		bMoveRight = false;
+		bMoveLeft = false;
+	}
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,
@@ -1309,6 +1403,9 @@ FVector AMainCharacter::MoveToLocation() const {
 
 void AMainCharacter::CanCover_Implementation(bool bCover) {
 
+}
+
+void AMainCharacter::MoveLeftRight_Implementation(float Direction) {
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {

@@ -159,6 +159,7 @@ public:
 	void ConstructEyesCamera();
 	void ConstructRefFollowCamera();
 	void ConstructRefFollowCameraArrowComponent();
+	void ConstructCoverArrows();
 	void ConstructEyesCameraHeadComponent();
 	void FinishCrosshairMovement();
 
@@ -199,6 +200,16 @@ public:
 
 	void ExitCover();
 
+	void LeftTracer();
+
+	void RightTracer();
+
+	bool CoverTracer(UArrowComponent* AComponent);
+
+	void InCoverMoving();
+
+	void MoveInCover();
+
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
 	                              bool AttackComponent = false, USkeletalMeshComponent* Parent = nullptr) const;
@@ -221,6 +232,7 @@ private:
 	FVector MoveToLocation() const;
 
 	virtual void CanCover_Implementation(bool bCover) override;
+	virtual void MoveLeftRight_Implementation(float Direction) override;
 
 	//TODO: Create inventory class to store informations like guids...
 	TArray<FGuid> ItemGuids;
@@ -250,6 +262,18 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover", meta = (AllowPrivateAccess = "true"))
 	class UAnimMontage* TakeCoverMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* CoverLeftMovement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* CoverRightMovement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveLeft;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveRight;
 
 	bool bCanCover;
 
@@ -630,6 +654,10 @@ public:
 
 	FORCEINLINE bool GetInCover() const {
 		return bInCover;
+	}
+
+	FORCEINLINE bool GetCoveringActive() const {
+		return bCoveringActive;
 	}
 
 	FORCEINLINE bool GetAimingButtonPressed() const {

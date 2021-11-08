@@ -22,4 +22,7 @@ class CONCEPT_GAME_API IMainCharacterInterface {
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void CanCover(bool bCanCover);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void MoveLeftRight(float Direction);
 };
