@@ -101,6 +101,7 @@ public:
 	void Cover();
 
 	bool GetForwardTracers(FVector& OutStart, FVector& OutEnd);
+	bool GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd);
 
 	bool IsWeaponUsable();
 	void PlayCharacterSound(ECharacterSoundState CharacterSoundState);
@@ -286,6 +287,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMoveRightLastFrame;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveForwardLeft;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveForwardRight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveForwardDisable;
 
 	bool bCanCover;
 

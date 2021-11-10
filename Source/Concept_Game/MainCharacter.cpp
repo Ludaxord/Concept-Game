@@ -275,11 +275,6 @@ void AMainCharacter::Tick(float DeltaTime) {
 	InterpCapsuleHalfHeight(DeltaTime);
 
 	CoverSystem();
-
-	if (bInCover) {
-		UE_LOG(LogTemp, Warning, TEXT("MoveRight: %s, MoveLeft: %s"), bMoveRight ? TEXT("true"): TEXT("false"),
-		       bMoveLeft ? TEXT("true") : TEXT("false"));
-	}
 }
 
 // Called to bind functionality to input
@@ -358,30 +353,44 @@ void AMainCharacter::SetDefaultCameras() {
 
 void AMainCharacter::MoveForward(float Value) {
 	if (Controller != nullptr && (Value != 0.0f)) {
-		if (bInCover) {
-			UE_LOG(LogTemp, Warning, TEXT("TurnValue: %f, LookValue: %f"), TurnVal, LookUpVal, CoverLeftMovement)
-		}
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation = {0, Rotation.Yaw, 0};
 		FVector Direction;
-		if (PoseType == EPoseType::EPT_Climb) {
-			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
-			if (Value < 0.0f) {
-				if (GetOverlappingLadderBottom() && bTouchingFloor) {
-					PoseType = EPoseType::EPT_Stand;
-					GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
-					SwitchCamera(false);
+		if (!bInCover || ! bCoverActive || !bCoveringActive) {
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation = {0, Rotation.Yaw, 0};
+			if (PoseType == EPoseType::EPT_Climb) {
+				Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
+				if (Value < 0.0f) {
+					if (GetOverlappingLadderBottom() && bTouchingFloor) {
+						PoseType = EPoseType::EPT_Stand;
+						GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+						SwitchCamera(false);
+					}
+				}
+				else if (Value > 0.0f) {
+					if (GetOverlappingLadderTop()) {
+
+					}
 				}
 			}
-			else if (Value > 0.0f) {
-				if (GetOverlappingLadderTop()) {
-
-				}
+			else {
+				Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 			}
 		}
 		else {
-			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+			if (!bMoveForwardDisable) {
+				if (bMoveForwardLeft) {
+					const FRotator Rotation = Controller->GetControlRotation();
+					const FRotator YawRotation = {0, Rotation.Yaw, 0};
+					Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+				}
+				else if (bMoveForwardRight) {
+					const FRotator Rotation = Controller->GetControlRotation();
+					const FRotator YawRotation = {0, Rotation.Yaw, 0};
+					Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+				}
+			}
 		}
+
 		AddMovementInput(Direction, Value);
 	}
 }
@@ -434,9 +443,7 @@ void AMainCharacter::ClimbRightActionReleased() {
 }
 
 void AMainCharacter::TurnRate(float Rate) {
-	// if (PoseType != EPoseType::EPT_Climb)
 	TurnValue = Rate;
-	// if (bInCover || bCoverActive || bCoveringActive) return;
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -449,9 +456,7 @@ void AMainCharacter::Turn(float Value) {
 }
 
 void AMainCharacter::LookUpAtRate(float Rate) {
-	// if (PoseType != EPoseType::EPT_Climb)
 	LookValue = Rate;
-	// if (bInCover || bCoverActive || bCoveringActive) return;
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
@@ -538,6 +543,39 @@ bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
 	                                               OutHitResult,
 	                                               true
 	);
+}
+
+bool AMainCharacter::GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd) {
+	OutStart = GetActorLocation();
+
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport) {
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+
+	FVector2D CrosshairLocation = {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
+	CrosshairLocation.Y -= 50.0f;
+
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
+
+	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+		UGameplayStatics::GetPlayerController(this, 0),
+		CrosshairLocation,
+		CrosshairWorldPosition,
+		CrosshairWorldDirection
+	);
+
+	if (bScreenToWorld) {
+			OutEnd = OutStart + CrosshairWorldDirection * 50000.0f;
+	FHitResult OutHitResult;
+	bool Trace = GetWorld()->LineTraceSingleByChannel(OutHitResult, OutStart, OutEnd, ECC_Visibility);
+	DrawDebugLine(GetWorld(), OutStart, OutEnd, FColor::Red, false, 50.0f);
+	return Trace;
+
+	}
+
+	return  false;
 }
 
 bool AMainCharacter::IsWeaponUsable() {
@@ -1163,10 +1201,11 @@ void AMainCharacter::CoverSystem() {
 	if (bInCover) {
 		LeftTracer();
 		RightTracer();
-	}
 
-	// UE_LOG(LogTemp, Warning, TEXT("CanCover: %s CoverActive: %s InCover: %s"), bCanCover ? TEXT("true"): TEXT("false"),
-	//        bCoverActive ? TEXT("true"): TEXT("false"), bInCover ? TEXT("true"): TEXT("false"))
+		FVector OutMoveTraceStart;
+		FVector OutMoveTraceEnd;
+		GetInCoverMouseTracer(OutMoveTraceStart, OutMoveTraceEnd);
+	}
 }
 
 void AMainCharacter::EnterCover() {
