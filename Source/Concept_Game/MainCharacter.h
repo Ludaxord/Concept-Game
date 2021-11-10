@@ -210,6 +210,9 @@ public:
 
 	void MoveInCover();
 
+	UFUNCTION()
+	void CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
 	                              bool AttackComponent = false, USkeletalMeshComponent* Parent = nullptr) const;
@@ -253,6 +256,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bInCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoverMontageEnded;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCoveringActive;
@@ -654,6 +660,18 @@ public:
 
 	FORCEINLINE bool GetInCover() const {
 		return bInCover;
+	}
+
+	FORCEINLINE bool GetIsMoveLeft() const {
+		return bMoveLeft;
+	}
+
+	FORCEINLINE bool GetCoverMontageEnded() const {
+		return bCoverMontageEnded;
+	}
+
+	FORCEINLINE bool GetIsMoveRight() const {
+		return bMoveRight;
 	}
 
 	FORCEINLINE bool GetCoveringActive() const {

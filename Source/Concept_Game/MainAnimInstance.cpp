@@ -42,6 +42,9 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bItemEquipped = MainCharacter->GetEquippedWeapon() != nullptr;
 		bJumpFromClimb = MainCharacter->GetJumpFromClimb();
 		bInCover = MainCharacter->GetInCover();
+		bIsMoveLeft = MainCharacter->GetIsMoveLeft();
+		bIsMoveRight = MainCharacter->GetIsMoveRight();
+		bCoverMontageEnded = MainCharacter->GetCoverMontageEnded();
 		bCoveringActive = MainCharacter->GetCoveringActive();
 		// UE_LOG(LogTemp, Warning, TEXT("Animation In Cover %s"), bInCover ? TEXT("true") : TEXT("false"));
 
@@ -228,9 +231,11 @@ void UMainAnimInstance::WeaponSway(float DeltaTime) {
 }
 
 void UMainAnimInstance::CanCover_Implementation(bool bCanCover) {
-
+	bInCover = bCanCover;
 }
 
 void UMainAnimInstance::MoveLeftRight_Implementation(float Direction) {
-
+	UE_LOG(LogTemp, Warning, TEXT("Direction Anim Inst %f"), Direction)
+	bIsMoveRight = Direction > 0;
+	bIsMoveLeft = Direction < 0;
 }

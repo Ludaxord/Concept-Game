@@ -125,6 +125,8 @@ void AMainCharacter::BeginPlay() {
 		UE_LOG(LogTemp, Warning, TEXT("Setting Aim Transition"));
 	}
 
+	GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &AMainCharacter::CoverMontageEnded);
+
 	InCoverMoving();
 }
 
@@ -442,9 +444,6 @@ void AMainCharacter::LookUpAtRate(float Rate) {
 
 void AMainCharacter::LookUp(float Value) {
 	if (PoseType == EPoseType::EPT_Climb) return;
-	UE_LOG(LogTemp, Warning, TEXT("bInCover: %s"), bInCover ? TEXT("true") : TEXT("false"));
-	UE_LOG(LogTemp, Warning, TEXT("bCoverActive: %s"), bCoverActive ? TEXT("true") : TEXT("false"));
-	UE_LOG(LogTemp, Warning, TEXT("bCoveringActive: %s"), bCoveringActive ? TEXT("true") : TEXT("false"));
 	if (bInCover || bCoverActive || bCoveringActive) return;
 	float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
 	AddControllerPitchInput(Value * LookUpScaleFactor);
@@ -980,6 +979,7 @@ void AMainCharacter::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType
 				                          : FName("StartCoverTwoHandWeapon");
 			if (AnimInstance && TakeCoverMontage) {
 				UE_LOG(LogTemp, Warning, TEXT("Section Name Montage Play: %s"), *SectionName.ToString())
+				bCoverMontageEnded = false;
 				AnimInstance->Montage_Play(TakeCoverMontage);
 				AnimInstance->Montage_JumpToSection(SectionName);
 			}
@@ -1162,7 +1162,9 @@ void AMainCharacter::EnterCover() {
 	SwitchCamera(true);
 
 	FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CoverNormal);
-	FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw - 180.0f, CoverRot.Roll);
+	FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
+	                              - 180.0f
+	                              , CoverRot.Roll);
 
 	FLatentActionInfo Info = FLatentActionInfo();
 	Info.CallbackTarget = this;
@@ -1256,6 +1258,11 @@ void AMainCharacter::MoveInCover() {
 		bMoveRight = false;
 		bMoveLeft = false;
 	}
+}
+
+void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
+	UE_LOG(LogTemp, Warning, TEXT("Montage End Name: %s"), *Montage->GetName());
+	bCoverMontageEnded = true;
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,
@@ -1406,6 +1413,7 @@ void AMainCharacter::CanCover_Implementation(bool bCover) {
 }
 
 void AMainCharacter::MoveLeftRight_Implementation(float Direction) {
+	UE_LOG(LogTemp, Warning, TEXT("Direction Char %f"), Direction)
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {
