@@ -379,14 +379,10 @@ void AMainCharacter::MoveForward(float Value) {
 		else {
 			if (!bMoveForwardDisable) {
 				if (bMoveForwardLeft) {
-					const FRotator Rotation = Controller->GetControlRotation();
-					const FRotator YawRotation = {0, Rotation.Yaw, 0};
-					Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+					//TODO: Fix
 				}
 				else if (bMoveForwardRight) {
-					const FRotator Rotation = Controller->GetControlRotation();
-					const FRotator YawRotation = {0, Rotation.Yaw, 0};
-					Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+					//TODO: Fix
 				}
 			}
 		}
@@ -567,15 +563,24 @@ bool AMainCharacter::GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd) {
 	);
 
 	if (bScreenToWorld) {
-			OutEnd = OutStart + CrosshairWorldDirection * 50000.0f;
-	FHitResult OutHitResult;
-	bool Trace = GetWorld()->LineTraceSingleByChannel(OutHitResult, OutStart, OutEnd, ECC_Visibility);
-	DrawDebugLine(GetWorld(), OutStart, OutEnd, FColor::Red, false, 50.0f);
-	return Trace;
+		OutEnd = OutStart + CrosshairWorldDirection * 200.0f;
+		FHitResult OutHitResult;
+		bool Trace = GetWorld()->LineTraceSingleByChannel(OutHitResult, OutStart, OutEnd, ECC_Visibility);
+		if (OutEnd.Y > OutStart.Y) {
+			// bMoveLeft = false;
+			// bMoveRight = true;
+			UE_LOG(LogTemp, Warning, TEXT("Brute Right"))
+		}
+		else if (OutEnd.Y < OutStart.Y) {
+			// bMoveLeft = true;
+			// bMoveRight = false;
+			UE_LOG(LogTemp, Warning, TEXT("Brute Left"))
+		}
+		return Trace;
 
 	}
 
-	return  false;
+	return false;
 }
 
 bool AMainCharacter::IsWeaponUsable() {
