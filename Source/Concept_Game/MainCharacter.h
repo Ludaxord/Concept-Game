@@ -281,6 +281,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMoveRight;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveLeftLastFrame;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveRightLastFrame;
+
 	bool bCanCover;
 
 	UPROPERTY(EditAnywhere, Category="Camera")
@@ -565,6 +571,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
 	float LookValue;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	float TurnVal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
+	float LookUpVal;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Items", meta = (AllowPrivateAccess = "true"))
 	TArray<AItem*> Inventory;
 
@@ -666,12 +678,20 @@ public:
 		return bMoveLeft;
 	}
 
-	FORCEINLINE bool GetCoverMontageEnded() const {
-		return bCoverMontageEnded;
-	}
-
 	FORCEINLINE bool GetIsMoveRight() const {
 		return bMoveRight;
+	}
+
+	FORCEINLINE bool GetIsMoveLeftLastFrame() const {
+		return bMoveLeftLastFrame;
+	}
+
+	FORCEINLINE bool GetIsMoveRightLastFrame() const {
+		return bMoveRightLastFrame;
+	}
+
+	FORCEINLINE bool GetCoverMontageEnded() const {
+		return bCoverMontageEnded;
 	}
 
 	FORCEINLINE bool GetCoveringActive() const {

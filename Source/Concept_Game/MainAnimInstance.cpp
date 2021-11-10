@@ -44,6 +44,8 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bInCover = MainCharacter->GetInCover();
 		bIsMoveLeft = MainCharacter->GetIsMoveLeft();
 		bIsMoveRight = MainCharacter->GetIsMoveRight();
+		bIsMoveLeftLastFrame = MainCharacter->GetIsMoveLeftLastFrame();
+		bIsMoveRightLastFrame = MainCharacter->GetIsMoveRightLastFrame();
 		bCoverMontageEnded = MainCharacter->GetCoverMontageEnded();
 		bCoveringActive = MainCharacter->GetCoveringActive();
 		// UE_LOG(LogTemp, Warning, TEXT("Animation In Cover %s"), bInCover ? TEXT("true") : TEXT("false"));

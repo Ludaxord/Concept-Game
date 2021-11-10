@@ -275,6 +275,11 @@ void AMainCharacter::Tick(float DeltaTime) {
 	InterpCapsuleHalfHeight(DeltaTime);
 
 	CoverSystem();
+
+	if (bInCover) {
+		UE_LOG(LogTemp, Warning, TEXT("MoveRight: %s, MoveLeft: %s"), bMoveRight ? TEXT("true"): TEXT("false"),
+		       bMoveLeft ? TEXT("true") : TEXT("false"));
+	}
 }
 
 // Called to bind functionality to input
@@ -353,6 +358,9 @@ void AMainCharacter::SetDefaultCameras() {
 
 void AMainCharacter::MoveForward(float Value) {
 	if (Controller != nullptr && (Value != 0.0f)) {
+		if (bInCover) {
+			UE_LOG(LogTemp, Warning, TEXT("TurnValue: %f, LookValue: %f"), TurnVal, LookUpVal, CoverLeftMovement)
+		}
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation = {0, Rotation.Yaw, 0};
 		FVector Direction;
@@ -380,6 +388,10 @@ void AMainCharacter::MoveForward(float Value) {
 
 void AMainCharacter::MoveRight(float Value) {
 	MoveRightValue = Value;
+	if (bInCover) {
+		bMoveLeft = Value > 0.0f;
+		bMoveRight = Value < 0.0f;
+	}
 	if (Controller != nullptr && (Value != 0.0f)) {
 		if (PoseType != EPoseType::EPT_Climb) {
 			const FRotator Rotation = Controller->GetControlRotation();
@@ -430,6 +442,7 @@ void AMainCharacter::TurnRate(float Rate) {
 
 void AMainCharacter::Turn(float Value) {
 	if (PoseType == EPoseType::EPT_Climb) return;
+	TurnVal = Value;
 	if (bInCover || bCoverActive || bCoveringActive) return;
 	float TurnScaleFactor = bAiming ? MouseAimingTurnRate : MouseHipTurnRate;
 	AddControllerYawInput(Value * TurnScaleFactor);
@@ -444,6 +457,7 @@ void AMainCharacter::LookUpAtRate(float Rate) {
 
 void AMainCharacter::LookUp(float Value) {
 	if (PoseType == EPoseType::EPT_Climb) return;
+	LookUpVal = Value;
 	if (bInCover || bCoverActive || bCoveringActive) return;
 	float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
 	AddControllerPitchInput(Value * LookUpScaleFactor);
