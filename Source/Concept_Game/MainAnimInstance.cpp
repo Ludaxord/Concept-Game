@@ -92,7 +92,10 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 			bIsAccelerating = false;
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("bIsAccelerating %s Speed: %f bInCover: %s bIsMoveLeft: %s bIsMoveRight: %s bMouseLeftForwardMove: %s bMouseRightForwardMove: %s"),
+		UE_LOG(LogTemp, Warning,
+		       TEXT(
+			       "bIsAccelerating %s Speed: %f bInCover: %s bIsMoveLeft: %s bIsMoveRight: %s bMouseLeftForwardMove: %s bMouseRightForwardMove: %s"
+		       ),
 		       bIsAccelerating ? TEXT("true") : TEXT("false"),
 		       Speed,
 		       bInCover ? TEXT("true") : TEXT("false"),
@@ -250,4 +253,10 @@ void UMainAnimInstance::MoveLeftRight_Implementation(float Direction) {
 	UE_LOG(LogTemp, Warning, TEXT("Direction Anim Inst %f"), Direction)
 	bIsMoveRight = Direction > 0;
 	bIsMoveLeft = Direction < 0;
+}
+
+void UMainAnimInstance::PeakLeft_Implementation(bool bPeakLeft) {
+}
+
+void UMainAnimInstance::PeakRight_Implementation(bool bPeakRight) {
 }

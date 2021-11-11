@@ -25,4 +25,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void MoveLeftRight(float Direction);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PeakRight(bool PeakRight);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PeakLeft(bool PeakLeft);
 };

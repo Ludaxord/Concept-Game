@@ -99,6 +99,8 @@ public:
 
 	//TODO: Move systems like covers, using weapons, using environment and jumping/parkour to different class to make it usable for AI Character and Player Character
 	void Cover();
+	void PeakLeft();
+	void PeakRight();
 
 	bool GetForwardTracers(FVector& OutStart, FVector& OutEnd);
 	bool GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd);
@@ -237,6 +239,8 @@ private:
 
 	virtual void CanCover_Implementation(bool bCover) override;
 	virtual void MoveLeftRight_Implementation(float Direction) override;
+	virtual void PeakLeft_Implementation(bool PeakLeft) override;
+	virtual void PeakRight_Implementation(bool PeakLeft) override;
 
 	//TODO: Create inventory class to store informations like guids...
 	TArray<FGuid> ItemGuids;

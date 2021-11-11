@@ -380,13 +380,15 @@ void AMainCharacter::MoveForward(float Value) {
 		else {
 			if (!bMoveForwardDisable) {
 				if (bMouseLeftForwardMove) {
-					UE_LOG(LogTemp, Warning, TEXT("bMouseLeftForwardMove bMoveLeft: %s bMoveRight: %s"), bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
+					UE_LOG(LogTemp, Warning, TEXT("bMouseLeftForwardMove bMoveLeft: %s bMoveRight: %s"),
+					       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
 					const FRotator Rotation = Controller->GetControlRotation();
 					const FRotator YawRotation = {Rotation.Pitch, 0, 0};
 					Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 				}
 				else if (bMouseRightForwardMove) {
-					UE_LOG(LogTemp, Warning, TEXT("bMouseRightForwardMove bMoveLeft: %s bMoveRight: %s"), bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
+					UE_LOG(LogTemp, Warning, TEXT("bMouseRightForwardMove bMoveLeft: %s bMoveRight: %s"),
+					       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
 					const FRotator Rotation = Controller->GetControlRotation();
 					const FRotator YawRotation = {Rotation.Pitch, 0, 0};
 					Direction = -FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -526,6 +528,12 @@ void AMainCharacter::Cover() {
 	       bCoverActive ? TEXT("true") : TEXT("false"),
 	       bInCover ? TEXT("true") : TEXT("false"),
 	       bCanCover ? TEXT("true") : TEXT("false"));
+}
+
+void AMainCharacter::PeakLeft() {
+}
+
+void AMainCharacter::PeakRight() {
 }
 
 bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
@@ -757,8 +765,15 @@ void AMainCharacter::AimingButtonPressed() {
 
 	bAimingButtonPressed = true;
 	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping && CombatState !=
-		ECombatState::ECS_Stunned)
-		Aim();
+		ECombatState::ECS_Stunned) {
+		if (!bInCover && !bCoverActive && !bCoveringActive) {
+			Aim();
+		}
+		else {
+			PeakLeft();
+			PeakRight();
+		}
+	}
 }
 
 void AMainCharacter::AimingButtonReleased() {
@@ -1507,6 +1522,13 @@ void AMainCharacter::CanCover_Implementation(bool bCover) {
 
 void AMainCharacter::MoveLeftRight_Implementation(float Direction) {
 	UE_LOG(LogTemp, Warning, TEXT("Direction Char %f"), Direction)
+}
+
+void AMainCharacter::PeakLeft_Implementation(bool PeakLeft) {
+
+}
+
+void AMainCharacter::PeakRight_Implementation(bool PeakRight) {
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {
