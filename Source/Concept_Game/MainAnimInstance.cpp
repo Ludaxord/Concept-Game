@@ -92,6 +92,16 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 			bIsAccelerating = false;
 		}
 
+		UE_LOG(LogTemp, Warning, TEXT("bIsAccelerating %s Speed: %f bInCover: %s bIsMoveLeft: %s bIsMoveRight: %s bMouseLeftForwardMove: %s bMouseRightForwardMove: %s"),
+		       bIsAccelerating ? TEXT("true") : TEXT("false"),
+		       Speed,
+		       bInCover ? TEXT("true") : TEXT("false"),
+		       bIsMoveLeft ? TEXT("true") : TEXT("false"),
+		       bIsMoveRight ? TEXT("true") : TEXT("false"),
+		       bMouseLeftForwardMove ? TEXT("true") : TEXT("false"),
+		       bMouseRightForwardMove ? TEXT("true") : TEXT("false")
+		)
+
 		FRotator AimRotation = MainCharacter->GetBaseAimRotation();
 		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(MainCharacter->GetVelocity());
 		MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
