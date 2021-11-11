@@ -283,6 +283,12 @@ private:
 	bool bMoveRight;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMouseRightForwardMove;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMouseLeftForwardMove;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMoveLeftLastFrame;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
@@ -692,12 +698,12 @@ public:
 		return bMoveRight;
 	}
 
-	FORCEINLINE bool GetIsMoveLeftLastFrame() const {
-		return bMoveLeftLastFrame;
+	FORCEINLINE bool GetMouseLeftForwardMove() const {
+		return bMouseLeftForwardMove;
 	}
 
-	FORCEINLINE bool GetIsMoveRightLastFrame() const {
-		return bMoveRightLastFrame;
+	FORCEINLINE bool GetMouseRightForwardMove() const {
+		return bMouseRightForwardMove;
 	}
 
 	FORCEINLINE bool GetCoverMontageEnded() const {

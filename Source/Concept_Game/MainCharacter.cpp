@@ -351,6 +351,7 @@ void AMainCharacter::SetDefaultCameras() {
 	}
 }
 
+//TODO: Make it more simple
 void AMainCharacter::MoveForward(float Value) {
 	if (Controller != nullptr && (Value != 0.0f)) {
 		FVector Direction;
@@ -378,11 +379,17 @@ void AMainCharacter::MoveForward(float Value) {
 		}
 		else {
 			if (!bMoveForwardDisable) {
-				if (bMoveForwardLeft) {
-					//TODO: Fix
+				if (bMouseLeftForwardMove) {
+					UE_LOG(LogTemp, Warning, TEXT("bMouseLeftForwardMove bMoveLeft: %s bMoveRight: %s"), bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
+					const FRotator Rotation = Controller->GetControlRotation();
+					const FRotator YawRotation = {Rotation.Pitch, 0, 0};
+					Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 				}
-				else if (bMoveForwardRight) {
-					//TODO: Fix
+				else if (bMouseRightForwardMove) {
+					UE_LOG(LogTemp, Warning, TEXT("bMouseRightForwardMove bMoveLeft: %s bMoveRight: %s"), bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
+					const FRotator Rotation = Controller->GetControlRotation();
+					const FRotator YawRotation = {Rotation.Pitch, 0, 0};
+					Direction = -FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 				}
 			}
 		}
@@ -393,22 +400,24 @@ void AMainCharacter::MoveForward(float Value) {
 
 void AMainCharacter::MoveRight(float Value) {
 	MoveRightValue = Value;
+	//TODO: Fix movement glitch
 	if (bInCover) {
 		bMoveLeft = Value > 0.0f;
 		bMoveRight = Value < 0.0f;
 	}
-	if (Controller != nullptr && (Value != 0.0f)) {
-		if (PoseType != EPoseType::EPT_Climb) {
-			const FRotator Rotation = Controller->GetControlRotation();
-			const FRotator YawRotation = {0, Rotation.Yaw, 0};
-			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			AddMovementInput(Direction, Value);
-			ClimbStartRotationYaw = Controller->GetControlRotation().Yaw;
-			ClimbStartRotationYawLeft = ClimbStartRotationYaw + 45.0f;
-			ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
+	if (bMoveForwardDisable) {
+		if (Controller != nullptr && (Value != 0.0f)) {
+			if (PoseType != EPoseType::EPT_Climb) {
+				const FRotator Rotation = Controller->GetControlRotation();
+				const FRotator YawRotation = {0, Rotation.Yaw, 0};
+				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+				AddMovementInput(Direction, Value);
+				ClimbStartRotationYaw = Controller->GetControlRotation().Yaw;
+				ClimbStartRotationYawLeft = ClimbStartRotationYaw + 45.0f;
+				ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
+			}
 		}
 	}
-
 }
 
 void AMainCharacter::ClimbRight(float Value) {
@@ -566,16 +575,42 @@ bool AMainCharacter::GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd) {
 		OutEnd = OutStart + CrosshairWorldDirection * 200.0f;
 		FHitResult OutHitResult;
 		bool Trace = GetWorld()->LineTraceSingleByChannel(OutHitResult, OutStart, OutEnd, ECC_Visibility);
-		if (OutEnd.Y > OutStart.Y) {
-			// bMoveLeft = false;
-			// bMoveRight = true;
-			UE_LOG(LogTemp, Warning, TEXT("Brute Right"))
+		// UE_LOG(LogTemp, Warning, TEXT("OutEnd Y: %f OutStart Y: %f"), OutEnd.Y, OutStart.Y)
+		float PositionsDelta = OutStart.Y - OutEnd.Y;
+		float Tolerance = 120.0f;
+		if (PositionsDelta > Tolerance) {
+			bMoveForwardDisable = false;
+			bMouseRightForwardMove = true;
+			bMouseLeftForwardMove = false;
+			UE_LOG(LogTemp, Warning, TEXT("Brute Right Delta: %f"), PositionsDelta)
 		}
-		else if (OutEnd.Y < OutStart.Y) {
-			// bMoveLeft = true;
-			// bMoveRight = false;
-			UE_LOG(LogTemp, Warning, TEXT("Brute Left"))
+		else if (PositionsDelta < -Tolerance) {
+			bMoveForwardDisable = false;
+			bMouseRightForwardMove = false;
+			bMouseLeftForwardMove = true;
+			UE_LOG(LogTemp, Warning, TEXT("Brute Left Delta: %f"), PositionsDelta)
 		}
+		else {
+			bMouseRightForwardMove = false;
+			bMouseLeftForwardMove = false;
+			bMoveForwardDisable = true;
+		}
+		// if (OutEnd.Y > OutStart.Y) {
+		// 	bMouseRightForwardMove = true;
+		// 	bMouseLeftForwardMove = false;
+		// 	// bMoveLeft = false;
+		// 	// bMoveRight = true;
+		// 	UE_LOG(LogTemp, Warning, TEXT("Brute Right Delta: %f"), PositionsDelta)
+		// }
+		// else if (OutEnd.Y < OutStart.Y) {
+		// 	bMouseRightForwardMove = false;
+		// 	bMouseLeftForwardMove = true;
+		// 	// bMoveLeft = true;
+		// 	// bMoveRight = false;
+		// 	UE_LOG(LogTemp, Warning, TEXT("Brute Left Delta: %f"), PositionsDelta)
+		// } else if (OutEnd.Y == OutStart.Y) {
+		// 	UE_LOG(LogTemp, Warning, TEXT("Disable Brute Movement"))
+		// }
 		return Trace;
 
 	}

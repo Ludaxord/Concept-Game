@@ -107,10 +107,10 @@ private:
 	bool bIsMoveRight;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
-	bool bIsMoveLeftLastFrame;
+	bool bMouseLeftForwardMove;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
-	bool bIsMoveRightLastFrame;
+	bool bMouseRightForwardMove;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCoverMontageEnded;
