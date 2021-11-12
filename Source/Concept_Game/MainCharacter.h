@@ -207,7 +207,9 @@ public:
 
 	void RightTracer();
 
-	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result);
+	void TopTracer();
+
+	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f);
 
 	void InCoverMoving();
 
@@ -215,24 +217,6 @@ public:
 
 	UFUNCTION()
 	void CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted);
-
-	UFUNCTION()
-	virtual void BeginOverlapCoverLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                                   UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-	                                   const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void EndOverlapCoverLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
-
-	UFUNCTION()
-	virtual void BeginOverlapCoverRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                                    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-	                                    const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void EndOverlapCoverRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
@@ -305,10 +289,19 @@ private:
 	class UArrowComponent* CoverRightMovement;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* CoverTopMovement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveTop;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMoveLeft;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMoveRight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCanPeakTop;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCanPeakLeft;

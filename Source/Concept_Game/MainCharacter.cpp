@@ -127,12 +127,6 @@ void AMainCharacter::BeginPlay() {
 
 	GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &AMainCharacter::CoverMontageEnded);
 
-	CoverLeftMovement->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::BeginOverlapCoverLeft);
-	CoverLeftMovement->OnComponentEndOverlap.AddDynamic(this, &AMainCharacter::EndOverlapCoverLeft);
-
-	CoverRightMovement->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::BeginOverlapCoverRight);
-	CoverRightMovement->OnComponentEndOverlap.AddDynamic(this, &AMainCharacter::EndOverlapCoverRight);
-
 	InCoverMoving();
 }
 
@@ -735,6 +729,8 @@ void AMainCharacter::ConstructCoverArrows() {
 	CoverLeftMovement->SetupAttachment(GetCapsuleComponent());
 	CoverRightMovement = CreateDefaultSubobject<UArrowComponent>(TEXT("CoverRightMovement"));
 	CoverRightMovement->SetupAttachment(GetCapsuleComponent());
+	CoverTopMovement = CreateDefaultSubobject<UArrowComponent>(TEXT("CoverTopMovement"));
+	CoverTopMovement->SetupAttachment(GetCapsuleComponent());
 }
 
 void AMainCharacter::ConstructEyesCameraHeadComponent() {
@@ -1288,6 +1284,7 @@ void AMainCharacter::CoverSystem() {
 	if (bInCover) {
 		LeftTracer();
 		RightTracer();
+		TopTracer();
 
 		FVector OutMoveTraceStart;
 		FVector OutMoveTraceEnd;
@@ -1352,13 +1349,26 @@ void AMainCharacter::RightTracer() {
 	}
 }
 
-bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result) {
+void AMainCharacter::TopTracer() {
+	FHitResult OutHitResult;
+	bMoveTop = CoverTracer(CoverTopMovement, OutHitResult, 30.0f);
+	if (OutHitResult.bBlockingHit) {
+		bCanPeakTop = false;
+	}
+	else {
+		bCanPeakTop = true;
+	}
+}
+
+bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight) {
 	TArray<AActor*> IgnoredActors;
+	FVector TraceStart = AComponent->GetComponentLocation();
+	FVector TraceEnd = AComponent->GetComponentLocation();
 	return UKismetSystemLibrary::CapsuleTraceSingle(this,
-	                                                AComponent->GetComponentLocation(),
-	                                                AComponent->GetComponentLocation(),
+	                                                TraceStart,
+	                                                TraceEnd,
 	                                                20.0f,
-	                                                60.0f,
+	                                                HalfHeight,
 	                                                ETraceTypeQuery::TraceTypeQuery1,
 	                                                false,
 	                                                IgnoredActors,
@@ -1420,28 +1430,6 @@ void AMainCharacter::MoveInCover() {
 void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
 	UE_LOG(LogTemp, Warning, TEXT("Montage End Name: %s"), *Montage->GetName());
 	bCoverMontageEnded = true;
-}
-
-void AMainCharacter::BeginOverlapCoverLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                           UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-                                           const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap Left"))
-}
-
-void AMainCharacter::EndOverlapCoverLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap Left End"))
-}
-
-void AMainCharacter::BeginOverlapCoverRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                            UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-                                            const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap Right"))
-}
-
-void AMainCharacter::EndOverlapCoverRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlap Right End"))
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,
