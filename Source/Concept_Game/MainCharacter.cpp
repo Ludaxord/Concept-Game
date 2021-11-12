@@ -127,6 +127,12 @@ void AMainCharacter::BeginPlay() {
 
 	GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &AMainCharacter::CoverMontageEnded);
 
+	CoverLeftMovement->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::BeginOverlapCoverLeft);
+	CoverLeftMovement->OnComponentEndOverlap.AddDynamic(this, &AMainCharacter::EndOverlapCoverLeft);
+
+	CoverRightMovement->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::BeginOverlapCoverRight);
+	CoverRightMovement->OnComponentEndOverlap.AddDynamic(this, &AMainCharacter::EndOverlapCoverRight);
+
 	InCoverMoving();
 }
 
@@ -531,9 +537,13 @@ void AMainCharacter::Cover() {
 }
 
 void AMainCharacter::PeakLeft() {
+	UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Left %s"), bCanPeakLeft ? TEXT("true") : TEXT("false"))
+	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->PeakLeft_Implementation(bCoverPeakLeft);
 }
 
 void AMainCharacter::PeakRight() {
+	UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Right %s"), bCanPeakRight ? TEXT("true") : TEXT("false"))
+	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->PeakRight_Implementation(bCoverPeakRight);
 }
 
 bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
@@ -770,7 +780,14 @@ void AMainCharacter::AimingButtonPressed() {
 			Aim();
 		}
 		else {
+			if (bCanPeakLeft) {
+				bCoverPeakLeft = true;
+			}
 			PeakLeft();
+
+			if (bCanPeakRight) {
+				bCoverPeakRight = true;
+			}
 			PeakRight();
 		}
 	}
@@ -778,7 +795,15 @@ void AMainCharacter::AimingButtonPressed() {
 
 void AMainCharacter::AimingButtonReleased() {
 	bAimingButtonPressed = false;
-	StopAiming();
+	if (!bInCover && !bCoverActive && !bCoveringActive) {
+		StopAiming();
+	}
+	else {
+		bCoverPeakLeft = false;
+		PeakLeft();
+		bCoverPeakRight = false;
+		PeakRight();
+	}
 }
 
 void AMainCharacter::RunningButtonPressed(float Value) {
@@ -916,7 +941,14 @@ void AMainCharacter::AimingFieldOfView(float DeltaTime) {
 
 void AMainCharacter::UseWeaponButtonPressed() {
 	bUseWeaponButtonPressed = true;
-	UseWeapon();
+	if (bInCover) {
+		if (bCanPeakLeft || bCanPeakRight) {
+			UseWeapon();
+		}
+	}
+	else {
+		UseWeapon();
+	}
 }
 
 void AMainCharacter::UseWeaponButtonReleased() {
@@ -1260,6 +1292,9 @@ void AMainCharacter::CoverSystem() {
 		FVector OutMoveTraceStart;
 		FVector OutMoveTraceEnd;
 		GetInCoverMouseTracer(OutMoveTraceStart, OutMoveTraceEnd);
+
+		PeakLeft();
+		PeakRight();
 	}
 }
 
@@ -1294,17 +1329,31 @@ void AMainCharacter::ExitCover() {
 	SwitchCamera(false);
 }
 
+
 void AMainCharacter::LeftTracer() {
-	bMoveLeft = CoverTracer(CoverLeftMovement);
+	FHitResult OutHitResult;
+	bMoveLeft = CoverTracer(CoverLeftMovement, OutHitResult);
+	if (OutHitResult.bBlockingHit) {
+		bCanPeakLeft = false;
+	}
+	else {
+		bCanPeakLeft = true;
+	}
 }
 
 void AMainCharacter::RightTracer() {
-	bMoveRight = CoverTracer(CoverRightMovement);
+	FHitResult OutHitResult;
+	bMoveRight = CoverTracer(CoverRightMovement, OutHitResult);
+	if (OutHitResult.bBlockingHit) {
+		bCanPeakRight = false;
+	}
+	else {
+		bCanPeakRight = true;
+	}
 }
 
-bool AMainCharacter::CoverTracer(UArrowComponent* AComponent) {
+bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result) {
 	TArray<AActor*> IgnoredActors;
-	FHitResult OutHitResult;
 	return UKismetSystemLibrary::CapsuleTraceSingle(this,
 	                                                AComponent->GetComponentLocation(),
 	                                                AComponent->GetComponentLocation(),
@@ -1314,7 +1363,7 @@ bool AMainCharacter::CoverTracer(UArrowComponent* AComponent) {
 	                                                false,
 	                                                IgnoredActors,
 	                                                EDrawDebugTrace::ForOneFrame,
-	                                                OutHitResult,
+	                                                Result,
 	                                                true
 	);
 }
@@ -1371,6 +1420,28 @@ void AMainCharacter::MoveInCover() {
 void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
 	UE_LOG(LogTemp, Warning, TEXT("Montage End Name: %s"), *Montage->GetName());
 	bCoverMontageEnded = true;
+}
+
+void AMainCharacter::BeginOverlapCoverLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                           UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                           const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap Left"))
+}
+
+void AMainCharacter::EndOverlapCoverLeft(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap Left End"))
+}
+
+void AMainCharacter::BeginOverlapCoverRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                            UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                            const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap Right"))
+}
+
+void AMainCharacter::EndOverlapCoverRight(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	UE_LOG(LogTemp, Warning, TEXT("Overlap Right End"))
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,

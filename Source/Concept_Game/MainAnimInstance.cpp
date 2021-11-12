@@ -256,7 +256,9 @@ void UMainAnimInstance::MoveLeftRight_Implementation(float Direction) {
 }
 
 void UMainAnimInstance::PeakLeft_Implementation(bool bPeakLeft) {
+	UE_LOG(LogTemp, Warning, TEXT("Peak Left %s"), bPeakLeft ? TEXT("true") : TEXT("false"))
 }
 
 void UMainAnimInstance::PeakRight_Implementation(bool bPeakRight) {
+	UE_LOG(LogTemp, Warning, TEXT("Peak Right %s"), bPeakRight ? TEXT("true") : TEXT("false"))
 }
