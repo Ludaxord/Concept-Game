@@ -35,6 +35,8 @@ public:
 
 	virtual void CanCover_Implementation(bool bCanCover) override;
 	virtual void MoveLeftRight_Implementation(float Direction) override;
+	virtual void PeakLeft_Implementation(bool PeakLeft) override;
+	virtual void PeakRight_Implementation(bool PeakRight) override;
 
 protected:
 	void TurnInPlace();
