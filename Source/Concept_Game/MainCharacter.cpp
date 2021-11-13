@@ -34,6 +34,7 @@ AMainCharacter::AMainCharacter():
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
+	bCameraMoved(false),
 	bOverlappingLadderBottom(false),
 	bOverlappingLadderTop(false),
 	bJumpFromClimb(false),
@@ -504,6 +505,7 @@ void AMainCharacter::Cover() {
 		                                                       true
 		);
 		if (bTraced) {
+
 			UE_LOG(LogTemp, Warning, TEXT("bTraced: %s, OutStart: %s, OutEnd: %s"),
 			       bTraced ? TEXT("true") : TEXT("false"), *OutStart.ToString(), *OutEnd.ToString());
 			if (OutHitResult.bBlockingHit) {
@@ -539,12 +541,12 @@ void AMainCharacter::Cover() {
 }
 
 void AMainCharacter::PeakLeft() {
-	UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Left %s"), bCanPeakLeft ? TEXT("true") : TEXT("false"))
+	// UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Left %s"), bCanPeakLeft ? TEXT("true") : TEXT("false"))
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->PeakLeft_Implementation(bCoverPeakLeft);
 }
 
 void AMainCharacter::PeakRight() {
-	UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Right %s"), bCanPeakRight ? TEXT("true") : TEXT("false"))
+	// UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Right %s"), bCanPeakRight ? TEXT("true") : TEXT("false"))
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->PeakRight_Implementation(bCoverPeakRight);
 }
 
@@ -1065,7 +1067,6 @@ void AMainCharacter::SwitchCamera(bool bFollowCamera) {
 			bUseControllerRotationYaw = bRotationYaw;
 			bUseControllerRotationRoll = false;
 		}
-		RefFollowCameraLocation = FollowCamera->GetRelativeLocation();
 	}
 }
 
@@ -1305,6 +1306,11 @@ void AMainCharacter::CoverSystem() {
 }
 
 void AMainCharacter::EnterCover() {
+	TopTracer();
+	UE_LOG(LogTemp, Warning, TEXT("CanPeekTop Traced"))
+	if (bCanPeakTop)
+		PoseType = EPoseType::EPT_Crouch;
+
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(true);
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	bInCover = true;
@@ -1346,6 +1352,7 @@ void AMainCharacter::LeftTracer() {
 			if (bCameraMoved) {
 				FollowCamera->SetRelativeLocation(RefFollowCameraLocation);
 			}
+			RefFollowCameraLocation = FollowCamera->GetRelativeLocation();
 			bCameraMoved = false;
 		}
 	}
@@ -1372,6 +1379,7 @@ void AMainCharacter::RightTracer() {
 			if (bCameraMoved) {
 				FollowCamera->SetRelativeLocation(RefFollowCameraLocation);
 			}
+			RefFollowCameraLocation = FollowCamera->GetRelativeLocation();
 			bCameraMoved = false;
 		}
 	}
@@ -1392,6 +1400,14 @@ void AMainCharacter::RightTracer() {
 void AMainCharacter::TopTracer() {
 	FHitResult OutHitResult;
 	bMoveTop = CoverTracer(CoverTopMovement, OutHitResult, 30.0f);
+
+	const TEnumAsByte<EPoseType> PoseEnum = PoseType;
+	FString EnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
+	UE_LOG(LogTemp, Warning, TEXT("Top Tracer: MoveTop %s CanPeekTop %s PoseType %s"),
+	       bMoveTop ? TEXT("true") : TEXT("false"),
+	       bCanPeakTop? TEXT("true") : TEXT("false"),
+	       *EnumAsString
+	);
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakTop = false;
 	}

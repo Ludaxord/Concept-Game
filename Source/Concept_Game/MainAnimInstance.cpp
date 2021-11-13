@@ -50,7 +50,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bCoveringActive = MainCharacter->GetCoveringActive();
 		// UE_LOG(LogTemp, Warning, TEXT("Animation In Cover %s"), bInCover ? TEXT("true") : TEXT("false"));
 
-		const TEnumAsByte<EPoseType> PoseEnum = MainCharacter->GetCurrentPoseType();
+		const TEnumAsByte<EPoseType> PoseEnum = PoseType;
 		FString PoseEnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
 
 		//NOTE: Temporary, detect if player use ladder from bottom or from top
@@ -60,7 +60,8 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bCrawling = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Crawl;
 		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bRunning = MainCharacter->GetRunning();
-		// UE_LOG(LogTemp, Warning, TEXT("Running: %s"), bRunning ? TEXT("true") : TEXT("false"));
+
+		UE_LOG(LogTemp, Warning, TEXT("Current Pose Type: %s"), *PoseEnumAsString);
 		//TODO: Add FABRIK
 
 		FVector Velocity = MainCharacter->GetVelocity();
@@ -92,18 +93,18 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 			bIsAccelerating = false;
 		}
 
-		UE_LOG(LogTemp, Warning,
-		       TEXT(
-			       "bIsAccelerating %s Speed: %f bInCover: %s bIsMoveLeft: %s bIsMoveRight: %s bMouseLeftForwardMove: %s bMouseRightForwardMove: %s"
-		       ),
-		       bIsAccelerating ? TEXT("true") : TEXT("false"),
-		       Speed,
-		       bInCover ? TEXT("true") : TEXT("false"),
-		       bIsMoveLeft ? TEXT("true") : TEXT("false"),
-		       bIsMoveRight ? TEXT("true") : TEXT("false"),
-		       bMouseLeftForwardMove ? TEXT("true") : TEXT("false"),
-		       bMouseRightForwardMove ? TEXT("true") : TEXT("false")
-		)
+		// UE_LOG(LogTemp, Warning,
+		//        TEXT(
+		// 	       "bIsAccelerating %s Speed: %f bInCover: %s bIsMoveLeft: %s bIsMoveRight: %s bMouseLeftForwardMove: %s bMouseRightForwardMove: %s"
+		//        ),
+		//        bIsAccelerating ? TEXT("true") : TEXT("false"),
+		//        Speed,
+		//        bInCover ? TEXT("true") : TEXT("false"),
+		//        bIsMoveLeft ? TEXT("true") : TEXT("false"),
+		//        bIsMoveRight ? TEXT("true") : TEXT("false"),
+		//        bMouseLeftForwardMove ? TEXT("true") : TEXT("false"),
+		//        bMouseRightForwardMove ? TEXT("true") : TEXT("false")
+		// )
 
 		FRotator AimRotation = MainCharacter->GetBaseAimRotation();
 		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(MainCharacter->GetVelocity());
@@ -256,11 +257,11 @@ void UMainAnimInstance::MoveLeftRight_Implementation(float Direction) {
 }
 
 void UMainAnimInstance::PeakLeft_Implementation(bool bPeakLeft) {
-	UE_LOG(LogTemp, Warning, TEXT("Peak Left %s"), bPeakLeft ? TEXT("true") : TEXT("false"))
+	// UE_LOG(LogTemp, Warning, TEXT("Peak Left %s"), bPeakLeft ? TEXT("true") : TEXT("false"))
 	bIsPeakLeft = bPeakLeft;
 }
 
 void UMainAnimInstance::PeakRight_Implementation(bool bPeakRight) {
-	UE_LOG(LogTemp, Warning, TEXT("Peak Right %s"), bPeakRight ? TEXT("true") : TEXT("false"))
+	// UE_LOG(LogTemp, Warning, TEXT("Peak Right %s"), bPeakRight ? TEXT("true") : TEXT("false"))
 	bIsPeakRight = bPeakRight;
 }
