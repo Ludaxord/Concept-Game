@@ -330,7 +330,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMoveForwardDisable;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	FVector TempCharacterLocation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	FVector RefFollowCameraLocation;
+
 	bool bCanCover;
+	bool bCameraMoved;
 
 	UPROPERTY(EditAnywhere, Category="Camera")
 	UCurveFloat* ClimbingTransitionFloatCurve;

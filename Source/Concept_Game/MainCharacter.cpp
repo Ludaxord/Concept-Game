@@ -407,16 +407,24 @@ void AMainCharacter::MoveRight(float Value) {
 		bMoveLeft = Value > 0.0f;
 		bMoveRight = Value < 0.0f;
 	}
-	if (bMoveForwardDisable) {
-		if (Controller != nullptr && (Value != 0.0f)) {
-			if (PoseType != EPoseType::EPT_Climb) {
+	if (Controller != nullptr && (Value != 0.0f)) {
+		if (PoseType != EPoseType::EPT_Climb && !bInCover) {
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation = {0, Rotation.Yaw, 0};
+			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			AddMovementInput(Direction, Value);
+			ClimbStartRotationYaw = Controller->GetControlRotation().Yaw;
+			ClimbStartRotationYawLeft = ClimbStartRotationYaw + 45.0f;
+			ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
+		}
+		else if (bInCover) {
+			UE_LOG(LogTemp, Warning, TEXT("In Cover Move Right Move Forward: %s"),
+			       bMoveForwardDisable ? TEXT("true") : TEXT("false"))
+			if (bMoveForwardDisable) {
 				const FRotator Rotation = Controller->GetControlRotation();
 				const FRotator YawRotation = {0, Rotation.Yaw, 0};
 				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 				AddMovementInput(Direction, Value);
-				ClimbStartRotationYaw = Controller->GetControlRotation().Yaw;
-				ClimbStartRotationYawLeft = ClimbStartRotationYaw + 45.0f;
-				ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
 			}
 		}
 	}
@@ -1057,6 +1065,7 @@ void AMainCharacter::SwitchCamera(bool bFollowCamera) {
 			bUseControllerRotationYaw = bRotationYaw;
 			bUseControllerRotationRoll = false;
 		}
+		RefFollowCameraLocation = FollowCamera->GetRelativeLocation();
 	}
 }
 
@@ -1333,8 +1342,22 @@ void AMainCharacter::LeftTracer() {
 	bMoveLeft = CoverTracer(CoverLeftMovement, OutHitResult, CapsuleHeight);
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakLeft = false;
+		if (!bCanPeakRight) {
+			if (bCameraMoved) {
+				FollowCamera->SetRelativeLocation(RefFollowCameraLocation);
+			}
+			bCameraMoved = false;
+		}
 	}
 	else {
+		if (!bCameraMoved) {
+			FollowCamera->SetRelativeLocation(
+				FVector(RefFollowCameraLocation.X,
+				        RefFollowCameraLocation.Y - 120.0f,
+				        RefFollowCameraLocation.Z)
+			);
+			bCameraMoved = true;
+		}
 		bCanPeakLeft = true;
 	}
 }
@@ -1345,8 +1368,23 @@ void AMainCharacter::RightTracer() {
 	bMoveRight = CoverTracer(CoverRightMovement, OutHitResult, CapsuleHeight);
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakRight = false;
+		if (!bCanPeakLeft) {
+			if (bCameraMoved) {
+				FollowCamera->SetRelativeLocation(RefFollowCameraLocation);
+			}
+			bCameraMoved = false;
+		}
 	}
 	else {
+		if (!bCameraMoved) {
+			FollowCamera->SetRelativeLocation(
+				FVector(RefFollowCameraLocation.X,
+				        RefFollowCameraLocation.Y + 80.0f,
+				        RefFollowCameraLocation.Z)
+			);
+			bCameraMoved = true;
+		}
+
 		bCanPeakRight = true;
 	}
 }
