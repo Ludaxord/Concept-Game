@@ -1307,7 +1307,6 @@ void AMainCharacter::CoverSystem() {
 
 void AMainCharacter::EnterCover() {
 	TopTracer();
-	UE_LOG(LogTemp, Warning, TEXT("CanPeekTop Traced"))
 	if (bCanPeakTop)
 		PoseType = EPoseType::EPT_Crouch;
 
@@ -1400,14 +1399,6 @@ void AMainCharacter::RightTracer() {
 void AMainCharacter::TopTracer() {
 	FHitResult OutHitResult;
 	bMoveTop = CoverTracer(CoverTopMovement, OutHitResult, 30.0f);
-
-	const TEnumAsByte<EPoseType> PoseEnum = PoseType;
-	FString EnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
-	UE_LOG(LogTemp, Warning, TEXT("Top Tracer: MoveTop %s CanPeekTop %s PoseType %s"),
-	       bMoveTop ? TEXT("true") : TEXT("false"),
-	       bCanPeakTop? TEXT("true") : TEXT("false"),
-	       *EnumAsString
-	);
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakTop = false;
 	}

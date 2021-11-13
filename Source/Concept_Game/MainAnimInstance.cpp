@@ -61,7 +61,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bCrouching = MainCharacter->GetCurrentPoseType() == EPoseType::EPT_Climb;
 		bRunning = MainCharacter->GetRunning();
 
-		UE_LOG(LogTemp, Warning, TEXT("Current Pose Type: %s"), *PoseEnumAsString);
+		// UE_LOG(LogTemp, Warning, TEXT("Current Pose Type: %s"), *PoseEnumAsString);
 		//TODO: Add FABRIK
 
 		FVector Velocity = MainCharacter->GetVelocity();
