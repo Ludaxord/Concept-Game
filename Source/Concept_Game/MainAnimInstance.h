@@ -109,6 +109,12 @@ private:
 	bool bIsMoveRight;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
+	bool bIsPeakLeft;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
+	bool bIsPeakRight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMouseLeftForwardMove;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))

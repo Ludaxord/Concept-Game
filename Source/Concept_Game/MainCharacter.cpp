@@ -1329,7 +1329,8 @@ void AMainCharacter::ExitCover() {
 
 void AMainCharacter::LeftTracer() {
 	FHitResult OutHitResult;
-	bMoveLeft = CoverTracer(CoverLeftMovement, OutHitResult);
+	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
+	bMoveLeft = CoverTracer(CoverLeftMovement, OutHitResult, CapsuleHeight);
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakLeft = false;
 	}
@@ -1340,7 +1341,8 @@ void AMainCharacter::LeftTracer() {
 
 void AMainCharacter::RightTracer() {
 	FHitResult OutHitResult;
-	bMoveRight = CoverTracer(CoverRightMovement, OutHitResult);
+	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
+	bMoveRight = CoverTracer(CoverRightMovement, OutHitResult, CapsuleHeight);
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakRight = false;
 	}
