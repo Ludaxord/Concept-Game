@@ -339,6 +339,10 @@ private:
 	bool bCanCover;
 	bool bCameraMoved;
 
+	bool bStoreTolerance;
+
+	float Tolerance;
+
 	UPROPERTY(EditAnywhere, Category="Camera")
 	UCurveFloat* ClimbingTransitionFloatCurve;
 

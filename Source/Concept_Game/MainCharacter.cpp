@@ -27,6 +27,7 @@ AMainCharacter::AMainCharacter():
 	BaseLookUpRate(45.0f),
 	HipTurnRate(90.0f),
 	HipLookUpRate(90.0f),
+	Tolerance(120.0f),
 	AimingTurnRate(20.0f),
 	AimingLookUpRate(20.0f),
 	MouseHipTurnRate(1.0f),
@@ -599,18 +600,24 @@ bool AMainCharacter::GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd) {
 		bool Trace = GetWorld()->LineTraceSingleByChannel(OutHitResult, OutStart, OutEnd, ECC_Visibility);
 		// UE_LOG(LogTemp, Warning, TEXT("OutEnd Y: %f OutStart Y: %f"), OutEnd.Y, OutStart.Y)
 		float PositionsDelta = OutStart.Y - OutEnd.Y;
-		float Tolerance = 120.0f;
+		if (!bStoreTolerance) {
+			Tolerance = PositionsDelta + 60.0f;
+			bStoreTolerance = true;
+		}
+		//
+		// UE_LOG(LogTemp, Warning, TEXT("Brute Delta: %f Brute Delta Sum: %f Brute Delta Difference: %f"), PositionsDelta,
+		//        PositionsDelta + Tolerance, PositionsDelta - Tolerance)
 		if (PositionsDelta > Tolerance) {
 			bMoveForwardDisable = false;
 			bMouseRightForwardMove = true;
 			bMouseLeftForwardMove = false;
-			UE_LOG(LogTemp, Warning, TEXT("Brute Right Delta: %f"), PositionsDelta)
+			UE_LOG(LogTemp, Warning, TEXT("Brute Right Delta: %f Tolerance: %f"), PositionsDelta, Tolerance)
 		}
 		else if (PositionsDelta < -Tolerance) {
 			bMoveForwardDisable = false;
 			bMouseRightForwardMove = false;
 			bMouseLeftForwardMove = true;
-			UE_LOG(LogTemp, Warning, TEXT("Brute Left Delta: %f"), PositionsDelta)
+			UE_LOG(LogTemp, Warning, TEXT("Brute Left Delta: %f Tolerance: %f"), PositionsDelta, Tolerance)
 		}
 		else {
 			bMouseRightForwardMove = false;
@@ -949,6 +956,17 @@ void AMainCharacter::UseWeaponButtonPressed() {
 	bUseWeaponButtonPressed = true;
 	if (bInCover) {
 		if (bCanPeakLeft || bCanPeakRight) {
+			if (!bAimingButtonPressed) {
+				if (bCanPeakLeft) {
+					bCoverPeakLeft = true;
+				}
+				PeakLeft();
+
+				if (bCanPeakRight) {
+					bCoverPeakRight = true;
+				}
+				PeakRight();
+			}
 			UseWeapon();
 		}
 	}
@@ -959,6 +977,14 @@ void AMainCharacter::UseWeaponButtonPressed() {
 
 void AMainCharacter::UseWeaponButtonReleased() {
 	bUseWeaponButtonPressed = false;
+	if (!bAimingButtonPressed) {
+		if (bCanPeakLeft || bCanPeakRight) {
+			bCoverPeakLeft = false;
+			PeakLeft();
+			bCoverPeakRight = false;
+			PeakRight();
+		}
+	}
 }
 
 void AMainCharacter::StartFireTimer() {
@@ -1302,6 +1328,9 @@ void AMainCharacter::CoverSystem() {
 
 		PeakLeft();
 		PeakRight();
+	}
+	else {
+		bStoreTolerance = false;
 	}
 }
 
