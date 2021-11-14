@@ -380,22 +380,25 @@ void AMainCharacter::MoveForward(float Value) {
 			}
 		}
 		else {
-			if (!bMoveForwardDisable) {
-				if (bMouseLeftForwardMove) {
-					UE_LOG(LogTemp, Warning, TEXT("bMouseLeftForwardMove bMoveLeft: %s bMoveRight: %s"),
-					       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
-					const FRotator Rotation = Controller->GetControlRotation();
-					const FRotator YawRotation = {Rotation.Pitch, 0, 0};
-					Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-				}
-				else if (bMouseRightForwardMove) {
-					UE_LOG(LogTemp, Warning, TEXT("bMouseRightForwardMove bMoveLeft: %s bMoveRight: %s"),
-					       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
-					const FRotator Rotation = Controller->GetControlRotation();
-					const FRotator YawRotation = {Rotation.Pitch, 0, 0};
-					Direction = -FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-				}
-			}
+			// if (!bMoveForwardDisable) {
+			// 	if (bMouseLeftForwardMove) {
+			// 		UE_LOG(LogTemp, Warning, TEXT("bMouseLeftForwardMove bMoveLeft: %s bMoveRight: %s"),
+			// 		       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
+			// 		const FRotator Rotation = Controller->GetControlRotation();
+			// 		const FRotator YawRotation = {Rotation.Pitch, 0, 0};
+			// 		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// 	}
+			// 	else if (bMouseRightForwardMove) {
+			// 		UE_LOG(LogTemp, Warning, TEXT("bMouseRightForwardMove bMoveLeft: %s bMoveRight: %s"),
+			// 		       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
+			// 		const FRotator Rotation = Controller->GetControlRotation();
+			// 		const FRotator YawRotation = {Rotation.Pitch, 0, 0};
+			// 		Direction = -FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// 	}
+			// }
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation = {Rotation.Pitch, 0, 0};
+			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		}
 
 		AddMovementInput(Direction, Value);
@@ -405,10 +408,10 @@ void AMainCharacter::MoveForward(float Value) {
 void AMainCharacter::MoveRight(float Value) {
 	MoveRightValue = Value;
 	//TODO: Fix movement glitch
-	if (bInCover) {
-		bMoveLeft = Value > 0.0f;
-		bMoveRight = Value < 0.0f;
-	}
+	// if (bInCover) {
+	// 	bMoveLeft = Value > 0.0f;
+	// 	bMoveRight = Value < 0.0f;
+	// }
 	if (Controller != nullptr && (Value != 0.0f)) {
 		if (PoseType != EPoseType::EPT_Climb && !bInCover) {
 			const FRotator Rotation = Controller->GetControlRotation();
@@ -420,16 +423,103 @@ void AMainCharacter::MoveRight(float Value) {
 			ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
 		}
 		else if (bInCover) {
-			UE_LOG(LogTemp, Warning, TEXT("In Cover Move Right Move Forward: %s"),
-			       bMoveForwardDisable ? TEXT("true") : TEXT("false"))
-			if (bMoveForwardDisable) {
-				const FRotator Rotation = Controller->GetControlRotation();
-				const FRotator YawRotation = {0, Rotation.Yaw, 0};
-				const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-				AddMovementInput(Direction, Value);
+			// if (bMoveForwardDisable) {
+			// 	const FRotator Rotation = Controller->GetControlRotation();
+			// 	const FRotator YawRotation = {0, Rotation.Yaw, 0};
+			// 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(
+			// 		bUseXInCoverMovement ? EAxis::X : EAxis::Y);
+			// 	AddMovementInput(Direction, Value);
+			// }
+			// bTraceCoverLeft = TraceCoverMovement(1.0f);
+			UE_LOG(LogTemp, Warning, TEXT("bMoveLeft %s"), bMoveLeft ? TEXT("true") : TEXT("false"))
+			// bTraceCoverRight = TraceCoverMovement(-1.0f);
+			UE_LOG(LogTemp, Warning, TEXT("bMoveRight %s"), bMoveRight ? TEXT("true") : TEXT("false"))
+
+
+			const FRotator Rotation = Controller->GetControlRotation();
+			const FRotator YawRotation = {0, Rotation.Yaw, 0};
+			if (bMoveLeft && bMoveRight) {
+				FHitResult Res;
+
+				TArray<AActor*> IgnoredActors;
+				bool bTrace = UKismetSystemLibrary::SphereTraceSingle(this,
+				                                                      GetActorLocation(),
+				                                                      GetActorLocation() +
+				                                                      GetCharacterMovement()->GetPlaneConstraintNormal()
+				                                                      *
+				                                                      -1.0f *
+				                                                      300.0f,
+				                                                      60.f,
+				                                                      ETraceTypeQuery::TraceTypeQuery1,
+				                                                      false,
+				                                                      IgnoredActors,
+				                                                      EDrawDebugTrace::Type::ForOneFrame,
+				                                                      Res,
+				                                                      true);
+				UE_LOG(LogTemp, Warning, TEXT("Trace3 %s"), bTrace ? TEXT("true") : TEXT("false"))
+				if (bTrace) {
+					GetCharacterMovement()->SetPlaneConstraintNormal(Res.Normal);
+					bTraceCoverLeft = Value > 0;
+					bTraceCoverRight = Value < 0;
+
+					AddMovementInput(YawRotation.Quaternion().GetRightVector(), Value);
+				}
 			}
+			else {
+				float CurrentValue = 0.0f;
+				const float ValueSign = FMath::Sign(Value);
+				bool bDir;
+				if (ValueSign == 1.f) {
+					bDir = bMoveRight;
+				}
+				else {
+					bDir = bMoveLeft;
+				}
+
+				if (ValueSign != 0.0f && bDir) {
+					CurrentValue = Value;
+				}
+
+				bTraceCoverLeft = CurrentValue > 0;
+				bTraceCoverRight = CurrentValue < 0;
+
+				UE_LOG(LogTemp, Warning, TEXT("bDir %s CurrentValue: %f"), bDir ? TEXT("true") : TEXT("false"),
+				       CurrentValue)
+
+				AddMovementInput(YawRotation.Quaternion().GetRightVector(), CurrentValue);
+			}
+			// const FRotator Rotation = Controller->GetControlRotation();
+			// const FRotator YawRotation = {0, Rotation.Yaw, 0};
+			// const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+			// AddMovementInput(Direction, Value);
 		}
 	}
+}
+
+bool AMainCharacter::TraceCoverMovement(float Orientation) {
+	FHitResult OutHitResult;
+	FVector CharacterNormalVector = GetCharacterMovement()->GetPlaneConstraintNormal() * Orientation;
+	FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CharacterNormalVector);
+	FVector StartTrace = GetActorLocation() + CoverRot.Quaternion().GetRightVector() * 80.f;
+	FVector EndTrace = StartTrace + CharacterNormalVector * 200.f;
+
+	// bool Trace = GetWorld()->LineTraceSingleByChannel(OutHitResult, StartTrace, EndTrace, ECC_EngineTraceChannel1);
+	// DrawDebugLine(GetWorld(), StartTrace, EndTrace, FColor::Magenta, false, 50.0f);
+	TArray<AActor*> IgnoredActors;
+	bool Trace = UKismetSystemLibrary::SphereTraceSingle(this,
+	                                                     StartTrace,
+	                                                     EndTrace,
+	                                                     10.f,
+	                                                     ETraceTypeQuery::TraceTypeQuery1,
+	                                                     false,
+	                                                     IgnoredActors,
+	                                                     EDrawDebugTrace::Type::ForOneFrame,
+	                                                     OutHitResult,
+	                                                     true
+	);
+
+
+	return Trace;
 }
 
 void AMainCharacter::ClimbRight(float Value) {
@@ -506,10 +596,8 @@ void AMainCharacter::Cover() {
 		                                                       true
 		);
 		if (bTraced) {
-
-			UE_LOG(LogTemp, Warning, TEXT("bTraced: %s, OutStart: %s, OutEnd: %s"),
-			       bTraced ? TEXT("true") : TEXT("false"), *OutStart.ToString(), *OutEnd.ToString());
 			if (OutHitResult.bBlockingHit) {
+				OutHitResult.Actor->GetActorBounds(false, CurrentCoverOrigin, CurrentCoverBoxExtend);
 				CoverLocation = OutHitResult.Location;
 				CoverNormal = OutHitResult.Normal;
 				EnterCover();
@@ -601,45 +689,76 @@ bool AMainCharacter::GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd) {
 		// UE_LOG(LogTemp, Warning, TEXT("OutEnd Y: %f OutStart Y: %f"), OutEnd.Y, OutStart.Y)
 		float PositionsDelta = OutStart.Y - OutEnd.Y;
 		if (!bStoreTolerance) {
-			Tolerance = PositionsDelta + 60.0f;
+			Tolerance = OutEnd.Y;
 			bStoreTolerance = true;
 		}
-		//
-		// UE_LOG(LogTemp, Warning, TEXT("Brute Delta: %f Brute Delta Sum: %f Brute Delta Difference: %f"), PositionsDelta,
-		//        PositionsDelta + Tolerance, PositionsDelta - Tolerance)
-		if (PositionsDelta > Tolerance) {
+		FVector LM = CoverLeftMovement->GetComponentLocation();
+		FVector RM = CoverRightMovement->GetComponentLocation();
+		FVector TM = CoverTopMovement->GetComponentLocation();
+
+
+		//TODO: Find location of Cover and Make movement for it.
+		float CurrentLM;
+		float CurrentRM;
+		float CurrentTM;
+		float CurrentOutEnd;
+		bUseXInCoverMovement = LM.Y == RM.Y;
+		if (bUseXInCoverMovement) {
+			CurrentLM = LM.X;
+			CurrentRM = RM.X;
+			CurrentTM = TM.X;
+			CurrentOutEnd = OutEnd.X;
+		}
+		else {
+			CurrentLM = LM.Y;
+			CurrentRM = RM.Y;
+			CurrentTM = TM.Y;
+			CurrentOutEnd = OutEnd.Y;
+		}
+
+		TArray<float> MovementOptions = {CurrentLM, CurrentRM, CurrentTM};
+		float MaxOption = FMath::Max(MovementOptions);
+
+		float FinalOption = 0;
+		for (float MO : MovementOptions) {
+			if (FMath::Abs(MO - CurrentOutEnd) < MaxOption) {
+				MaxOption = FMath::Abs(MO - CurrentOutEnd);
+				FinalOption = MO;
+			}
+		}
+
+		UE_LOG(
+			LogTemp, Warning,
+			TEXT(
+				"OutStart: %s OutEnd: %f LM: %f RM: %f TM: %f, Option: %f, MaxOption: %f"
+			),
+			*OutStart.ToString(),
+			CurrentOutEnd,
+			CurrentLM,
+			CurrentRM,
+			CurrentTM,
+			FinalOption,
+			MaxOption
+		)
+
+		if (FinalOption == CurrentLM) {
 			bMoveForwardDisable = false;
 			bMouseRightForwardMove = true;
 			bMouseLeftForwardMove = false;
-			UE_LOG(LogTemp, Warning, TEXT("Brute Right Delta: %f Tolerance: %f"), PositionsDelta, Tolerance)
+			UE_LOG(LogTemp, Warning, TEXT("Brute Right "))
 		}
-		else if (PositionsDelta < -Tolerance) {
+		else if (FinalOption == CurrentRM) {
 			bMoveForwardDisable = false;
 			bMouseRightForwardMove = false;
 			bMouseLeftForwardMove = true;
-			UE_LOG(LogTemp, Warning, TEXT("Brute Left Delta: %f Tolerance: %f"), PositionsDelta, Tolerance)
+			UE_LOG(LogTemp, Warning, TEXT("Brute Left "))
 		}
-		else {
+		else if (FinalOption == CurrentTM) {
 			bMouseRightForwardMove = false;
 			bMouseLeftForwardMove = false;
 			bMoveForwardDisable = true;
+			UE_LOG(LogTemp, Warning, TEXT("Brute Enable Movement"))
 		}
-		// if (OutEnd.Y > OutStart.Y) {
-		// 	bMouseRightForwardMove = true;
-		// 	bMouseLeftForwardMove = false;
-		// 	// bMoveLeft = false;
-		// 	// bMoveRight = true;
-		// 	UE_LOG(LogTemp, Warning, TEXT("Brute Right Delta: %f"), PositionsDelta)
-		// }
-		// else if (OutEnd.Y < OutStart.Y) {
-		// 	bMouseRightForwardMove = false;
-		// 	bMouseLeftForwardMove = true;
-		// 	// bMoveLeft = true;
-		// 	// bMoveRight = false;
-		// 	UE_LOG(LogTemp, Warning, TEXT("Brute Left Delta: %f"), PositionsDelta)
-		// } else if (OutEnd.Y == OutStart.Y) {
-		// 	UE_LOG(LogTemp, Warning, TEXT("Disable Brute Movement"))
-		// }
 		return Trace;
 
 	}
@@ -1324,7 +1443,7 @@ void AMainCharacter::CoverSystem() {
 
 		FVector OutMoveTraceStart;
 		FVector OutMoveTraceEnd;
-		GetInCoverMouseTracer(OutMoveTraceStart, OutMoveTraceEnd);
+		// GetInCoverMouseTracer(OutMoveTraceStart, OutMoveTraceEnd);
 
 		PeakLeft();
 		PeakRight();
@@ -1360,6 +1479,10 @@ void AMainCharacter::EnterCover() {
 	                                      false,
 	                                      EMoveComponentAction::Type::Move,
 	                                      Info);
+
+	GetCharacterMovement()->SetPlaneConstraintEnabled(true);
+	// GetCharacterMovement()->SetPlaneConstraintNormal(CoverNormal);
+	bUseControllerRotationYaw = false;
 }
 
 void AMainCharacter::ExitCover() {
@@ -1367,6 +1490,7 @@ void AMainCharacter::ExitCover() {
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(false);
 	bInCover = false;
 	SwitchCamera(false);
+	GetCharacterMovement()->SetPlaneConstraintEnabled(false);
 }
 
 
@@ -1374,6 +1498,7 @@ void AMainCharacter::LeftTracer() {
 	FHitResult OutHitResult;
 	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
 	bMoveLeft = CoverTracer(CoverLeftMovement, OutHitResult, CapsuleHeight);
+	CoverLeftSphereBlocker = OutHitResult.GetActor();
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakLeft = false;
 		if (!bCanPeakRight) {
@@ -1401,6 +1526,7 @@ void AMainCharacter::RightTracer() {
 	FHitResult OutHitResult;
 	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
 	bMoveRight = CoverTracer(CoverRightMovement, OutHitResult, CapsuleHeight);
+	CoverRightSphereBlocker = OutHitResult.GetActor();
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakRight = false;
 		if (!bCanPeakLeft) {

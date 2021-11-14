@@ -211,6 +211,8 @@ public:
 
 	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f);
 
+	bool TraceCoverMovement(float Orientation);
+
 	void InCoverMoving();
 
 	void MoveInCover();
@@ -338,10 +340,24 @@ private:
 
 	bool bCanCover;
 	bool bCameraMoved;
+	bool bUseXInCoverMovement;
 
 	bool bStoreTolerance;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bTraceCoverLeft;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bTraceCoverRight;
+
+	FVector CurrentCoverOrigin;
+
+	FVector CurrentCoverBoxExtend;
+
 	float Tolerance;
+
+	AActor* CoverLeftSphereBlocker;
+	AActor* CoverRightSphereBlocker;
 
 	UPROPERTY(EditAnywhere, Category="Camera")
 	UCurveFloat* ClimbingTransitionFloatCurve;
@@ -729,11 +745,11 @@ public:
 	}
 
 	FORCEINLINE bool GetIsMoveLeft() const {
-		return bMoveLeft;
+		return bTraceCoverLeft;
 	}
 
 	FORCEINLINE bool GetIsMoveRight() const {
-		return bMoveRight;
+		return bTraceCoverRight;
 	}
 
 	FORCEINLINE bool GetMouseLeftForwardMove() const {
