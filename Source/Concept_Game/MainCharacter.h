@@ -101,6 +101,7 @@ public:
 	void Cover();
 	void PeakLeft();
 	void PeakRight();
+	void PeakTop();
 
 	bool GetForwardTracers(FVector& OutStart, FVector& OutEnd);
 	bool GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd);
@@ -245,6 +246,7 @@ private:
 	virtual void MoveLeftRight_Implementation(float Direction) override;
 	virtual void PeakLeft_Implementation(bool PeakLeft) override;
 	virtual void PeakRight_Implementation(bool PeakLeft) override;
+	virtual void PeakTop_Implementation(bool PeakTop) override;
 
 	//TODO: Create inventory class to store informations like guids...
 	TArray<FGuid> ItemGuids;
@@ -281,6 +283,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCoverPeakRight;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoverPeakTop;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover", meta = (AllowPrivateAccess = "true"))
 	class UAnimMontage* TakeCoverMontage;
 
@@ -301,6 +306,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMoveRight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveRightDirectionTrace;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveLeftDirectionTrace;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCanPeakTop;
@@ -745,10 +756,18 @@ public:
 	}
 
 	FORCEINLINE bool GetIsMoveLeft() const {
-		return bTraceCoverLeft;
+		return bMoveLeft;
 	}
 
 	FORCEINLINE bool GetIsMoveRight() const {
+		return bMoveRight;
+	}
+
+	FORCEINLINE bool GetTraceCoverLeft() const {
+		return bTraceCoverLeft;
+	}
+
+	FORCEINLINE bool GetTraceCoverRight() const {
 		return bTraceCoverRight;
 	}
 

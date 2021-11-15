@@ -31,4 +31,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PeakLeft(bool PeakLeft);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PeakTop(bool PeakTop);
 };

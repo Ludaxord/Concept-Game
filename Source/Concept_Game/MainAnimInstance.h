@@ -37,6 +37,7 @@ public:
 	virtual void MoveLeftRight_Implementation(float Direction) override;
 	virtual void PeakLeft_Implementation(bool PeakLeft) override;
 	virtual void PeakRight_Implementation(bool PeakRight) override;
+	virtual void PeakTop_Implementation(bool PeakTop) override;
 
 protected:
 	void TurnInPlace();
@@ -109,10 +110,19 @@ private:
 	bool bIsMoveRight;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
+	bool bTraceCoverLeft;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
+	bool bTraceCoverRight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
 	bool bIsPeakLeft;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
 	bool bIsPeakRight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
+	bool bIsPeakTop;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cover", meta = (AllowPrivateAccess = "true"))
 	bool bMouseLeftForwardMove;

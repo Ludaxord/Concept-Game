@@ -380,22 +380,6 @@ void AMainCharacter::MoveForward(float Value) {
 			}
 		}
 		else {
-			// if (!bMoveForwardDisable) {
-			// 	if (bMouseLeftForwardMove) {
-			// 		UE_LOG(LogTemp, Warning, TEXT("bMouseLeftForwardMove bMoveLeft: %s bMoveRight: %s"),
-			// 		       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
-			// 		const FRotator Rotation = Controller->GetControlRotation();
-			// 		const FRotator YawRotation = {Rotation.Pitch, 0, 0};
-			// 		Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			// 	}
-			// 	else if (bMouseRightForwardMove) {
-			// 		UE_LOG(LogTemp, Warning, TEXT("bMouseRightForwardMove bMoveLeft: %s bMoveRight: %s"),
-			// 		       bMoveLeft ? TEXT("true") : TEXT("false"), bMoveRight ? TEXT("true") : TEXT("false"))
-			// 		const FRotator Rotation = Controller->GetControlRotation();
-			// 		const FRotator YawRotation = {Rotation.Pitch, 0, 0};
-			// 		Direction = -FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			// 	}
-			// }
 			const FRotator Rotation = Controller->GetControlRotation();
 			const FRotator YawRotation = {Rotation.Pitch, 0, 0};
 			Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
@@ -407,11 +391,6 @@ void AMainCharacter::MoveForward(float Value) {
 
 void AMainCharacter::MoveRight(float Value) {
 	MoveRightValue = Value;
-	//TODO: Fix movement glitch
-	// if (bInCover) {
-	// 	bMoveLeft = Value > 0.0f;
-	// 	bMoveRight = Value < 0.0f;
-	// }
 	if (Controller != nullptr && (Value != 0.0f)) {
 		if (PoseType != EPoseType::EPT_Climb && !bInCover) {
 			const FRotator Rotation = Controller->GetControlRotation();
@@ -423,19 +402,6 @@ void AMainCharacter::MoveRight(float Value) {
 			ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
 		}
 		else if (bInCover) {
-			// if (bMoveForwardDisable) {
-			// 	const FRotator Rotation = Controller->GetControlRotation();
-			// 	const FRotator YawRotation = {0, Rotation.Yaw, 0};
-			// 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(
-			// 		bUseXInCoverMovement ? EAxis::X : EAxis::Y);
-			// 	AddMovementInput(Direction, Value);
-			// }
-			// bTraceCoverLeft = TraceCoverMovement(1.0f);
-			UE_LOG(LogTemp, Warning, TEXT("bMoveLeft %s"), bMoveLeft ? TEXT("true") : TEXT("false"))
-			// bTraceCoverRight = TraceCoverMovement(-1.0f);
-			UE_LOG(LogTemp, Warning, TEXT("bMoveRight %s"), bMoveRight ? TEXT("true") : TEXT("false"))
-
-
 			const FRotator Rotation = Controller->GetControlRotation();
 			const FRotator YawRotation = {0, Rotation.Yaw, 0};
 			if (bMoveLeft && bMoveRight) {
@@ -483,15 +449,27 @@ void AMainCharacter::MoveRight(float Value) {
 				bTraceCoverLeft = CurrentValue > 0;
 				bTraceCoverRight = CurrentValue < 0;
 
-				UE_LOG(LogTemp, Warning, TEXT("bDir %s CurrentValue: %f"), bDir ? TEXT("true") : TEXT("false"),
-				       CurrentValue)
+				if (!bTraceCoverLeft && CurrentValue == 0.0f) {
+					bTraceCoverLeft = bCanPeakLeft;
+				}
+
+				if (!bTraceCoverRight && CurrentValue == 0.0f) {
+					bTraceCoverRight = bCanPeakRight;
+				}
+
+
+				// UE_LOG(LogTemp, Warning, TEXT("bTraceCoverLeft %s bTraceCoverRight %s CurrentValue: %f bMoveLeft: %s bMoveRight: %s bCanPeakLeft: %s bCanPeakRight: %s"),
+				//        bTraceCoverLeft ? TEXT("true") : TEXT("false"),
+				//        bTraceCoverRight ? TEXT("true") : TEXT("false"),
+				//        CurrentValue,
+				//        bMoveLeft ? TEXT("true") : TEXT("false"),
+				//        bMoveRight ? TEXT("true") : TEXT("false"),
+				//        bCanPeakLeft? TEXT("true") : TEXT("false"),
+				//        bCanPeakRight? TEXT("true") : TEXT("false")
+				// )
 
 				AddMovementInput(YawRotation.Quaternion().GetRightVector(), CurrentValue);
 			}
-			// const FRotator Rotation = Controller->GetControlRotation();
-			// const FRotator YawRotation = {0, Rotation.Yaw, 0};
-			// const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			// AddMovementInput(Direction, Value);
 		}
 	}
 }
@@ -637,6 +615,14 @@ void AMainCharacter::PeakLeft() {
 void AMainCharacter::PeakRight() {
 	// UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Right %s"), bCanPeakRight ? TEXT("true") : TEXT("false"))
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->PeakRight_Implementation(bCoverPeakRight);
+}
+
+void AMainCharacter::PeakTop() {
+	UE_LOG(LogTemp, Warning, TEXT("Peak Overlap Top %s bCoverPeakTop: %s, ButtonPressed: %s"),
+	       bCanPeakTop ? TEXT("true") : TEXT("false"),
+	       bCoverPeakTop ? TEXT("true") : TEXT("false"),
+	       bAimingButtonPressed ? TEXT("true") : TEXT("false"))
+	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->PeakTop_Implementation(bCoverPeakTop);
 }
 
 bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
@@ -921,6 +907,13 @@ void AMainCharacter::AimingButtonPressed() {
 				bCoverPeakRight = true;
 			}
 			PeakRight();
+
+			if (!bCoverPeakRight && !bCoverPeakLeft) {
+				if (bCanPeakTop) {
+					bCoverPeakTop = true;
+				}
+				PeakTop();
+			}
 		}
 	}
 }
@@ -935,6 +928,8 @@ void AMainCharacter::AimingButtonReleased() {
 		PeakLeft();
 		bCoverPeakRight = false;
 		PeakRight();
+		bCoverPeakTop = false;
+		PeakTop();
 	}
 }
 
@@ -1074,7 +1069,7 @@ void AMainCharacter::AimingFieldOfView(float DeltaTime) {
 void AMainCharacter::UseWeaponButtonPressed() {
 	bUseWeaponButtonPressed = true;
 	if (bInCover) {
-		if (bCanPeakLeft || bCanPeakRight) {
+		if (bCanPeakLeft || bCanPeakRight || bCanPeakTop) {
 			if (!bAimingButtonPressed) {
 				if (bCanPeakLeft) {
 					bCoverPeakLeft = true;
@@ -1085,6 +1080,13 @@ void AMainCharacter::UseWeaponButtonPressed() {
 					bCoverPeakRight = true;
 				}
 				PeakRight();
+
+				if (!bCoverPeakRight && !bCoverPeakLeft) {
+					if (bCanPeakTop) {
+						bCoverPeakTop = true;
+					}
+					PeakTop();
+				}
 			}
 			UseWeapon();
 		}
@@ -1097,11 +1099,13 @@ void AMainCharacter::UseWeaponButtonPressed() {
 void AMainCharacter::UseWeaponButtonReleased() {
 	bUseWeaponButtonPressed = false;
 	if (!bAimingButtonPressed) {
-		if (bCanPeakLeft || bCanPeakRight) {
+		if (bCanPeakLeft || bCanPeakRight || bCanPeakTop) {
 			bCoverPeakLeft = false;
 			PeakLeft();
 			bCoverPeakRight = false;
 			PeakRight();
+			bCoverPeakTop = false;
+			PeakTop();
 		}
 	}
 }
@@ -1560,6 +1564,27 @@ void AMainCharacter::TopTracer() {
 	else {
 		bCanPeakTop = true;
 	}
+
+	if (bCoverPeakTop) {
+		if (!bAimingButtonPressed) {
+			if (bCameraMoved) {
+				FollowCamera->SetRelativeLocation(RefFollowCameraLocation);
+			}
+			RefFollowCameraLocation = FollowCamera->GetRelativeLocation();
+			bCameraMoved = false;
+		}
+		else {
+			if (!bCameraMoved) {
+				FollowCamera->SetRelativeLocation(
+					FVector(RefFollowCameraLocation.X,
+					        RefFollowCameraLocation.Y,
+					        RefFollowCameraLocation.Z + 80.f)
+				);
+				bCameraMoved = true;
+			}
+		}
+
+	}
 }
 
 bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight) {
@@ -1790,6 +1815,10 @@ void AMainCharacter::PeakLeft_Implementation(bool PeakLeft) {
 }
 
 void AMainCharacter::PeakRight_Implementation(bool PeakRight) {
+}
+
+void AMainCharacter::PeakTop_Implementation(bool bPeakTop) {
+
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {
