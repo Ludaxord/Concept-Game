@@ -554,7 +554,6 @@ void AMainCharacter::LookUp(float Value) {
 }
 
 void AMainCharacter::Cover() {
-	// if (bCanCover) {
 	if (!bCoverActive) {
 		FVector OutStart;
 		FVector OutEnd;
@@ -597,10 +596,7 @@ void AMainCharacter::Cover() {
 		}
 	}
 	bCoverActive = !bCoverActive;
-	// }
-	// else {
-	// 	bCoverActive = false;
-	// }
+
 	UE_LOG(LogTemp, Warning, TEXT("CoverActive: %s InCover: %s CanCover: %s"),
 	       bCoverActive ? TEXT("true") : TEXT("false"),
 	       bInCover ? TEXT("true") : TEXT("false"),
@@ -1429,13 +1425,15 @@ void AMainCharacter::CoverSystem() {
 	FVector OutEnd;
 	bool bCovering = GetForwardTracers(OutStart, OutEnd);
 	if (bInCover && bCoverActive && bCoveringActive) {
-		bCanCover = bCovering;
-		if (!bCanCover) {
-			if (PoseType != EPoseType::EPT_Climb) {
-				bCoverActive = false;
-				bCoveringActive = false;
-				bInCover = false;
-				SwitchCamera(false);
+		if (bCoverMontageEnded) {
+			bCanCover = bCovering;
+			if (!bCanCover) {
+				if (PoseType != EPoseType::EPT_Climb) {
+					bCoverActive = false;
+					bCoveringActive = false;
+					bInCover = false;
+					SwitchCamera(false);
+				}
 			}
 		}
 	}
@@ -1459,7 +1457,7 @@ void AMainCharacter::CoverSystem() {
 
 void AMainCharacter::EnterCover() {
 	TopTracer();
-	if (bCanPeakTop)
+	if (bCanPeakTop && PoseType != EPoseType::EPT_Crouch)
 		PoseType = EPoseType::EPT_Crouch;
 
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->CanCover_Implementation(true);
