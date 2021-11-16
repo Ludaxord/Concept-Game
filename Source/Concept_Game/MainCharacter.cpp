@@ -564,6 +564,8 @@ void AMainCharacter::Cover() {
 		if (bTraced) {
 			if (OutHitResult.bBlockingHit) {
 				CurrentCoverHitResult = OutHitResult;
+				CurrentCoverCollisionResponse = CurrentCoverHitResult.GetComponent()->GetCollisionResponseToChannel(
+					ECollisionChannel::ECC_EngineTraceChannel2);
 				OutHitResult.Actor->GetActorBounds(false, CurrentCoverOrigin, CurrentCoverBoxExtend);
 				CoverLocation = OutHitResult.Location;
 				CoverNormal = OutHitResult.Normal;
@@ -1579,6 +1581,7 @@ void AMainCharacter::TopTracer() {
 
 void AMainCharacter::HideCoverOnCameraTrace() {
 	if (CurrentCoverHitResult.GetActor() != nullptr) {
+
 		// CurrentCoverHitResult.GetActor()->GetActorLocation();
 
 		FVector2D ViewportSize;
@@ -1606,21 +1609,21 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 			FHitResult HitLocation;
 			TArray<AActor*> IgnoredActors;
 
-			UKismetSystemLibrary::LineTraceSingle(this,
-			                                      Start,
-			                                      End,
-			                                      ETraceTypeQuery::TraceTypeQuery1,
-			                                      false,
-			                                      IgnoredActors,
-			                                      EDrawDebugTrace::ForOneFrame,
-			                                      HitLocation,
-			                                      false
-			);
+			UKismetSystemLibrary::LineTraceSingle(this, Start, End, ETraceTypeQuery::TraceTypeQuery2, false,
+			                                      IgnoredActors, EDrawDebugTrace::ForOneFrame, HitLocation, false);
+			// GetWorld()->LineTraceSingleByChannel(HitLocation, Start, End, ECollisionChannel::ECC_Visibility);
+			// DrawDebugLine(GetWorld(), Start, End, FColor::Emerald);
 
 			if (HitLocation.bBlockingHit) {
-				UE_LOG(LogTemp, Warning, TEXT("HitLocation Actor Name %s CurrentCoverHitResult Actor Name %s"),
-				       *HitLocation.GetActor()->GetName(), *CurrentCoverHitResult.GetActor()->GetName())
-
+				UE_LOG(LogTemp,
+				       Warning,
+				       TEXT(
+					       "HitLocation Actor Name %s CurrentCoverHitResult Actor Name %s, CurrentCollisionTraceStatus: %s"
+				       ),
+				       *HitLocation.GetActor()->GetName(),
+				       *CurrentCoverHitResult.GetActor()->GetName(),
+				       *UEnum::GetValueAsString(CurrentCoverHitResult.GetComponent()->GetCollisionResponseToChannel(
+					       ECollisionChannel::ECC_EngineTraceChannel2)))
 				FHitResult HitPlayer;
 
 				bool bPlayerIsOverlapped = UKismetSystemLibrary::LineTraceSingle(this,
@@ -1636,13 +1639,36 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 
 				if (bPlayerIsOverlapped) {
 					if (HitPlayer.GetActor() == CurrentCoverHitResult.GetActor()) {
+
 						// UE_LOG(LogTemp, Warning, TEXT("WasRendered: %s, bPlayerIsOverlapped: %s"),
 						//        this->WasRecentlyRendered(0.01) ? TEXT("true") : TEXT("false"),
 						//        bPlayerIsOverlapped ? TEXT("true") : TEXT("false"))
-						HitPlayer.GetActor()->GetRootComponent()->SetVisibility(false);
+						CurrentCoverHitResult.GetActor()->GetRootComponent()->SetVisibility(false);
+						// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 	ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+						// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 	ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+						// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 	ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Ignore);
+						CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+							ECollisionChannel::ECC_EngineTraceChannel2, ECollisionResponse::ECR_Ignore);
+						CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+							ECollisionChannel::ECC_EngineTraceChannel1, ECollisionResponse::ECR_Block);
+
+						// CurrentCoverHitResult.GetComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+						// HitPlayer.GetComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+						// HitPlayer.GetComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+						// HitPlayer.GetActor()->SetActorEnableCollision(false);
 					}
-				} else {
+				}
+				else {
 					CurrentCoverHitResult.GetActor()->GetRootComponent()->SetVisibility(true);
+					if (CurrentCoverHitResult.GetActor() != nullptr) {
+						CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+							ECollisionChannel::ECC_EngineTraceChannel2, CurrentCoverCollisionResponse);
+					}
+
 				}
 			}
 		}

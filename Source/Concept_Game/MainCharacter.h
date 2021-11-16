@@ -354,6 +354,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	FHitResult CurrentCoverHitResult;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<ECollisionResponse> CurrentCoverCollisionResponse;
+
 	bool bCanCover;
 	bool bCameraMoved;
 	bool bUseXInCoverMovement;
