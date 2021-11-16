@@ -210,6 +210,8 @@ public:
 
 	void TopTracer();
 
+	void HideCoverOnCameraTrace();
+
 	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f);
 
 	bool TraceCoverMovement(float Orientation);
@@ -348,6 +350,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	FVector RefFollowCameraLocation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	FHitResult CurrentCoverHitResult;
 
 	bool bCanCover;
 	bool bCameraMoved;

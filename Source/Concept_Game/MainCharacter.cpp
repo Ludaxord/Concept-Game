@@ -457,17 +457,6 @@ void AMainCharacter::MoveRight(float Value) {
 					bTraceCoverRight = bCanPeakRight;
 				}
 
-
-				// UE_LOG(LogTemp, Warning, TEXT("bTraceCoverLeft %s bTraceCoverRight %s CurrentValue: %f bMoveLeft: %s bMoveRight: %s bCanPeakLeft: %s bCanPeakRight: %s"),
-				//        bTraceCoverLeft ? TEXT("true") : TEXT("false"),
-				//        bTraceCoverRight ? TEXT("true") : TEXT("false"),
-				//        CurrentValue,
-				//        bMoveLeft ? TEXT("true") : TEXT("false"),
-				//        bMoveRight ? TEXT("true") : TEXT("false"),
-				//        bCanPeakLeft? TEXT("true") : TEXT("false"),
-				//        bCanPeakRight? TEXT("true") : TEXT("false")
-				// )
-
 				AddMovementInput(YawRotation.Quaternion().GetRightVector(), CurrentValue);
 			}
 		}
@@ -574,6 +563,7 @@ void AMainCharacter::Cover() {
 		);
 		if (bTraced) {
 			if (OutHitResult.bBlockingHit) {
+				CurrentCoverHitResult = OutHitResult;
 				OutHitResult.Actor->GetActorBounds(false, CurrentCoverOrigin, CurrentCoverBoxExtend);
 				CoverLocation = OutHitResult.Location;
 				CoverNormal = OutHitResult.Normal;
@@ -591,6 +581,7 @@ void AMainCharacter::Cover() {
 		if (bInCover) {
 			ExitCover();
 			bCoveringActive = false;
+			CurrentCoverHitResult = FHitResult();
 			// PlayMontage(ECharacterMontage::ECM_ExitCover);
 			//TODO: Add anim montage And rotation Root Yaw.
 		}
@@ -1442,6 +1433,7 @@ void AMainCharacter::CoverSystem() {
 		LeftTracer();
 		RightTracer();
 		TopTracer();
+		HideCoverOnCameraTrace();
 
 		FVector OutMoveTraceStart;
 		FVector OutMoveTraceEnd;
@@ -1582,6 +1574,78 @@ void AMainCharacter::TopTracer() {
 			}
 		}
 
+	}
+}
+
+void AMainCharacter::HideCoverOnCameraTrace() {
+	if (CurrentCoverHitResult.GetActor() != nullptr) {
+		// CurrentCoverHitResult.GetActor()->GetActorLocation();
+
+		FVector2D ViewportSize;
+		if (GEngine && GEngine->GameViewport) {
+			GEngine->GameViewport->GetViewportSize(ViewportSize);
+		}
+
+		FVector2D CrosshairLocation = {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
+		CrosshairLocation.Y -= 50.0f;
+
+		FVector CrosshairWorldPosition;
+		FVector CrosshairWorldDirection;
+
+
+		bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+			UGameplayStatics::GetPlayerController(this, 0),
+			CrosshairLocation,
+			CrosshairWorldPosition,
+			CrosshairWorldDirection
+		);
+
+		if (bScreenToWorld) {
+			const FVector Start = CrosshairWorldPosition;
+			const FVector End = Start + CrosshairWorldDirection * 1000.f;
+			FHitResult HitLocation;
+			TArray<AActor*> IgnoredActors;
+
+			UKismetSystemLibrary::LineTraceSingle(this,
+			                                      Start,
+			                                      End,
+			                                      ETraceTypeQuery::TraceTypeQuery1,
+			                                      false,
+			                                      IgnoredActors,
+			                                      EDrawDebugTrace::ForOneFrame,
+			                                      HitLocation,
+			                                      false
+			);
+
+			if (HitLocation.bBlockingHit) {
+				UE_LOG(LogTemp, Warning, TEXT("HitLocation Actor Name %s CurrentCoverHitResult Actor Name %s"),
+				       *HitLocation.GetActor()->GetName(), *CurrentCoverHitResult.GetActor()->GetName())
+
+				FHitResult HitPlayer;
+
+				bool bPlayerIsOverlapped = UKismetSystemLibrary::LineTraceSingle(this,
+					Start,
+					GetActorLocation(),
+					ETraceTypeQuery::TraceTypeQuery1,
+					false,
+					IgnoredActors,
+					EDrawDebugTrace::None,
+					HitPlayer,
+					false
+				);
+
+				if (bPlayerIsOverlapped) {
+					if (HitPlayer.GetActor() == CurrentCoverHitResult.GetActor()) {
+						// UE_LOG(LogTemp, Warning, TEXT("WasRendered: %s, bPlayerIsOverlapped: %s"),
+						//        this->WasRecentlyRendered(0.01) ? TEXT("true") : TEXT("false"),
+						//        bPlayerIsOverlapped ? TEXT("true") : TEXT("false"))
+						HitPlayer.GetActor()->GetRootComponent()->SetVisibility(false);
+					}
+				} else {
+					CurrentCoverHitResult.GetActor()->GetRootComponent()->SetVisibility(true);
+				}
+			}
+		}
 	}
 }
 

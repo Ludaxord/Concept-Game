@@ -24,16 +24,17 @@ void AMainCharacterCameraManager::Tick(float DeltaSeconds) {
 
 	if (MainCharacter) {
 		if (MainCharacter->GetCameraState() == ECameraState::ECS_EyesCamera) {
-					SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset, FVector(0.0f), DeltaSeconds, 8.0f);
-		SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset,
-		                                           MainCharacter->GetAimingButtonPressed()
-			                                           ? SwayAim()
-			                                           : SwayIdle(),
-		                                           DeltaSeconds,
-		                                           5.0f);
+			SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset, FVector(0.0f), DeltaSeconds, 8.0f);
+			SwayOffset = UKismetMathLibrary::VInterpTo(SwayOffset,
+			                                           MainCharacter->GetAimingButtonPressed()
+				                                           ? SwayAim()
+				                                           : SwayIdle(),
+			                                           DeltaSeconds,
+			                                           5.0f);
 		}
-
 	}
+
+	
 }
 
 FVector AMainCharacterCameraManager::SwayIdle() {
