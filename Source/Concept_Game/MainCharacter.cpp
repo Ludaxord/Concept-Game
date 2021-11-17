@@ -422,7 +422,6 @@ void AMainCharacter::MoveRight(float Value) {
 				                                                      EDrawDebugTrace::Type::ForOneFrame,
 				                                                      Res,
 				                                                      true);
-				UE_LOG(LogTemp, Warning, TEXT("Trace3 %s"), bTrace ? TEXT("true") : TEXT("false"))
 				if (bTrace) {
 					GetCharacterMovement()->SetPlaneConstraintNormal(Res.Normal);
 					bTraceCoverLeft = Value > 0;
@@ -546,7 +545,8 @@ void AMainCharacter::Cover() {
 	if (!bCoverActive) {
 		FVector OutStart;
 		FVector OutEnd;
-		GetForwardTracers(OutStart, OutEnd);
+		FHitResult Res;
+		GetForwardTracers(OutStart, OutEnd, Res);
 
 		TArray<AActor*> IgnoredActors;
 		FHitResult OutHitResult;
@@ -564,8 +564,7 @@ void AMainCharacter::Cover() {
 		if (bTraced) {
 			if (OutHitResult.bBlockingHit) {
 				CurrentCoverHitResult = OutHitResult;
-				CurrentCoverCollisionResponse = CurrentCoverHitResult.GetComponent()->GetCollisionResponseToChannel(
-					ECollisionChannel::ECC_EngineTraceChannel2);
+
 				OutHitResult.Actor->GetActorBounds(false, CurrentCoverOrigin, CurrentCoverBoxExtend);
 				CoverLocation = OutHitResult.Location;
 				CoverNormal = OutHitResult.Normal;
@@ -614,7 +613,7 @@ void AMainCharacter::PeakTop() {
 	Cast<UMainAnimInstance>(GetMesh()->GetAnimInstance())->PeakTop_Implementation(bCoverPeakTop);
 }
 
-bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
+bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd, FHitResult& TraceHitResult) {
 	FVector RotFVector = GetActorRotation().Quaternion().GetForwardVector();
 	FVector MultipliedFVector = {RotFVector.X * 80.0f, RotFVector.Y * 80.0f, RotFVector.Z};
 	float CoverRadius = 20.0f;
@@ -622,7 +621,7 @@ bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
 	OutEnd = OutStart + MultipliedFVector;
 
 	TArray<AActor*> IgnoredActors;
-	FHitResult OutHitResult;
+	// FHitResult OutHitResult;
 	return UKismetSystemLibrary::SphereTraceSingle(this,
 	                                               OutStart,
 	                                               OutEnd,
@@ -631,7 +630,7 @@ bool AMainCharacter::GetForwardTracers(FVector& OutStart, FVector& OutEnd) {
 	                                               false,
 	                                               IgnoredActors,
 	                                               EDrawDebugTrace::Type::ForOneFrame,
-	                                               OutHitResult,
+	                                               TraceHitResult,
 	                                               true
 	);
 }
@@ -864,8 +863,6 @@ void AMainCharacter::UseWeapon() {
 	if (PoseType == EPoseType::EPT_Climb) return;
 	if (!IsWeaponUsable()) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("Use Weapon"));
-
 	UseWeaponByType(EquippedWeapon->GetWeaponType());
 
 }
@@ -935,7 +932,6 @@ void AMainCharacter::RunningButtonReleased() {
 void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
 	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
 	auto KeyTime = Player->GetInputKeyTimeDown(Key);
-
 
 	switch (PoseType) {
 	case EPoseType::EPT_Stand:
@@ -1416,7 +1412,8 @@ void AMainCharacter::SphereOverlapEnd(FGuid Guid) {
 void AMainCharacter::CoverSystem() {
 	FVector OutStart;
 	FVector OutEnd;
-	bool bCovering = GetForwardTracers(OutStart, OutEnd);
+	FHitResult TracerResult;
+	bool bCovering = GetForwardTracers(OutStart, OutEnd, TracerResult);
 	if (bInCover && bCoverActive && bCoveringActive) {
 		if (bCoverMontageEnded) {
 			bCanCover = bCovering;
@@ -1432,9 +1429,11 @@ void AMainCharacter::CoverSystem() {
 	}
 
 	if (bInCover) {
+		CurrentCoverHitResult = TracerResult;
 		LeftTracer();
 		RightTracer();
 		TopTracer();
+		TraceCharacterCover();
 		HideCoverOnCameraTrace();
 
 		FVector OutMoveTraceStart;
@@ -1557,6 +1556,11 @@ void AMainCharacter::TopTracer() {
 		bCanPeakTop = true;
 	}
 
+	if (bCanPeakTop && PoseType != EPoseType::EPT_Crouch)
+		PoseType = EPoseType::EPT_Crouch;
+
+	// CameraBoom->bDoCollisionTest = !bCanPeakTop;
+
 	if (bCoverPeakTop) {
 		if (!bAimingButtonPressed) {
 			if (bCameraMoved) {
@@ -1582,8 +1586,6 @@ void AMainCharacter::TopTracer() {
 void AMainCharacter::HideCoverOnCameraTrace() {
 	if (CurrentCoverHitResult.GetActor() != nullptr) {
 
-		// CurrentCoverHitResult.GetActor()->GetActorLocation();
-
 		FVector2D ViewportSize;
 		if (GEngine && GEngine->GameViewport) {
 			GEngine->GameViewport->GetViewportSize(ViewportSize);
@@ -1607,31 +1609,50 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 			const FVector Start = CrosshairWorldPosition;
 			const FVector End = Start + CrosshairWorldDirection * 1000.f;
 			FHitResult HitLocation;
-			TArray<AActor*> IgnoredActors;
+			TArray<AActor*> IgnoredActors = {CurrentCoverHitResult.GetActor()};
 
 			UKismetSystemLibrary::LineTraceSingle(this, Start, End, ETraceTypeQuery::TraceTypeQuery2, false,
 			                                      IgnoredActors, EDrawDebugTrace::ForOneFrame, HitLocation, false);
-			// GetWorld()->LineTraceSingleByChannel(HitLocation, Start, End, ECollisionChannel::ECC_Visibility);
-			// DrawDebugLine(GetWorld(), Start, End, FColor::Emerald);
+
+			FHitResult NextCoverHitResult;
+			FVector NextCoverTraceStart =  GetActorLocation();
+			if (bCanPeakLeft) {
+				NextCoverTraceStart = CoverLeftMovement->GetComponentLocation();
+			} else if (bCanPeakRight) {
+				NextCoverTraceStart = CoverRightMovement->GetComponentLocation();
+			}
+			const FVector NextCoverTraceEnd = NextCoverTraceStart +
+				CrosshairWorldDirection * 1000.f;
+			UKismetSystemLibrary::LineTraceSingle(this,
+			                                      NextCoverTraceStart,
+			                                      NextCoverTraceEnd,
+			                                      ETraceTypeQuery::TraceTypeQuery1,
+			                                      false,
+			                                      IgnoredActors,
+			                                      EDrawDebugTrace::ForOneFrame,
+			                                      NextCoverHitResult,
+			                                      false);
 
 			if (HitLocation.bBlockingHit) {
-				UE_LOG(LogTemp,
-				       Warning,
-				       TEXT(
-					       "HitLocation Actor Name %s CurrentCoverHitResult Actor Name %s, CurrentCollisionTraceStatus: %s"
-				       ),
-				       *HitLocation.GetActor()->GetName(),
-				       *CurrentCoverHitResult.GetActor()->GetName(),
-				       *UEnum::GetValueAsString(CurrentCoverHitResult.GetComponent()->GetCollisionResponseToChannel(
-					       ECollisionChannel::ECC_EngineTraceChannel2)))
+				// UE_LOG(LogTemp,
+				//        Warning,
+				//        TEXT(
+				// 	       "HitLocation Actor Name %s CurrentCoverHitResult Actor Name %s NextCoverHitResult Actor Name %s"
+				//        ),
+				//        *HitLocation.GetActor()->GetName(),
+				//        *CurrentCoverHitResult.GetActor()->GetName(),
+				//        *NextCoverHitResult.GetActor()->GetName()
+				// )
+
 				FHitResult HitPlayer;
+				TArray<AActor*> IA;
 
 				bool bPlayerIsOverlapped = UKismetSystemLibrary::LineTraceSingle(this,
 					Start,
 					GetActorLocation(),
 					ETraceTypeQuery::TraceTypeQuery1,
 					false,
-					IgnoredActors,
+					IA,
 					EDrawDebugTrace::None,
 					HitPlayer,
 					false
@@ -1639,40 +1660,48 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 
 				if (bPlayerIsOverlapped) {
 					if (HitPlayer.GetActor() == CurrentCoverHitResult.GetActor()) {
-
-						// UE_LOG(LogTemp, Warning, TEXT("WasRendered: %s, bPlayerIsOverlapped: %s"),
-						//        this->WasRecentlyRendered(0.01) ? TEXT("true") : TEXT("false"),
-						//        bPlayerIsOverlapped ? TEXT("true") : TEXT("false"))
 						CurrentCoverHitResult.GetActor()->GetRootComponent()->SetVisibility(false);
-						// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
-						// 	ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
-						// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
-						// 	ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-						// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
-						// 	ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Ignore);
-						CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
-							ECollisionChannel::ECC_EngineTraceChannel2, ECollisionResponse::ECR_Ignore);
-						CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
-							ECollisionChannel::ECC_EngineTraceChannel1, ECollisionResponse::ECR_Block);
 
-						// CurrentCoverHitResult.GetComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-
-						// HitPlayer.GetComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-						// HitPlayer.GetComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-						// HitPlayer.GetActor()->SetActorEnableCollision(false);
+						// 		// UE_LOG(LogTemp, Warning, TEXT("WasRendered: %s, bPlayerIsOverlapped: %s"),
+						// 		//        this->WasRecentlyRendered(0.01) ? TEXT("true") : TEXT("false"),
+						// 		//        bPlayerIsOverlapped ? TEXT("true") : TEXT("false"))
+						// 		// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 		// 	ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+						// 		// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 		// 	ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+						// 		// CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 		// 	ECollisionChannel::ECC_Destructible, ECollisionResponse::ECR_Ignore);
+						// 		CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 			ECollisionChannel::ECC_EngineTraceChannel2, ECollisionResponse::ECR_Ignore);
+						// 		CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
+						// 			ECollisionChannel::ECC_EngineTraceChannel1, ECollisionResponse::ECR_Block);
+						//
+						// 		// CurrentCoverHitResult.GetComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+						//
+						// 		// HitPlayer.GetComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+						// 		// HitPlayer.GetComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+						// 		// HitPlayer.GetActor()->SetActorEnableCollision(false);
+						// 	}
+					}
+					else {
+						CurrentCoverHitResult.GetActor()->GetRootComponent()->SetVisibility(true);
 					}
 				}
 				else {
 					CurrentCoverHitResult.GetActor()->GetRootComponent()->SetVisibility(true);
-					if (CurrentCoverHitResult.GetActor() != nullptr) {
-						CurrentCoverHitResult.GetComponent()->SetCollisionResponseToChannel(
-							ECollisionChannel::ECC_EngineTraceChannel2, CurrentCoverCollisionResponse);
-					}
-
 				}
 			}
 		}
 	}
+}
+
+void AMainCharacter::TraceCharacterCover() {
+	FHitResult HitResult;
+	TArray<AActor*> IgnoredActors;
+	const FVector Start = GetActorLocation();
+	const FVector End = GetActorUpVector() * (-100.0f) + GetActorLocation();
+	UKismetSystemLibrary::LineTraceSingle(this, Start, End, ETraceTypeQuery::TraceTypeQuery1, false,
+	                                      IgnoredActors, EDrawDebugTrace::ForOneFrame, HitResult, false);
 }
 
 bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight) {
@@ -1725,7 +1754,8 @@ void AMainCharacter::MoveInCover() {
 	if (bMoveLeft) {
 		if (MoveRightValue < 0) {
 			FVector Vec = UKismetMathLibrary::VInterpTo(Loc,
-			                                            (GetActorRotation().Quaternion().GetRightVector() * -20.0f) +
+			                                            (GetActorRotation().Quaternion().GetRightVector() * -20.0f)
+			                                            +
 			                                            Loc,
 			                                            GetWorld()->GetDeltaSeconds(),
 			                                            5.0f
@@ -1891,7 +1921,6 @@ FVector AMainCharacter::MoveToLocation() const {
 }
 
 void AMainCharacter::CanCover_Implementation(bool bCover) {
-
 }
 
 void AMainCharacter::MoveLeftRight_Implementation(float Direction) {
@@ -1899,14 +1928,12 @@ void AMainCharacter::MoveLeftRight_Implementation(float Direction) {
 }
 
 void AMainCharacter::PeakLeft_Implementation(bool PeakLeft) {
-
 }
 
 void AMainCharacter::PeakRight_Implementation(bool PeakRight) {
 }
 
 void AMainCharacter::PeakTop_Implementation(bool bPeakTop) {
-
 }
 
 float AMainCharacter::GetCrosshairSpreadMultiplier() const {

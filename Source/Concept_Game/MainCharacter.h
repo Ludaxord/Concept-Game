@@ -103,7 +103,7 @@ public:
 	void PeakRight();
 	void PeakTop();
 
-	bool GetForwardTracers(FVector& OutStart, FVector& OutEnd);
+	bool GetForwardTracers(FVector& OutStart, FVector& OutEnd, FHitResult& TracerHitResult);
 	bool GetInCoverMouseTracer(FVector& OutStart, FVector& OutEnd);
 
 	bool IsWeaponUsable();
@@ -211,6 +211,8 @@ public:
 	void TopTracer();
 
 	void HideCoverOnCameraTrace();
+
+	void TraceCharacterCover();
 
 	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f);
 
@@ -376,6 +378,7 @@ private:
 	float Tolerance;
 
 	AActor* CoverLeftSphereBlocker;
+
 	AActor* CoverRightSphereBlocker;
 
 	UPROPERTY(EditAnywhere, Category="Camera")
