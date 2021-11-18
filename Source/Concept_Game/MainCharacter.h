@@ -184,6 +184,8 @@ public:
 	template <typename T>
 	T* SpawnCoverPoint(TSubclassOf<T> CoverPortalClass);
 
+	bool RemoveCoverPoint(ACoverPoint* Point);
+
 	void EquipWeapon(AWeapon* WeaponToEquip, FName SocketName = "RightHandSocket", bool bSwapping = false);
 
 	void DropItem(AItem* ItemToDrop);

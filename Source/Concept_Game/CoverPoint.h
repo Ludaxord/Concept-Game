@@ -22,9 +22,21 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                          const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Point Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* PointMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Point Properties", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* MovementAreaSphere;
 
 	ACharacter* AttachedCharacter;
 

@@ -1341,6 +1341,10 @@ T* AMainCharacter::SpawnCoverPoint(TSubclassOf<T> CoverPortalClass
 	);
 }
 
+bool AMainCharacter::RemoveCoverPoint(ACoverPoint* Point) {
+	return GetWorld()->DestroyActor(Point);
+}
+
 void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool bSwapping) {
 	if (WeaponToEquip) {
 		// WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -1621,6 +1625,7 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 			const FVector End = Start + CrosshairWorldDirection * 1000.f;
 			FHitResult HitLocation;
 			TArray<AActor*> IgnoredActors = {CurrentCoverHitResult.GetActor()};
+			TArray<AActor*> IA;
 
 			UKismetSystemLibrary::LineTraceSingle(this, Start, End, ETraceTypeQuery::TraceTypeQuery2, false,
 			                                      IgnoredActors, EDrawDebugTrace::ForOneFrame, HitLocation, false);
@@ -1648,16 +1653,38 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 			                                      false);
 
 			if (NextCoverHitResult.bBlockingHit) {
-				if (CurrentCoverPoint == nullptr) {
-					CurrentCoverPoint = SpawnCoverPoint(DefaultCoverPointClass);
-					CurrentCoverPoint->AttachCharacter(this);
+				if (NextCoverHitResult.GetActor() != CurrentCoverHitResult.GetActor()) {
+					if (CurrentCoverPoint == nullptr) {
+						UE_LOG(LogTemp, Warning, TEXT("SPAWN NEW PORTAL"));
+						CurrentCoverPoint = SpawnCoverPoint(DefaultCoverPointClass);
+						CurrentCoverPoint->AttachCharacter(this);
+					}
+
+					if (CurrentCoverPoint != nullptr) {
+						CurrentCoverPoint->SetActorLocation(NextCoverHitResult.Location);
+					}
+
+					// UE_LOG(
+					// 	LogTemp, Warning, TEXT("NextCoverHitResult: %s CurrentCoverPoint: %s, Location: %s"),
+					// 	*NextCoverHitResult.GetActor()->GetName(), *CurrentCoverPoint->GetName(),
+					// 	*CurrentCoverPoint->GetActorLocation().ToString()
+					// )
+				}
+				else {
+					if (CurrentCoverPoint != nullptr) {
+						if (RemoveCoverPoint(CurrentCoverPoint)) {
+							CurrentCoverPoint = nullptr;
+						}
+					}
+				}
+			}
+			else {
+				if (CurrentCoverPoint != nullptr) {
+					if (RemoveCoverPoint(CurrentCoverPoint)) {
+						CurrentCoverPoint = nullptr;
+					}
 				}
 
-				CurrentCoverPoint->SetActorLocation(NextCoverHitResult.Location);
-
-				UE_LOG(LogTemp, Warning, TEXT("NextCoverHitResult: %s CurrentCoverPoint: %s, Location: %s"),
-				       *NextCoverHitResult.GetActor()->GetName(), *CurrentCoverPoint->GetName(),
-				       *CurrentCoverPoint->GetActorLocation().ToString())
 			}
 
 			if (HitLocation.bBlockingHit) {
@@ -1672,7 +1699,6 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 				// )
 
 				FHitResult HitPlayer;
-				TArray<AActor*> IA;
 
 				bool bPlayerIsOverlapped = UKismetSystemLibrary::LineTraceSingle(this,
 					Start,
