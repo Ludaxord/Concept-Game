@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AmmoType.h"
+#include "CoverPoint.h"
 #include "CyberWeapon.h"
 #include "FireWeapon.h"
 #include "MainCharacterInterface.h"
@@ -179,6 +180,9 @@ public:
 
 	template <typename T>
 	T* SpawnWeapon(TSubclassOf<T> WeaponClass);
+
+	template <typename T>
+	T* SpawnCoverPoint(TSubclassOf<T> CoverPortalClass);
 
 	void EquipWeapon(AWeapon* WeaponToEquip, FName SocketName = "RightHandSocket", bool bSwapping = false);
 
@@ -370,6 +374,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bTraceCoverRight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ACoverPoint> DefaultCoverPointClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	ACoverPoint* CurrentCoverPoint;
 
 	FVector CurrentCoverOrigin;
 

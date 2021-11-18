@@ -1330,6 +1330,17 @@ T* AMainCharacter::SpawnWeapon(TSubclassOf<T> WeaponClass) {
 	return GetWorld()->SpawnActor<T>(WeaponClass);
 }
 
+template <typename T>
+T* AMainCharacter::SpawnCoverPoint(TSubclassOf<T> CoverPortalClass
+	// , FVector& CoverLocation, FRotator& CoverRotation
+) {
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	return GetWorld()->SpawnActor<T>(CoverPortalClass
+		//, CoverLocation, CoverRotation, SpawnParams
+	);
+}
+
 void AMainCharacter::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool bSwapping) {
 	if (WeaponToEquip) {
 		// WeaponToEquip->GetAreaSphere()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -1615,14 +1626,17 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 			                                      IgnoredActors, EDrawDebugTrace::ForOneFrame, HitLocation, false);
 
 			FHitResult NextCoverHitResult;
-			FVector NextCoverTraceStart =  GetActorLocation();
+			FVector NextCoverTraceStart = GetActorLocation();
 			if (bCanPeakLeft) {
 				NextCoverTraceStart = CoverLeftMovement->GetComponentLocation();
-			} else if (bCanPeakRight) {
+			}
+			else if (bCanPeakRight) {
 				NextCoverTraceStart = CoverRightMovement->GetComponentLocation();
 			}
-			const FVector NextCoverTraceEnd = NextCoverTraceStart +
-				CrosshairWorldDirection * 1000.f;
+			FRotator NextCoverRotation = GetActorRotation();
+			FVector NextCoverTraceEnd = NextCoverTraceStart +
+				CrosshairWorldDirection
+				* 1800.f;
 			UKismetSystemLibrary::LineTraceSingle(this,
 			                                      NextCoverTraceStart,
 			                                      NextCoverTraceEnd,
@@ -1632,6 +1646,19 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 			                                      EDrawDebugTrace::ForOneFrame,
 			                                      NextCoverHitResult,
 			                                      false);
+
+			if (NextCoverHitResult.bBlockingHit) {
+				if (CurrentCoverPoint == nullptr) {
+					CurrentCoverPoint = SpawnCoverPoint(DefaultCoverPointClass);
+					CurrentCoverPoint->AttachCharacter(this);
+				}
+
+				CurrentCoverPoint->SetActorLocation(NextCoverHitResult.Location);
+
+				UE_LOG(LogTemp, Warning, TEXT("NextCoverHitResult: %s CurrentCoverPoint: %s, Location: %s"),
+				       *NextCoverHitResult.GetActor()->GetName(), *CurrentCoverPoint->GetName(),
+				       *CurrentCoverPoint->GetActorLocation().ToString())
+			}
 
 			if (HitLocation.bBlockingHit) {
 				// UE_LOG(LogTemp,
