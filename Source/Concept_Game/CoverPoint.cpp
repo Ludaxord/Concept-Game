@@ -32,7 +32,6 @@ void ACoverPoint::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 }
 
-
 void ACoverPoint::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                        const FHitResult& SweepResult) {

@@ -218,6 +218,8 @@ public:
 
 	void HideCoverOnCameraTrace();
 
+	void MoveRightInCover(float Value);
+
 	void TraceCharacterCover();
 
 	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f);
@@ -361,6 +363,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	FHitResult CurrentCoverHitResult;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	class ACover* CurrentCover;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionResponse> CurrentCoverCollisionResponse;
@@ -828,6 +833,30 @@ public:
 
 	FORCEINLINE float GetLookValue() const {
 		return LookValue;
+	}
+
+	FORCEINLINE void SetTraceCoverLeft(bool InTraceCoverLeft) {
+		bTraceCoverLeft = InTraceCoverLeft;
+	}
+
+	FORCEINLINE void SetTraceCoverRight(bool InTraceCoverRight) {
+		bTraceCoverRight = InTraceCoverRight;
+	}
+
+	FORCEINLINE bool GetCanPeakLeft() {
+		return bCanPeakLeft;
+	}
+
+	FORCEINLINE bool GetCanPeakRight() {
+		return bCanPeakRight;
+	}
+
+	FORCEINLINE bool GetMoveLeft() {
+		return bMoveLeft;
+	}
+
+	FORCEINLINE bool GetMoveRight() {
+		return bMoveRight;
 	}
 
 	UFUNCTION(BlueprintCallable)
