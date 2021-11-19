@@ -42,6 +42,10 @@ public:
 
 	void MoveRight(float Value);
 
+	void Aim();
+
+	void StopAiming();
+
 	UFUNCTION()
 	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 	                    class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,

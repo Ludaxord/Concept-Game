@@ -79,68 +79,44 @@ FVector ACover::MoveForward(float Value) {
 	}
 
 	return FVector(0.0f);
-}	
+}
 
 void ACover::MoveRight(float Value) {
 	if (CurrentOverlappingCharacter) {
 		CurrentOverlappingCharacter->MoveRightInCover(Value);
-		// const FRotator Rotation = CurrentOverlappingCharacter->Controller->GetControlRotation();
-		// const FRotator YawRotation = {0, Rotation.Yaw, 0};
-		// if (CurrentOverlappingCharacter->GetMoveLeft() && CurrentOverlappingCharacter->GetMoveRight()) {
-		// 	FHitResult Res;
-		//
-		// 	TArray<AActor*> IgnoredActors;
-		// 	bool bTrace = UKismetSystemLibrary::SphereTraceSingle(this,
-		// 	                                                      CurrentOverlappingCharacter->GetActorLocation(),
-		// 	                                                      CurrentOverlappingCharacter->GetActorLocation() +
-		// 	                                                      CurrentOverlappingCharacter->GetCharacterMovement()->
-		// 	                                                      GetPlaneConstraintNormal()
-		// 	                                                      *
-		// 	                                                      -1.0f *
-		// 	                                                      300.0f,
-		// 	                                                      60.f,
-		// 	                                                      ETraceTypeQuery::TraceTypeQuery1,
-		// 	                                                      false,
-		// 	                                                      IgnoredActors,
-		// 	                                                      EDrawDebugTrace::Type::ForOneFrame,
-		// 	                                                      Res,
-		// 	                                                      true);
-		// 	if (bTrace) {
-		// 		CurrentOverlappingCharacter->GetCharacterMovement()->SetPlaneConstraintNormal(Res.Normal);
-		// 		CurrentOverlappingCharacter->SetTraceCoverLeft(Value > 0);
-		// 		CurrentOverlappingCharacter->SetTraceCoverRight(Value < 0);
-		//
-		// 		CurrentOverlappingCharacter->AddMovementInput(YawRotation.Quaternion().GetRightVector(), Value);
-		// 	}
-		// }
-		// else {
-		// 	float CurrentValue = 0.0f;
-		// 	const float ValueSign = FMath::Sign(Value);
-		// 	bool bDir;
-		// 	if (ValueSign == 1.f) {
-		// 		bDir = CurrentOverlappingCharacter->GetMoveRight();
-		// 	}
-		// 	else {
-		// 		bDir = CurrentOverlappingCharacter->GetMoveLeft();
-		// 	}
-		//
-		// 	if (ValueSign != 0.0f && bDir) {
-		// 		CurrentValue = Value;
-		// 	}
-		//
-		// 	CurrentOverlappingCharacter->SetTraceCoverLeft(CurrentValue > 0);
-		// 	CurrentOverlappingCharacter->SetTraceCoverRight(CurrentValue < 0);
-		//
-		// 	if (!CurrentOverlappingCharacter->GetTraceCoverLeft() && CurrentValue == 0.0f) {
-		// 		CurrentOverlappingCharacter->SetTraceCoverLeft(CurrentOverlappingCharacter->GetCanPeakLeft());
-		// 	}
-		//
-		// 	if (!CurrentOverlappingCharacter->GetTraceCoverRight() && CurrentValue == 0.0f) {
-		// 		CurrentOverlappingCharacter->SetTraceCoverRight(CurrentOverlappingCharacter->GetCanPeakRight());
-		// 	}
-		//
-		// 	CurrentOverlappingCharacter->AddMovementInput(YawRotation.Quaternion().GetRightVector(), CurrentValue);
-		// }
+	}
+}
+
+void ACover::Aim() {
+	if (CurrentOverlappingCharacter) {
+		if (CurrentOverlappingCharacter->GetCanPeakLeft()) {
+			CurrentOverlappingCharacter->SetCoverPeakLeft(true);
+		}
+		CurrentOverlappingCharacter->PeakLeft();
+
+		if (CurrentOverlappingCharacter->GetCanPeakRight()) {
+			CurrentOverlappingCharacter->SetCoverPeakRight(true);
+		}
+		CurrentOverlappingCharacter->PeakRight();
+
+		if (!CurrentOverlappingCharacter->GetCoverPeakRight() && !CurrentOverlappingCharacter->GetCoverPeakLeft()) {
+			if (CurrentOverlappingCharacter->GetCanPeakTop()) {
+				CurrentOverlappingCharacter->SetCoverPeakTop(true);
+			}
+			CurrentOverlappingCharacter->PeakTop();
+		}
+	}
+
+}
+
+void ACover::StopAiming() {
+	if (CurrentOverlappingCharacter) {
+		CurrentOverlappingCharacter->SetCoverPeakLeft(false);
+		CurrentOverlappingCharacter->PeakLeft();
+		CurrentOverlappingCharacter->SetCoverPeakRight(false);
+		CurrentOverlappingCharacter->PeakRight();
+		CurrentOverlappingCharacter->SetCoverPeakTop(false);
+		CurrentOverlappingCharacter->PeakTop();
 	}
 }
 

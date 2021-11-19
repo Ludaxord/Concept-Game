@@ -843,12 +843,40 @@ public:
 		bTraceCoverRight = InTraceCoverRight;
 	}
 
+	FORCEINLINE void SetCoverPeakLeft(bool InCoverPeakLeft) {
+		bCoverPeakLeft = InCoverPeakLeft;
+	}
+
+	FORCEINLINE void SetCoverPeakRight(bool InCoverPeakRight) {
+		bCoverPeakRight = InCoverPeakRight;
+	}
+
+	FORCEINLINE void SetCoverPeakTop(bool InCoverPeakTop) {
+		bCoverPeakTop = InCoverPeakTop;
+	}
+
 	FORCEINLINE bool GetCanPeakLeft() {
 		return bCanPeakLeft;
 	}
 
 	FORCEINLINE bool GetCanPeakRight() {
 		return bCanPeakRight;
+	}
+
+	FORCEINLINE bool GetCanPeakTop() {
+		return bCanPeakTop;
+	}
+
+	FORCEINLINE bool GetCoverPeakLeft() {
+		return bCoverPeakLeft;
+	}
+
+	FORCEINLINE bool GetCoverPeakRight() {
+		return bCoverPeakRight;
+	}
+
+	FORCEINLINE bool GetCoverPeakTop() {
+		return bCoverPeakTop;
 	}
 
 	FORCEINLINE bool GetMoveLeft() {

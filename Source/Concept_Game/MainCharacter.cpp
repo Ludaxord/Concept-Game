@@ -415,8 +415,6 @@ bool AMainCharacter::TraceCoverMovement(float Orientation) {
 	FVector StartTrace = GetActorLocation() + CoverRot.Quaternion().GetRightVector() * 80.f;
 	FVector EndTrace = StartTrace + CharacterNormalVector * 200.f;
 
-	// bool Trace = GetWorld()->LineTraceSingleByChannel(OutHitResult, StartTrace, EndTrace, ECC_EngineTraceChannel1);
-	// DrawDebugLine(GetWorld(), StartTrace, EndTrace, FColor::Magenta, false, 50.0f);
 	TArray<AActor*> IgnoredActors;
 	bool Trace = UKismetSystemLibrary::SphereTraceSingle(this,
 	                                                     StartTrace,
@@ -837,22 +835,8 @@ void AMainCharacter::AimingButtonPressed() {
 			Aim();
 		}
 		else {
-			if (bCanPeakLeft) {
-				bCoverPeakLeft = true;
-			}
-			PeakLeft();
-
-			if (bCanPeakRight) {
-				bCoverPeakRight = true;
-			}
-			PeakRight();
-
-			if (!bCoverPeakRight && !bCoverPeakLeft) {
-				if (bCanPeakTop) {
-					bCoverPeakTop = true;
-				}
-				PeakTop();
-			}
+			if (CurrentCover)
+				CurrentCover->Aim();
 		}
 	}
 }
@@ -863,12 +847,8 @@ void AMainCharacter::AimingButtonReleased() {
 		StopAiming();
 	}
 	else {
-		bCoverPeakLeft = false;
-		PeakLeft();
-		bCoverPeakRight = false;
-		PeakRight();
-		bCoverPeakTop = false;
-		PeakTop();
+		if(CurrentCover)
+			CurrentCover->StopAiming();
 	}
 }
 
