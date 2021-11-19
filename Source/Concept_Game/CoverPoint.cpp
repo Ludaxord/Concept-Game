@@ -34,12 +34,16 @@ void ACoverPoint::Tick(float DeltaTime) {
 
 
 void ACoverPoint::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-                                 const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlapping %s"), * OtherActor->GetName());
+                                       UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+                                       const FHitResult& SweepResult) {
+	UE_LOG(LogTemp, Warning, TEXT("Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+	       *OtherActor->GetName(),
+	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
 }
 
 void ACoverPoint::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-		UE_LOG(LogTemp, Warning, TEXT("End Overlapping %s"), * OtherActor->GetName());
+                                     UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	UE_LOG(LogTemp, Warning, TEXT("End Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+	       *OtherActor->GetName(),
+	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
 }
