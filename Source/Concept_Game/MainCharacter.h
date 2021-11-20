@@ -855,6 +855,10 @@ public:
 		bCoverPeakTop = InCoverPeakTop;
 	}
 
+	FORCEINLINE ACover* GetCurrentCover() {
+		return CurrentCover;
+	}
+
 	FORCEINLINE bool GetCanPeakLeft() {
 		return bCanPeakLeft;
 	}

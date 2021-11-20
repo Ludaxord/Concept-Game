@@ -3,6 +3,7 @@
 
 #include "CoverPoint.h"
 
+#include "Cover.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -25,6 +26,7 @@ void ACoverPoint::BeginPlay() {
 
 	MovementAreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ACoverPoint::OnSphereBeginOverlap);
 	MovementAreaSphere->OnComponentEndOverlap.AddDynamic(this, &ACoverPoint::OnSphereEndOverlap);
+	PointMesh->SetVisibility(false);
 }
 
 // Called every frame
@@ -35,14 +37,30 @@ void ACoverPoint::Tick(float DeltaTime) {
 void ACoverPoint::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                        const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
-	       *OtherActor->GetName(),
-	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+	ACover* CurrentOverlappingCover = Cast<ACover>(OtherActor);
+	if (AttachedCharacter) {
+		AMainCharacter* Character = Cast<AMainCharacter>(AttachedCharacter);
+		if (Character) {
+			ACover* CurrentCover = Character->GetCurrentCover();
+			if (CurrentOverlappingCover != CurrentCover && Cast<AMainCharacter>(OtherActor) != AttachedCharacter) {
+				PointMesh->SetVisibility(true);
+				UE_LOG(LogTemp, Warning, TEXT("Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+				       *OtherActor->GetName(),
+				       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+				OverlappingCover = CurrentOverlappingCover;
+			}
+		}
+	}
 }
 
 void ACoverPoint::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                      UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("End Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
-	       *OtherActor->GetName(),
-	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+	ACover* CurrentOverlappingCover = Cast<ACover>(OtherActor);
+	if (OverlappingCover == CurrentOverlappingCover) {
+		PointMesh->SetVisibility(false);
+		UE_LOG(LogTemp, Warning, TEXT("End Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+		       *OtherActor->GetName(),
+		       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+		OverlappingCover = nullptr;
+	}
 }

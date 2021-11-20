@@ -42,8 +42,26 @@ private:
 
 	FGuid ID;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Point Properties", meta = (AllowPrivateAccess = "true"))
+	class ACover* OverlappingCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Point Properties", meta = (AllowPrivateAccess = "true"))
+	FVector CoverNormal;
+
 public:
 	FORCEINLINE void AttachCharacter(ACharacter* Character) {
 		AttachedCharacter = Character;
+	}
+
+	FORCEINLINE ACover* GetOverlappingCover() {
+		return OverlappingCover;
+	}
+
+	FORCEINLINE void SetCoverNormal(FVector Normal) {
+		CoverNormal = Normal;
+	}
+
+	FORCEINLINE FVector GetCoverNormal() {
+		return CoverNormal ;
 	}
 };

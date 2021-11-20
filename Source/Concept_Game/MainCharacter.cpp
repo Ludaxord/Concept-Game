@@ -847,7 +847,7 @@ void AMainCharacter::AimingButtonReleased() {
 		StopAiming();
 	}
 	else {
-		if(CurrentCover)
+		if (CurrentCover)
 			CurrentCover->StopAiming();
 	}
 }
@@ -911,10 +911,31 @@ void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
 
 void AMainCharacter::Jump() {
 	if (PoseType != EPoseType::EPT_Climb) {
-		if (PoseType != EPoseType::EPT_Stand) {
+		if (PoseType != EPoseType::EPT_Stand && !bInCover || !bCoverActive || !bCoveringActive) {
 			UE_LOG(LogTemp, Warning, TEXT("Jumping Not Stand"));
 			PoseType = EPoseType::EPT_Stand;
 			GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+		}
+		else if (bInCover || bCoverActive || bCoveringActive) {
+			if (CurrentCoverPoint->GetOverlappingCover() != nullptr) {
+				UE_LOG(LogTemp, Warning, TEXT("Change Cover"))
+				FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CurrentCoverPoint->GetCoverNormal());
+				FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
+				                              - 180.0f
+				                              , CoverRot.Roll);
+				FLatentActionInfo Info = FLatentActionInfo();
+				Info.CallbackTarget = this;
+				//TODO: Just for test, need to add animations
+				UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
+				                                      CurrentCoverPoint->GetActorLocation(),
+				                                      TargetRot,
+				                                      false,
+				                                      false,
+				                                      0.2f,
+				                                      false,
+				                                      EMoveComponentAction::Type::Move,
+				                                      Info);
+			}
 		}
 		else {
 			UE_LOG(LogTemp, Warning, TEXT("Jumping Base"));
@@ -1593,6 +1614,7 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 
 					if (CurrentCoverPoint != nullptr) {
 						CurrentCoverPoint->SetActorLocation(NextCoverHitResult.Location);
+						CurrentCoverPoint->SetCoverNormal(NextCoverHitResult.Normal);
 					}
 				}
 				else {
@@ -1664,64 +1686,64 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 }
 
 void AMainCharacter::MoveRightInCover(float Value) {
-				const FRotator Rotation = Controller->GetControlRotation();
-				const FRotator YawRotation = {0, Rotation.Yaw, 0};
-				if (bMoveLeft && bMoveRight) {
-					FHitResult Res;
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation = {0, Rotation.Yaw, 0};
+	if (bMoveLeft && bMoveRight) {
+		FHitResult Res;
 
-					TArray<AActor*> IgnoredActors;
-					bool bTrace = UKismetSystemLibrary::SphereTraceSingle(this,
-					                                                      GetActorLocation(),
-					                                                      GetActorLocation() +
-					                                                      GetCharacterMovement()->
-					                                                      GetPlaneConstraintNormal()
-					                                                      *
-					                                                      -1.0f *
-					                                                      300.0f,
-					                                                      60.f,
-					                                                      ETraceTypeQuery::TraceTypeQuery1,
-					                                                      false,
-					                                                      IgnoredActors,
-					                                                      EDrawDebugTrace::Type::ForOneFrame,
-					                                                      Res,
-					                                                      true);
-					if (bTrace) {
-						GetCharacterMovement()->SetPlaneConstraintNormal(Res.Normal);
-						bTraceCoverLeft = Value > 0;
-						bTraceCoverRight = Value < 0;
+		TArray<AActor*> IgnoredActors;
+		bool bTrace = UKismetSystemLibrary::SphereTraceSingle(this,
+		                                                      GetActorLocation(),
+		                                                      GetActorLocation() +
+		                                                      GetCharacterMovement()->
+		                                                      GetPlaneConstraintNormal()
+		                                                      *
+		                                                      -1.0f *
+		                                                      300.0f,
+		                                                      60.f,
+		                                                      ETraceTypeQuery::TraceTypeQuery1,
+		                                                      false,
+		                                                      IgnoredActors,
+		                                                      EDrawDebugTrace::Type::ForOneFrame,
+		                                                      Res,
+		                                                      true);
+		if (bTrace) {
+			GetCharacterMovement()->SetPlaneConstraintNormal(Res.Normal);
+			bTraceCoverLeft = Value > 0;
+			bTraceCoverRight = Value < 0;
 
-						AddMovementInput(YawRotation.Quaternion().GetRightVector(), Value);
-					}
-				}
-				else {
-					float CurrentValue = 0.0f;
-					const float ValueSign = FMath::Sign(Value);
-					bool bDir;
-					if (ValueSign == 1.f) {
-						bDir = bMoveRight;
-					}
-					else {
-						bDir = bMoveLeft;
-					}
+			AddMovementInput(YawRotation.Quaternion().GetRightVector(), Value);
+		}
+	}
+	else {
+		float CurrentValue = 0.0f;
+		const float ValueSign = FMath::Sign(Value);
+		bool bDir;
+		if (ValueSign == 1.f) {
+			bDir = bMoveRight;
+		}
+		else {
+			bDir = bMoveLeft;
+		}
 
-					if (ValueSign != 0.0f && bDir) {
-						CurrentValue = Value;
-					}
+		if (ValueSign != 0.0f && bDir) {
+			CurrentValue = Value;
+		}
 
-					bTraceCoverLeft = CurrentValue > 0;
-					bTraceCoverRight = CurrentValue < 0;
+		bTraceCoverLeft = CurrentValue > 0;
+		bTraceCoverRight = CurrentValue < 0;
 
-					if (!bTraceCoverLeft && CurrentValue == 0.0f) {
-						bTraceCoverLeft = bCanPeakLeft;
-					}
+		if (!bTraceCoverLeft && CurrentValue == 0.0f) {
+			bTraceCoverLeft = bCanPeakLeft;
+		}
 
-					if (!bTraceCoverRight && CurrentValue == 0.0f) {
-						bTraceCoverRight = bCanPeakRight;
-					}
+		if (!bTraceCoverRight && CurrentValue == 0.0f) {
+			bTraceCoverRight = bCanPeakRight;
+		}
 
-					AddMovementInput(YawRotation.Quaternion().GetRightVector(), CurrentValue);
-				}
-			}
+		AddMovementInput(YawRotation.Quaternion().GetRightVector(), CurrentValue);
+	}
+}
 
 void AMainCharacter::TraceCharacterCover() {
 	FHitResult HitResult;
