@@ -921,6 +921,10 @@ void AMainCharacter::Jump() {
 			if (CurrentCoverPoint->GetOverlappingCover() != nullptr) {
 				UE_LOG(LogTemp, Warning, TEXT("Change Cover"))
 				bMoveInCover = true;
+
+				if (CurrentCover)
+					CurrentCover->GetRootComponent()->SetVisibility(true);
+
 				FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CurrentCoverPoint->GetCoverNormal());
 				FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
 				                              - 180.0f
@@ -1463,6 +1467,8 @@ void AMainCharacter::ExitCover() {
 	bInCover = false;
 	SwitchCamera(false);
 	GetCharacterMovement()->SetPlaneConstraintEnabled(false);
+	if (CurrentCover)
+		CurrentCover->GetRootComponent()->SetVisibility(true);
 }
 
 

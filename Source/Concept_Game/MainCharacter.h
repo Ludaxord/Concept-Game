@@ -897,6 +897,10 @@ public:
 		return bMoveRight;
 	}
 
+	FORCEINLINE bool GetMoveInCover() {
+		return bMoveInCover;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	float GetCrosshairSpreadMultiplier() const;
 
