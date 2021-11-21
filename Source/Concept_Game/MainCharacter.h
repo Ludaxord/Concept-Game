@@ -230,6 +230,9 @@ public:
 
 	void MoveInCover();
 
+	UFUNCTION(BlueprintCallable)
+	void MoveBetweenCovers();
+
 	UFUNCTION()
 	void CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
@@ -297,6 +300,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCoverPeakTop;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bMoveInCover;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cover", meta = (AllowPrivateAccess = "true"))
 	class UAnimMontage* TakeCoverMontage;

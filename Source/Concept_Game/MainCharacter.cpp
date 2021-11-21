@@ -36,6 +36,7 @@ AMainCharacter::AMainCharacter():
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
+	bMoveInCover(false),
 	bCameraMoved(false),
 	bOverlappingLadderBottom(false),
 	bOverlappingLadderTop(false),
@@ -911,7 +912,7 @@ void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
 
 void AMainCharacter::Jump() {
 	if (PoseType != EPoseType::EPT_Climb) {
-		if (PoseType != EPoseType::EPT_Stand && !bInCover || !bCoverActive || !bCoveringActive) {
+		if (PoseType != EPoseType::EPT_Stand && (!bInCover || !bCoverActive || !bCoveringActive)) {
 			UE_LOG(LogTemp, Warning, TEXT("Jumping Not Stand"));
 			PoseType = EPoseType::EPT_Stand;
 			GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
@@ -919,19 +920,26 @@ void AMainCharacter::Jump() {
 		else if (bInCover || bCoverActive || bCoveringActive) {
 			if (CurrentCoverPoint->GetOverlappingCover() != nullptr) {
 				UE_LOG(LogTemp, Warning, TEXT("Change Cover"))
+				bMoveInCover = true;
 				FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CurrentCoverPoint->GetCoverNormal());
 				FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
 				                              - 180.0f
 				                              , CoverRot.Roll);
 				FLatentActionInfo Info = FLatentActionInfo();
 				Info.CallbackTarget = this;
+				Info.ExecutionFunction = "MoveBetweenCovers";
+				Info.Linkage = 0;
+				Info.UUID = FMath::Rand();
+
+				float Dist = FVector::Dist(GetActorLocation(), CurrentCoverPoint->GetActorLocation());
+
 				//TODO: Just for test, need to add animations
 				UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
 				                                      CurrentCoverPoint->GetActorLocation(),
 				                                      TargetRot,
 				                                      false,
 				                                      false,
-				                                      0.2f,
+				                                      Dist / GetCharacterMovement()->MaxWalkSpeed,
 				                                      false,
 				                                      EMoveComponentAction::Type::Move,
 				                                      Info);
@@ -1383,30 +1391,32 @@ void AMainCharacter::CoverSystem() {
 	FVector OutEnd;
 	FHitResult TracerResult;
 	bool bCovering = GetForwardTracers(OutStart, OutEnd, TracerResult);
-	if (bInCover && bCoverActive && bCoveringActive) {
-		if (bCoverMontageEnded) {
-			bCanCover = bCovering;
-			if (!bCanCover) {
-				if (PoseType != EPoseType::EPT_Climb) {
-					bCoverActive = false;
-					bCoveringActive = false;
-					bInCover = false;
-					SwitchCamera(false);
+	if (!bMoveInCover) {
+		if (bInCover && bCoverActive && bCoveringActive) {
+			if (bCoverMontageEnded) {
+				bCanCover = bCovering;
+				if (!bCanCover) {
+					if (PoseType != EPoseType::EPT_Climb) {
+						bCoverActive = false;
+						bCoveringActive = false;
+						bInCover = false;
+						SwitchCamera(false);
+					}
 				}
 			}
 		}
-	}
 
-	if (bInCover) {
-		CurrentCoverHitResult = TracerResult;
-		CurrentCover = Cast<ACover>(TracerResult.Actor);
-		if (CurrentCover) {
-			CurrentCover->SetCurrentOverlappingCharacter(this);
-			CurrentCover->InCoverSystem();
+		if (bInCover) {
+			CurrentCoverHitResult = TracerResult;
+			CurrentCover = Cast<ACover>(TracerResult.Actor);
+			if (CurrentCover) {
+				CurrentCover->SetCurrentOverlappingCharacter(this);
+				CurrentCover->InCoverSystem();
+			}
 		}
-	}
-	else {
-		bStoreTolerance = false;
+		else {
+			bStoreTolerance = false;
+		}
 	}
 }
 
@@ -1820,6 +1830,11 @@ void AMainCharacter::MoveInCover() {
 		bMoveRight = false;
 		bMoveLeft = false;
 	}
+}
+
+void AMainCharacter::MoveBetweenCovers() {
+	UE_LOG(LogTemp, Warning, TEXT("MoveBetweenCovers %s"), bMoveInCover ? TEXT("true") : TEXT("false"))
+	bMoveInCover = false;
 }
 
 void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
