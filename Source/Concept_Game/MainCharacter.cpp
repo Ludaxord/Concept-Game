@@ -938,9 +938,15 @@ void AMainCharacter::Jump() {
 
 				float Dist = FVector::Dist(GetActorLocation(), CurrentCoverPoint->GetActorLocation());
 
+				GetCapsuleComponent()->SetWorldRotation(TargetRot);
+
+				FVector NewLocation = {
+					CurrentCoverPoint->GetActorLocation().X, CurrentCoverPoint->GetActorLocation().Y,
+					GetActorLocation().Z
+				};
 				//TODO: Just for test, need to add animations
 				UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
-				                                      CurrentCoverPoint->GetActorLocation(),
+				                                      NewLocation,
 				                                      TargetRot,
 				                                      false,
 				                                      false,
