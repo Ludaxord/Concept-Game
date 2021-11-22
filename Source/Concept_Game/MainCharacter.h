@@ -129,6 +129,8 @@ public:
 
 	void Jump() override;
 
+	virtual void Landed(const FHitResult& Hit) override;
+
 	void Crouching();
 	void Crawling();
 	void Standing();
@@ -612,6 +614,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	bool bOverlappingLadderTop;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	int TimesJumped;
 
 	EPoseType LastPoseType;
 

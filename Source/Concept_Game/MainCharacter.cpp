@@ -27,6 +27,7 @@ AMainCharacter::AMainCharacter():
 	BaseTurnRate(45.0f),
 	BaseLookUpRate(45.0f),
 	HipTurnRate(90.0f),
+	TimesJumped(0),
 	HipLookUpRate(90.0f),
 	Tolerance(120.0f),
 	AimingTurnRate(20.0f),
@@ -951,7 +952,14 @@ void AMainCharacter::Jump() {
 		}
 		else {
 			UE_LOG(LogTemp, Warning, TEXT("Jumping Base"));
-			Super::Jump();
+			if (TimesJumped < 2) {
+				if (GetCharacterMovement()->IsFalling()) {
+					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+					// LaunchCharacter(FVector(0.0f, 0.0f, 500.f), false, true);
+				}
+				Super::Jump();
+				TimesJumped++;
+			}
 		}
 	}
 	else {
@@ -960,9 +968,23 @@ void AMainCharacter::Jump() {
 		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 		SwitchCamera(false);
 		UE_LOG(LogTemp, Warning, TEXT("Jumping From Climb %s"), bJumpFromClimb ? TEXT("true") : TEXT("false"));
-		Super::Jump();
+		if (TimesJumped < 2) {
+			if (GetCharacterMovement()->IsFalling()) {
+				GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+				// LaunchCharacter(FVector(0.0f, 0.0f, 500.f), false, true);
+			}
+			Super::Jump();
+			TimesJumped++;
+		}
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Times Jumped: %i"), TimesJumped)
+
+}
+
+void AMainCharacter::Landed(const FHitResult& MovieSceneBlends) {
+	TimesJumped = 0;
+	Super::Landed(MovieSceneBlends);
 }
 
 void AMainCharacter::Crouching() {
