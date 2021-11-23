@@ -1820,7 +1820,7 @@ void AMainCharacter::TraceCoverDisableWhileInCover() {
 bool AMainCharacter::FrontTraceCoverDisable() {
 	FVector RotFVector = GetActorRotation().Quaternion().GetForwardVector();
 	FVector MultipliedFVector = {RotFVector.X * 80.0f, RotFVector.Y * 80.0f, RotFVector.Z};
-	FVector OutStart = {GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 40.f};
+	FVector OutStart = {GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 20.f};
 	FVector OutEnd = OutStart + MultipliedFVector;
 	TArray<AActor*> IgnoredActors;
 	FHitResult HitResult;
