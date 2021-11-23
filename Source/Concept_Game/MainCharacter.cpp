@@ -1832,16 +1832,16 @@ bool AMainCharacter::FrontTraceCoverDisable() {
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
 	TraceObjects.Add(EObjectTypeQuery::ObjectTypeQuery1);
-
-	bool Hit = UKismetSystemLibrary::SphereTraceMulti(this,
+	ETraceTypeQuery MyTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel3);
+	bool Hit = UKismetSystemLibrary::SphereTraceSingle(this,
 	                                                  OutStart,
 	                                                  OutEnd,
 	                                                  10.f,
-	                                                  ETraceTypeQuery::TraceTypeQuery3,
+	                                                  MyTraceType,
 	                                                  false,
 	                                                  IgnoredActors,
 	                                                  EDrawDebugTrace::ForOneFrame,
-	                                                  HitResults,
+	                                                  HitResult,
 	                                                  true,
 	                                                  FLinearColor::Yellow,
 	                                                  FLinearColor::Blue);
@@ -1850,6 +1850,10 @@ bool AMainCharacter::FrontTraceCoverDisable() {
 			UE_LOG(LogTemp, Warning, TEXT("Hit Front TraceCover Disabled Actor Name %s"), *H.GetActor()->GetName())
 		}
 	}
+
+			if (HitResult.bBlockingHit) {
+			UE_LOG(LogTemp, Warning, TEXT("Hit Front TraceCover Disabled Actor Name %s"), *HitResult.GetActor()->GetName())
+		}
 	return Hit;
 }
 
