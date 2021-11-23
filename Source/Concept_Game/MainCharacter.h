@@ -224,6 +224,18 @@ public:
 
 	void TraceCharacterCover();
 
+	void TraceCoverDisable();
+
+	void TraceCoverDisableWhileInCover();
+
+	bool FrontTraceCoverDisable();
+
+	bool LeftTraceCoverDisable();
+
+	bool RightTraceCoverDisable();
+
+	bool CrosshairTraceCoverDisable();
+
 	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f);
 
 	bool TraceCoverMovement(float Orientation);
@@ -284,6 +296,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bInCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoverDisable;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCoverMontageEnded;

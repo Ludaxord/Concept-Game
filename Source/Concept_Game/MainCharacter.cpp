@@ -5,6 +5,7 @@
 
 #include "Cover.h"
 #include "DrawDebugHelpers.h"
+#include "Ladder.h"
 #include "MainAnimInstance.h"
 #include "MainHUD.h"
 #include "Camera/CameraComponent.h"
@@ -37,6 +38,7 @@ AMainCharacter::AMainCharacter():
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
+	bCoverDisable(false),
 	bMoveInCover(false),
 	bCameraMoved(false),
 	bOverlappingLadderBottom(false),
@@ -488,61 +490,64 @@ void AMainCharacter::LookUp(float Value) {
 }
 
 void AMainCharacter::Cover() {
-	if (!bCoverActive) {
-		FVector OutStart;
-		FVector OutEnd;
-		FHitResult Res;
-		GetForwardTracers(OutStart, OutEnd, Res);
+	if (!bCoverDisable) {
+		if (!bCoverActive) {
+			FVector OutStart;
+			FVector OutEnd;
+			FHitResult Res;
+			GetForwardTracers(OutStart, OutEnd, Res);
 
-		TArray<AActor*> IgnoredActors;
-		FHitResult OutHitResult;
-		bool bTraced = UKismetSystemLibrary::SphereTraceSingle(this,
-		                                                       OutStart,
-		                                                       OutEnd,
-		                                                       80.0f,
-		                                                       ETraceTypeQuery::TraceTypeQuery1,
-		                                                       false,
-		                                                       IgnoredActors,
-		                                                       EDrawDebugTrace::Type::ForOneFrame,
-		                                                       OutHitResult,
-		                                                       true
-		);
-		if (bTraced) {
-			if (OutHitResult.bBlockingHit) {
-				CurrentCoverHitResult = OutHitResult;
+			TArray<AActor*> IgnoredActors;
+			FHitResult OutHitResult;
+			bool bTraced = UKismetSystemLibrary::SphereTraceSingle(this,
+			                                                       OutStart,
+			                                                       OutEnd,
+			                                                       80.0f,
+			                                                       ETraceTypeQuery::TraceTypeQuery1,
+			                                                       false,
+			                                                       IgnoredActors,
+			                                                       EDrawDebugTrace::Type::ForOneFrame,
+			                                                       OutHitResult,
+			                                                       true
+			);
+			if (bTraced) {
+				if (OutHitResult.bBlockingHit) {
+					CurrentCoverHitResult = OutHitResult;
 
-				OutHitResult.Actor->GetActorBounds(false, CurrentCoverOrigin, CurrentCoverBoxExtend);
-				CoverLocation = OutHitResult.Location;
-				CoverNormal = OutHitResult.Normal;
-				CurrentCover = Cast<ACover>(OutHitResult.Actor);
-				if (CurrentCover) {
-					CurrentCover->SetCurrentOverlappingCharacter(this);
-					CurrentCover->TakeCover();
-					//TODO: Add anim montage And rotation Root Yaw.
-					bCoveringActive = true;
+					OutHitResult.Actor->GetActorBounds(false, CurrentCoverOrigin, CurrentCoverBoxExtend);
+					CoverLocation = OutHitResult.Location;
+					CoverNormal = OutHitResult.Normal;
+					CurrentCover = Cast<ACover>(OutHitResult.Actor);
+					if (CurrentCover) {
+						CurrentCover->SetCurrentOverlappingCharacter(this);
+						CurrentCover->TakeCover();
+						//TODO: Add anim montage And rotation Root Yaw.
+						bCoveringActive = true;
+					}
 				}
 			}
 		}
-	}
-	else {
-		if (bInCover) {
-			CurrentCover->QuitCover();
-			bCoveringActive = false;
-			CurrentCoverHitResult = FHitResult();
-			if (CurrentCoverPoint != nullptr) {
-				if (RemoveCoverPoint(CurrentCoverPoint)) {
-					CurrentCoverPoint = nullptr;
+		else {
+			if (bInCover) {
+				CurrentCover->QuitCover();
+				bCoveringActive = false;
+				CurrentCoverHitResult = FHitResult();
+				if (CurrentCoverPoint != nullptr) {
+					if (RemoveCoverPoint(CurrentCoverPoint)) {
+						CurrentCoverPoint = nullptr;
+					}
 				}
+
+				CurrentCover = nullptr;
+				// PlayMontage(ECharacterMontage::ECM_ExitCover);
+				//TODO: Add anim montage And rotation Root Yaw.
 			}
-
-			CurrentCover = nullptr;
-			// PlayMontage(ECharacterMontage::ECM_ExitCover);
-			//TODO: Add anim montage And rotation Root Yaw.
 		}
+		bCoverActive = !bCoverActive;
 	}
-	bCoverActive = !bCoverActive;
 
-	UE_LOG(LogTemp, Warning, TEXT("CoverActive: %s InCover: %s CanCover: %s"),
+	UE_LOG(LogTemp, Warning, TEXT("CoverDisable: %s CoverActive: %s InCover: %s CanCover: %s"),
+	       bCoverDisable ? TEXT("true") : TEXT("false"),
 	       bCoverActive ? TEXT("true") : TEXT("false"),
 	       bInCover ? TEXT("true") : TEXT("false"),
 	       bCanCover ? TEXT("true") : TEXT("false"));
@@ -1423,6 +1428,8 @@ void AMainCharacter::CoverSystem() {
 	FVector OutEnd;
 	FHitResult TracerResult;
 	bool bCovering = GetForwardTracers(OutStart, OutEnd, TracerResult);
+	TraceCoverDisable();
+
 	if (!bMoveInCover) {
 		if (bInCover && bCoverActive && bCoveringActive) {
 			if (bCoverMontageEnded) {
@@ -1796,6 +1803,108 @@ void AMainCharacter::TraceCharacterCover() {
 	const FVector End = GetActorUpVector() * (-100.0f) + GetActorLocation();
 	UKismetSystemLibrary::LineTraceSingle(this, Start, End, ETraceTypeQuery::TraceTypeQuery1, false,
 	                                      IgnoredActors, EDrawDebugTrace::ForOneFrame, HitResult, false);
+}
+
+void AMainCharacter::TraceCoverDisable() {
+	if (!bInCover) {
+		bCoverDisable = FrontTraceCoverDisable();
+	}
+}
+
+void AMainCharacter::TraceCoverDisableWhileInCover() {
+	if (bInCover) {
+		bCoverDisable = LeftTraceCoverDisable() || RightTraceCoverDisable();
+	}
+}
+
+bool AMainCharacter::FrontTraceCoverDisable() {
+	FVector RotFVector = GetActorRotation().Quaternion().GetForwardVector();
+	FVector MultipliedFVector = {RotFVector.X * 80.0f, RotFVector.Y * 80.0f, RotFVector.Z};
+	FVector OutStart = {GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 40.f};
+	FVector OutEnd = OutStart + MultipliedFVector;
+	TArray<AActor*> IgnoredActors;
+	FHitResult HitResult;
+	TArray<FHitResult> HitResults;
+
+	FCollisionQueryParams QueryParams = FCollisionQueryParams::DefaultQueryParam;
+	QueryParams.AddIgnoredActor(this);
+	// bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, OutStart, OutEnd, ECC_EngineTraceChannel3, QueryParams);
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
+	TraceObjects.Add(EObjectTypeQuery::ObjectTypeQuery1);
+
+	bool Hit = UKismetSystemLibrary::SphereTraceMulti(this,
+	                                                  OutStart,
+	                                                  OutEnd,
+	                                                  10.f,
+	                                                  ETraceTypeQuery::TraceTypeQuery3,
+	                                                  false,
+	                                                  IgnoredActors,
+	                                                  EDrawDebugTrace::ForOneFrame,
+	                                                  HitResults,
+	                                                  true,
+	                                                  FLinearColor::Yellow,
+	                                                  FLinearColor::Blue);
+	for (FHitResult H : HitResults) {
+		if (H.bBlockingHit) {
+			UE_LOG(LogTemp, Warning, TEXT("Hit Front TraceCover Disabled Actor Name %s"), *H.GetActor()->GetName())
+		}
+	}
+	return Hit;
+}
+
+bool AMainCharacter::LeftTraceCoverDisable() {
+	FVector OutStart;
+	FVector OutEnd;
+	TArray<AActor*> IgnoredActors;
+	FHitResult HitResult;
+	return UKismetSystemLibrary::LineTraceSingle(this,
+	                                             OutStart,
+	                                             OutEnd,
+	                                             ETraceTypeQuery::TraceTypeQuery3,
+	                                             false,
+	                                             IgnoredActors,
+	                                             EDrawDebugTrace::ForOneFrame,
+	                                             HitResult,
+	                                             false,
+	                                             FLinearColor::Yellow,
+	                                             FLinearColor::Blue);
+}
+
+bool AMainCharacter::RightTraceCoverDisable() {
+	FVector OutStart;
+	FVector OutEnd;
+	TArray<AActor*> IgnoredActors;
+	FHitResult HitResult;
+	return UKismetSystemLibrary::LineTraceSingle(this,
+	                                             OutStart,
+	                                             OutEnd,
+	                                             ETraceTypeQuery::TraceTypeQuery3,
+	                                             false,
+	                                             IgnoredActors,
+	                                             EDrawDebugTrace::ForOneFrame,
+	                                             HitResult,
+	                                             false,
+	                                             FLinearColor::Yellow,
+	                                             FLinearColor::Blue);
+}
+
+bool AMainCharacter::CrosshairTraceCoverDisable() {
+	FVector OutStart;
+	FVector OutEnd;
+	TArray<AActor*> IgnoredActors;
+	FHitResult HitResult;
+	return UKismetSystemLibrary::LineTraceSingle(this,
+	                                             OutStart,
+	                                             OutEnd,
+	                                             ETraceTypeQuery::TraceTypeQuery3,
+	                                             false,
+	                                             IgnoredActors,
+	                                             EDrawDebugTrace::ForOneFrame,
+	                                             HitResult,
+	                                             false,
+	                                             FLinearColor::Yellow,
+	                                             FLinearColor::Blue);
 }
 
 bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight) {
