@@ -1908,6 +1908,16 @@ bool AMainCharacter::CrosshairTraceCoverDisable() {
 	                                             FLinearColor::Blue);
 }
 
+bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
+	// TODO: Implement
+	return false;
+}
+
+bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
+	// TODO: Implement
+	return false;
+}
+
 bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight,
                                  ETraceTypeQuery TraceType, FLinearColor TraceColor, FLinearColor HitColor) {
 	TArray<AActor*> IgnoredActors;

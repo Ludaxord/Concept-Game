@@ -236,6 +236,10 @@ public:
 
 	bool CrosshairTraceCoverDisable();
 
+	bool LeftTraceCoverJumpBetweenCovers();
+
+	bool RightTraceCoverJumpBetweenCovers();
+
 	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f,
 	                 ETraceTypeQuery TraceType = ETraceTypeQuery::TraceTypeQuery1,
 	                 FLinearColor TraceColor = FLinearColor::Red, FLinearColor HitColor = FLinearColor::Green);
