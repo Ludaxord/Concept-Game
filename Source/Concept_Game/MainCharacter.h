@@ -236,7 +236,9 @@ public:
 
 	bool CrosshairTraceCoverDisable();
 
-	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f);
+	bool CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight = 60.0f,
+	                 ETraceTypeQuery TraceType = ETraceTypeQuery::TraceTypeQuery1,
+	                 FLinearColor TraceColor = FLinearColor::Red, FLinearColor HitColor = FLinearColor::Green);
 
 	bool TraceCoverMovement(float Orientation);
 
@@ -301,6 +303,12 @@ private:
 	bool bCoverDisable;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoverLeftDisable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bCoverRightDisable;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCoverMontageEnded;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
@@ -329,6 +337,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	class UArrowComponent* CoverRightMovement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* CoverDisableLeftMovement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* CoverDisableRightMovement;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	class UArrowComponent* CoverTopMovement;

@@ -41,6 +41,8 @@ AMainCharacter::AMainCharacter():
 	bCoverDisable(false),
 	bMoveInCover(false),
 	bCameraMoved(false),
+	bCoverLeftDisable(false),
+	bCoverRightDisable(false),
 	bOverlappingLadderBottom(false),
 	bOverlappingLadderTop(false),
 	bJumpFromClimb(false),
@@ -490,8 +492,8 @@ void AMainCharacter::LookUp(float Value) {
 }
 
 void AMainCharacter::Cover() {
-	if (!bCoverDisable) {
-		if (!bCoverActive) {
+	if (!bCoverActive) {
+		if (!bCoverDisable) {
 			FVector OutStart;
 			FVector OutEnd;
 			FHitResult Res;
@@ -527,22 +529,24 @@ void AMainCharacter::Cover() {
 				}
 			}
 		}
-		else {
-			if (bInCover) {
-				CurrentCover->QuitCover();
-				bCoveringActive = false;
-				CurrentCoverHitResult = FHitResult();
-				if (CurrentCoverPoint != nullptr) {
-					if (RemoveCoverPoint(CurrentCoverPoint)) {
-						CurrentCoverPoint = nullptr;
-					}
+	}
+	else {
+		if (bInCover) {
+			CurrentCover->QuitCover();
+			bCoveringActive = false;
+			CurrentCoverHitResult = FHitResult();
+			if (CurrentCoverPoint != nullptr) {
+				if (RemoveCoverPoint(CurrentCoverPoint)) {
+					CurrentCoverPoint = nullptr;
 				}
-
-				CurrentCover = nullptr;
-				// PlayMontage(ECharacterMontage::ECM_ExitCover);
-				//TODO: Add anim montage And rotation Root Yaw.
 			}
+
+			CurrentCover = nullptr;
+			// PlayMontage(ECharacterMontage::ECM_ExitCover);
+			//TODO: Add anim montage And rotation Root Yaw.
 		}
+	}
+	if (!bCoverDisable) {
 		bCoverActive = !bCoverActive;
 	}
 
@@ -799,6 +803,11 @@ void AMainCharacter::ConstructCoverArrows() {
 	CoverRightMovement->SetupAttachment(GetCapsuleComponent());
 	CoverTopMovement = CreateDefaultSubobject<UArrowComponent>(TEXT("CoverTopMovement"));
 	CoverTopMovement->SetupAttachment(GetCapsuleComponent());
+
+	CoverDisableLeftMovement = CreateDefaultSubobject<UArrowComponent>(TEXT("CoverDisableLeftMovement"));
+	CoverDisableLeftMovement->SetupAttachment(GetCapsuleComponent());
+	CoverDisableRightMovement = CreateDefaultSubobject<UArrowComponent>(TEXT("CoverDisableRightMovement"));
+	CoverDisableRightMovement->SetupAttachment(GetCapsuleComponent());
 }
 
 void AMainCharacter::ConstructEyesCameraHeadComponent() {
@@ -1739,7 +1748,7 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 void AMainCharacter::MoveRightInCover(float Value) {
 	const FRotator Rotation = Controller->GetControlRotation();
 	const FRotator YawRotation = {0, Rotation.Yaw, 0};
-	if (bMoveLeft && bMoveRight) {
+	if (bMoveLeft && bMoveRight && !bCoverRightDisable && !bCoverLeftDisable) {
 		FHitResult Res;
 
 		TArray<AActor*> IgnoredActors;
@@ -1771,10 +1780,10 @@ void AMainCharacter::MoveRightInCover(float Value) {
 		const float ValueSign = FMath::Sign(Value);
 		bool bDir;
 		if (ValueSign == 1.f) {
-			bDir = bMoveRight;
+			bDir = bMoveRight && !bCoverRightDisable;
 		}
 		else {
-			bDir = bMoveLeft;
+			bDir = bMoveLeft && !bCoverLeftDisable;
 		}
 
 		if (ValueSign != 0.0f && bDir) {
@@ -1813,7 +1822,8 @@ void AMainCharacter::TraceCoverDisable() {
 
 void AMainCharacter::TraceCoverDisableWhileInCover() {
 	if (bInCover) {
-		bCoverDisable = LeftTraceCoverDisable() || RightTraceCoverDisable();
+		bCoverLeftDisable = LeftTraceCoverDisable();
+		bCoverRightDisable = RightTraceCoverDisable();
 	}
 }
 
@@ -1824,73 +1834,60 @@ bool AMainCharacter::FrontTraceCoverDisable() {
 	FVector OutEnd = OutStart + MultipliedFVector;
 	TArray<AActor*> IgnoredActors;
 	FHitResult HitResult;
-	TArray<FHitResult> HitResults;
-
-	FCollisionQueryParams QueryParams = FCollisionQueryParams::DefaultQueryParam;
-	QueryParams.AddIgnoredActor(this);
-	// bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, OutStart, OutEnd, ECC_EngineTraceChannel3, QueryParams);
-
-	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
-	TraceObjects.Add(EObjectTypeQuery::ObjectTypeQuery1);
-	ETraceTypeQuery MyTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel3);
+	ETraceTypeQuery CoverDisableTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel3);
 	bool Hit = UKismetSystemLibrary::SphereTraceSingle(this,
-	                                                  OutStart,
-	                                                  OutEnd,
-	                                                  10.f,
-	                                                  MyTraceType,
-	                                                  false,
-	                                                  IgnoredActors,
-	                                                  EDrawDebugTrace::ForOneFrame,
-	                                                  HitResult,
-	                                                  true,
-	                                                  FLinearColor::Yellow,
-	                                                  FLinearColor::Blue);
-	for (FHitResult H : HitResults) {
-		if (H.bBlockingHit) {
-			UE_LOG(LogTemp, Warning, TEXT("Hit Front TraceCover Disabled Actor Name %s"), *H.GetActor()->GetName())
-		}
-	}
+	                                                   OutStart,
+	                                                   OutEnd,
+	                                                   10.f,
+	                                                   CoverDisableTraceType,
+	                                                   false,
+	                                                   IgnoredActors,
+	                                                   EDrawDebugTrace::ForOneFrame,
+	                                                   HitResult,
+	                                                   true,
+	                                                   FLinearColor::Yellow,
+	                                                   FLinearColor::Blue);
 
-			if (HitResult.bBlockingHit) {
-			UE_LOG(LogTemp, Warning, TEXT("Hit Front TraceCover Disabled Actor Name %s"), *HitResult.GetActor()->GetName())
-		}
+	if (HitResult.bBlockingHit) {
+		UE_LOG(LogTemp, Warning, TEXT("Hit Front TraceCover Disabled Actor Name %s"), *HitResult.GetActor()->GetName())
+	}
 	return Hit;
 }
 
 bool AMainCharacter::LeftTraceCoverDisable() {
-	FVector OutStart;
-	FVector OutEnd;
-	TArray<AActor*> IgnoredActors;
-	FHitResult HitResult;
-	return UKismetSystemLibrary::LineTraceSingle(this,
-	                                             OutStart,
-	                                             OutEnd,
-	                                             ETraceTypeQuery::TraceTypeQuery3,
-	                                             false,
-	                                             IgnoredActors,
-	                                             EDrawDebugTrace::ForOneFrame,
-	                                             HitResult,
-	                                             false,
-	                                             FLinearColor::Yellow,
-	                                             FLinearColor::Blue);
+	ETraceTypeQuery CoverDisableTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel3);
+	FHitResult OutHitResult;
+	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
+	bool Hit = CoverTracer(CoverDisableLeftMovement,
+	                       OutHitResult,
+	                       CapsuleHeight,
+	                       CoverDisableTraceType,
+	                       FLinearColor::Yellow,
+	                       FLinearColor::Blue);
+
+	if (OutHitResult.bBlockingHit) {
+		UE_LOG(LogTemp, Warning, TEXT("Hit Left TraceCover Disabled Actor Name %s"),
+		       *OutHitResult.GetActor()->GetName())
+	}
+	return Hit;
 }
 
 bool AMainCharacter::RightTraceCoverDisable() {
-	FVector OutStart;
-	FVector OutEnd;
-	TArray<AActor*> IgnoredActors;
-	FHitResult HitResult;
-	return UKismetSystemLibrary::LineTraceSingle(this,
-	                                             OutStart,
-	                                             OutEnd,
-	                                             ETraceTypeQuery::TraceTypeQuery3,
-	                                             false,
-	                                             IgnoredActors,
-	                                             EDrawDebugTrace::ForOneFrame,
-	                                             HitResult,
-	                                             false,
-	                                             FLinearColor::Yellow,
-	                                             FLinearColor::Blue);
+	ETraceTypeQuery CoverDisableTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel3);
+	FHitResult OutHitResult;
+	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
+	bool Hit = CoverTracer(CoverDisableRightMovement,
+	                       OutHitResult,
+	                       CapsuleHeight,
+	                       CoverDisableTraceType,
+	                       FLinearColor::Yellow,
+	                       FLinearColor::Blue);
+
+	if (OutHitResult.bBlockingHit) {
+		UE_LOG(LogTemp, Warning, TEXT("Hit Right TraceCover Disabled Actor Name %s"),
+		       *OutHitResult.GetActor()->GetName())
+	}
+	return Hit;
 }
 
 bool AMainCharacter::CrosshairTraceCoverDisable() {
@@ -1911,7 +1908,8 @@ bool AMainCharacter::CrosshairTraceCoverDisable() {
 	                                             FLinearColor::Blue);
 }
 
-bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight) {
+bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result, float HalfHeight,
+                                 ETraceTypeQuery TraceType, FLinearColor TraceColor, FLinearColor HitColor) {
 	TArray<AActor*> IgnoredActors;
 	FVector TraceStart = AComponent->GetComponentLocation();
 	FVector TraceEnd = AComponent->GetComponentLocation();
@@ -1920,12 +1918,14 @@ bool AMainCharacter::CoverTracer(UArrowComponent* AComponent, FHitResult& Result
 	                                                TraceEnd,
 	                                                20.0f,
 	                                                HalfHeight,
-	                                                ETraceTypeQuery::TraceTypeQuery1,
+	                                                TraceType,
 	                                                false,
 	                                                IgnoredActors,
 	                                                EDrawDebugTrace::ForOneFrame,
 	                                                Result,
-	                                                true
+	                                                true,
+	                                                TraceColor,
+	                                                HitColor
 	);
 }
 

@@ -37,6 +37,9 @@ ALadder::ALadder(): RungsNumber(10),
 	LadderCollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("LadderCollisionCapsule"));
 	LadderCollisionCapsule->SetupAttachment(GetRootComponent());
 
+	LadderCollisionDisableCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("LadderCollisionDisableCapsule"));
+	LadderCollisionDisableCapsule->SetupAttachment(GetRootComponent());
+
 	LadderUpperCollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("LadderUpperCollisionSphere"));
 	LadderUpperCollisionSphere->SetupAttachment(GetRootComponent());
 
@@ -105,6 +108,7 @@ void ALadder::SetupAreaCapsule() {
 	float AreaSphereLocationZ = (RungsNumber * SpaceBetweenRungs) / 2;
 	LadderCollisionCapsule->SetCapsuleHalfHeight(AreaSphereLocationZ);
 	LadderCollisionCapsule->SetCapsuleRadius(GetAreaSphere()->GetScaledSphereRadius());
+	// LadderCollisionCapsule->SetCapsuleRadius(GetAreaSphere()->GetScaledSphereRadius() / 2);
 	LadderCollisionCapsule->SetRelativeLocation(FVector(LadderCollisionCapsule->GetRelativeLocation().X,
 	                                                    LadderCollisionCapsule->GetRelativeLocation().Y,
 	                                                    AreaSphereLocationZ));
@@ -112,6 +116,21 @@ void ALadder::SetupAreaCapsule() {
 	LadderCollisionCapsule->SetRelativeRotation(FRotator(LadderCollisionCapsule->GetRelativeRotation().Pitch,
 	                                                     LadderCollisionCapsule->GetRelativeRotation().Yaw,
 	                                                     LadderCollisionCapsule->GetRelativeRotation().Roll));
+}
+
+void ALadder::SetupDisableCollisionCapsule() {
+	float AreaSphereLocationZ = (RungsNumber * SpaceBetweenRungs) / 2;
+	LadderCollisionDisableCapsule->SetCapsuleHalfHeight(AreaSphereLocationZ);
+	LadderCollisionDisableCapsule->SetCapsuleRadius(GetAreaSphere()->GetScaledSphereRadius() / 2);
+	LadderCollisionDisableCapsule->SetRelativeLocation(FVector(LadderCollisionDisableCapsule->GetRelativeLocation().X,
+	                                                           LadderCollisionDisableCapsule->GetRelativeLocation().Y,
+	                                                           AreaSphereLocationZ));
+
+	LadderCollisionDisableCapsule->SetRelativeRotation(FRotator(
+		LadderCollisionDisableCapsule->GetRelativeRotation().Pitch,
+		LadderCollisionDisableCapsule->GetRelativeRotation().Yaw,
+		LadderCollisionDisableCapsule->GetRelativeRotation().Roll));
+
 }
 
 void ALadder::SetupBottomCapsule() {

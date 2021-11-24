@@ -37,6 +37,9 @@ protected:
 	void SetupAreaCapsule();
 
 	UFUNCTION(BlueprintCallable)
+	void SetupDisableCollisionCapsule();
+
+	UFUNCTION(BlueprintCallable)
 	void SetupBottomCapsule();
 
 	UFUNCTION(BlueprintCallable)
@@ -87,6 +90,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* LadderCollisionCapsule;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
+	class UCapsuleComponent* LadderCollisionDisableCapsule;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Ladder Properties", meta = (AllowPrivateAccess = "true"))
 	USphereComponent* LadderBottomCollisionSphere;

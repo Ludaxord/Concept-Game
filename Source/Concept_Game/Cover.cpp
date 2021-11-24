@@ -55,7 +55,7 @@ void ACover::QuitCover() {
 
 void ACover::InCoverSystem() {
 	if (CurrentOverlappingCharacter) {
-		// CurrentOverlappingCharacter->TraceCoverDisableWhileInCover();
+		CurrentOverlappingCharacter->TraceCoverDisableWhileInCover();
 		CurrentOverlappingCharacter->LeftTracer();
 		CurrentOverlappingCharacter->RightTracer();
 		CurrentOverlappingCharacter->TopTracer();
