@@ -429,6 +429,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	ACoverPoint* CurrentCoverPoint;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	ACoverPoint* LeftCoverPoint;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	ACoverPoint* RightCoverPoint;
+
 	FVector CurrentCoverOrigin;
 
 	FVector CurrentCoverBoxExtend;

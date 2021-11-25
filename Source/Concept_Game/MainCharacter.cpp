@@ -1916,9 +1916,9 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 	if (bCanPeakLeft) {
 		FHitResult NextCoverHitResult;
 		FRotator NextCoverRotation = GetActorRotation();
-		FVector NextCoverTraceStart = CoverDisableLeftMovement->GetComponentLocation();
+		FVector NextCoverTraceStart = CoverLeftMovement->GetComponentLocation();
 		FVector RotFVector = -GetActorRotation().Quaternion().GetRightVector();
-		FVector NextCoverTraceEnd = CoverDisableLeftMovement->GetComponentLocation() + RotFVector * 100.f;
+		FVector NextCoverTraceEnd = CoverLeftMovement->GetComponentLocation() + RotFVector * 100.f;
 		TArray<AActor*> IgnoredActors;
 		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
 		UKismetSystemLibrary::LineTraceSingle(this,
@@ -1949,9 +1949,9 @@ bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
 	if (bCanPeakRight) {
 		FHitResult NextCoverHitResult;
 		FRotator NextCoverRotation = GetActorRotation();
-		FVector NextCoverTraceStart = CoverDisableRightMovement->GetComponentLocation();
+		FVector NextCoverTraceStart = CoverRightMovement->GetComponentLocation();
 		FVector RotFVector = UKismetMathLibrary::NegateVector(-GetActorRotation().Quaternion().GetRightVector());
-		FVector NextCoverTraceEnd = CoverDisableLeftMovement->GetComponentLocation() + RotFVector * 200.f;
+		FVector NextCoverTraceEnd = CoverRightMovement->GetComponentLocation() + RotFVector * 100.f;
 		TArray<AActor*> IgnoredActors;
 		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
 		UKismetSystemLibrary::LineTraceSingle(this,
