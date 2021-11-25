@@ -1519,7 +1519,9 @@ void AMainCharacter::ExitCover() {
 void AMainCharacter::LeftTracer() {
 	FHitResult OutHitResult;
 	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
+
 	bMoveLeft = CoverTracer(CoverLeftMovement, OutHitResult, CapsuleHeight);
+
 	CoverLeftSphereBlocker = OutHitResult.GetActor();
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakLeft = false;
@@ -1547,7 +1549,9 @@ void AMainCharacter::LeftTracer() {
 void AMainCharacter::RightTracer() {
 	FHitResult OutHitResult;
 	float CapsuleHeight = PoseType == EPoseType::EPT_Crouch ? 20.0f : 60.0f;
+
 	bMoveRight = CoverTracer(CoverRightMovement, OutHitResult, CapsuleHeight);
+
 	CoverRightSphereBlocker = OutHitResult.GetActor();
 	if (OutHitResult.bBlockingHit) {
 		bCanPeakRight = false;
@@ -1909,12 +1913,68 @@ bool AMainCharacter::CrosshairTraceCoverDisable() {
 }
 
 bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
-	// TODO: Implement
+	if (bCanPeakLeft) {
+		FHitResult NextCoverHitResult;
+		FRotator NextCoverRotation = GetActorRotation();
+		FVector NextCoverTraceStart = CoverDisableLeftMovement->GetComponentLocation();
+		FVector RotFVector = -GetActorRotation().Quaternion().GetRightVector();
+		FVector NextCoverTraceEnd = CoverDisableLeftMovement->GetComponentLocation() + RotFVector * 100.f;
+		TArray<AActor*> IgnoredActors;
+		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
+		UKismetSystemLibrary::LineTraceSingle(this,
+		                                      NextCoverTraceStart,
+		                                      NextCoverTraceEnd,
+		                                      CoverTraceType,
+		                                      false,
+		                                      IgnoredActors,
+		                                      EDrawDebugTrace::ForOneFrame,
+		                                      NextCoverHitResult,
+		                                      true,
+		                                      FLinearColor::MakeRandomColor(),
+		                                      FLinearColor::MakeRandomColor());
+
+		if (NextCoverHitResult.bBlockingHit) {
+			UE_LOG(
+				LogTemp,
+				Warning,
+				TEXT("LeftTraceCoverJumpBetweenCovers: %s"),
+				*NextCoverHitResult.GetActor()->GetName()
+			)
+		}
+	}
 	return false;
 }
 
 bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
-	// TODO: Implement
+	if (bCanPeakRight) {
+		FHitResult NextCoverHitResult;
+		FRotator NextCoverRotation = GetActorRotation();
+		FVector NextCoverTraceStart = CoverDisableRightMovement->GetComponentLocation();
+		FVector RotFVector = UKismetMathLibrary::NegateVector(-GetActorRotation().Quaternion().GetRightVector());
+		FVector NextCoverTraceEnd = CoverDisableLeftMovement->GetComponentLocation() + RotFVector * 200.f;
+		TArray<AActor*> IgnoredActors;
+		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
+		UKismetSystemLibrary::LineTraceSingle(this,
+		                                         NextCoverTraceStart,
+		                                         NextCoverTraceEnd,
+		                                         CoverTraceType,
+		                                         false,
+		                                         IgnoredActors,
+		                                         EDrawDebugTrace::ForOneFrame,
+		                                         NextCoverHitResult,
+		                                         true,
+		                                         FLinearColor::MakeRandomColor(),
+		                                         FLinearColor::MakeRandomColor());
+
+		if (NextCoverHitResult.bBlockingHit) {
+			UE_LOG(
+				LogTemp,
+				Warning,
+				TEXT("RightTraceCoverJumpBetweenCovers: %s"),
+				*NextCoverHitResult.GetActor()->GetName()
+			)
+		}
+	}
 	return false;
 }
 

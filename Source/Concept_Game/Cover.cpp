@@ -62,6 +62,9 @@ void ACover::InCoverSystem() {
 		CurrentOverlappingCharacter->TraceCharacterCover();
 		CurrentOverlappingCharacter->HideCoverOnCameraTrace();
 
+		CurrentOverlappingCharacter->LeftTraceCoverJumpBetweenCovers();
+		CurrentOverlappingCharacter->RightTraceCoverJumpBetweenCovers();
+
 		FVector OutMoveTraceStart;
 		FVector OutMoveTraceEnd;
 		// GetInCoverMouseTracer(OutMoveTraceStart, OutMoveTraceEnd);
