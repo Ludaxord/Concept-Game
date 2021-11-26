@@ -933,32 +933,72 @@ void AMainCharacter::Jump() {
 			GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 		}
 		else if (bInCover || bCoverActive || bCoveringActive) {
-			if (CurrentCoverPoint->GetOverlappingCover() != nullptr) {
-				UE_LOG(LogTemp, Warning, TEXT("Change Cover"))
+			if (!bSlideToLeftCover && !bSlideToRightCover) {
+				//TODO: Remove duplicates, to make code clearer
+				if (CurrentCoverPoint->GetOverlappingCover() != nullptr) {
+					UE_LOG(LogTemp, Warning, TEXT("Change Cover"))
+					bMoveInCover = true;
+
+					if (CurrentCover)
+						CurrentCover->GetRootComponent()->SetVisibility(true);
+
+					FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CurrentCoverPoint->GetCoverNormal());
+					FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
+					                              - 180.0f
+					                              , CoverRot.Roll);
+					FLatentActionInfo Info = FLatentActionInfo();
+					Info.CallbackTarget = this;
+					Info.ExecutionFunction = "MoveBetweenCovers";
+					Info.Linkage = 0;
+					Info.UUID = FMath::Rand();
+
+					float Dist = FVector::Dist(GetActorLocation(), CurrentCoverPoint->GetActorLocation());
+
+					GetCapsuleComponent()->SetWorldRotation(TargetRot);
+
+					FVector NewLocation = {
+						CurrentCoverPoint->GetActorLocation().X, CurrentCoverPoint->GetActorLocation().Y,
+						GetActorLocation().Z
+					};
+
+					UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
+					                                      NewLocation,
+					                                      TargetRot,
+					                                      false,
+					                                      false,
+					                                      Dist / GetCharacterMovement()->MaxWalkSpeed,
+					                                      false,
+					                                      EMoveComponentAction::Type::Move,
+					                                      Info);
+				}
+			}
+			else {
 				bMoveInCover = true;
 
 				if (CurrentCover)
 					CurrentCover->GetRootComponent()->SetVisibility(true);
 
-				FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CurrentCoverPoint->GetCoverNormal());
-				FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
-				                              - 180.0f
-				                              , CoverRot.Roll);
+				FRotator CoverRot;
+				FRotator TargetRot;
 				FLatentActionInfo Info = FLatentActionInfo();
 				Info.CallbackTarget = this;
 				Info.ExecutionFunction = "MoveBetweenCovers";
 				Info.Linkage = 0;
 				Info.UUID = FMath::Rand();
+				float Dist = 1;
+				FVector NewLocation;
 
-				float Dist = FVector::Dist(GetActorLocation(), CurrentCoverPoint->GetActorLocation());
+				//TODO: Calculate distances between covers
+				if (bSlideToLeftCover) {
+					UE_LOG(LogTemp, Warning, TEXT("Can Slide To Left"))
+				}
+
+				if (bSlideToRightCover) {
+					UE_LOG(LogTemp, Warning, TEXT("Can Slide To Right"))
+				}
 
 				GetCapsuleComponent()->SetWorldRotation(TargetRot);
 
-				FVector NewLocation = {
-					CurrentCoverPoint->GetActorLocation().X, CurrentCoverPoint->GetActorLocation().Y,
-					GetActorLocation().Z
-				};
-				//TODO: Just for test, need to add animations
 				UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
 				                                      NewLocation,
 				                                      TargetRot,
@@ -1918,7 +1958,7 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 		FRotator NextCoverRotation = GetActorRotation();
 		FVector NextCoverTraceStart = CoverLeftMovement->GetComponentLocation();
 		FVector RotFVector = -GetActorRotation().Quaternion().GetRightVector();
-		FVector NextCoverTraceEnd = CoverLeftMovement->GetComponentLocation() + RotFVector * 100.f;
+		FVector NextCoverTraceEnd = CoverLeftMovement->GetComponentLocation() + RotFVector * 150.f;
 		TArray<AActor*> IgnoredActors;
 		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
 		UKismetSystemLibrary::LineTraceSingle(this,
@@ -1934,12 +1974,18 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 		                                      FLinearColor::MakeRandomColor());
 
 		if (NextCoverHitResult.bBlockingHit) {
-			UE_LOG(
-				LogTemp,
-				Warning,
-				TEXT("LeftTraceCoverJumpBetweenCovers: %s"),
-				*NextCoverHitResult.GetActor()->GetName()
-			)
+			ACover* LeftTraceCover = Cast<ACover>(NextCoverHitResult.GetActor());
+			if (LeftTraceCover) {
+				SlideLeftCover = LeftTraceCover;
+				UE_LOG(
+					LogTemp,
+					Warning,
+					TEXT("LeftTraceCoverJumpBetweenCovers: %s"),
+					*NextCoverHitResult.GetActor()->GetName()
+				)
+
+				return true;
+			}
 		}
 	}
 	return false;
@@ -1951,28 +1997,34 @@ bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
 		FRotator NextCoverRotation = GetActorRotation();
 		FVector NextCoverTraceStart = CoverRightMovement->GetComponentLocation();
 		FVector RotFVector = UKismetMathLibrary::NegateVector(-GetActorRotation().Quaternion().GetRightVector());
-		FVector NextCoverTraceEnd = CoverRightMovement->GetComponentLocation() + RotFVector * 100.f;
+		FVector NextCoverTraceEnd = CoverRightMovement->GetComponentLocation() + RotFVector * 150.f;
 		TArray<AActor*> IgnoredActors;
 		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
 		UKismetSystemLibrary::LineTraceSingle(this,
-		                                         NextCoverTraceStart,
-		                                         NextCoverTraceEnd,
-		                                         CoverTraceType,
-		                                         false,
-		                                         IgnoredActors,
-		                                         EDrawDebugTrace::ForOneFrame,
-		                                         NextCoverHitResult,
-		                                         true,
-		                                         FLinearColor::MakeRandomColor(),
-		                                         FLinearColor::MakeRandomColor());
+		                                      NextCoverTraceStart,
+		                                      NextCoverTraceEnd,
+		                                      CoverTraceType,
+		                                      false,
+		                                      IgnoredActors,
+		                                      EDrawDebugTrace::ForOneFrame,
+		                                      NextCoverHitResult,
+		                                      true,
+		                                      FLinearColor::MakeRandomColor(),
+		                                      FLinearColor::MakeRandomColor());
 
 		if (NextCoverHitResult.bBlockingHit) {
-			UE_LOG(
-				LogTemp,
-				Warning,
-				TEXT("RightTraceCoverJumpBetweenCovers: %s"),
-				*NextCoverHitResult.GetActor()->GetName()
-			)
+			ACover* RightTraceCover = Cast<ACover>(NextCoverHitResult.GetActor());
+			if (RightTraceCover) {
+				SlideRightCover = RightTraceCover;
+				UE_LOG(
+					LogTemp,
+					Warning,
+					TEXT("RightTraceCoverJumpBetweenCovers: %s"),
+					*NextCoverHitResult.GetActor()->GetName()
+				)
+
+				return true;
+			}
 		}
 	}
 	return false;

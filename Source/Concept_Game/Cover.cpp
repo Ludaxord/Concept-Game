@@ -62,8 +62,8 @@ void ACover::InCoverSystem() {
 		CurrentOverlappingCharacter->TraceCharacterCover();
 		CurrentOverlappingCharacter->HideCoverOnCameraTrace();
 
-		CurrentOverlappingCharacter->LeftTraceCoverJumpBetweenCovers();
-		CurrentOverlappingCharacter->RightTraceCoverJumpBetweenCovers();
+		CurrentOverlappingCharacter->SetSlideToLeftCover(CurrentOverlappingCharacter->LeftTraceCoverJumpBetweenCovers());
+		CurrentOverlappingCharacter->SetSlideToRightCover(CurrentOverlappingCharacter->RightTraceCoverJumpBetweenCovers());
 
 		FVector OutMoveTraceStart;
 		FVector OutMoveTraceEnd;

@@ -370,6 +370,18 @@ private:
 	bool bCanPeakTop;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bSlideToLeftCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	bool bSlideToRightCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	ACover* SlideLeftCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	ACover* SlideRightCover;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	bool bCanPeakLeft;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
@@ -833,6 +845,14 @@ public:
 		return bInCover;
 	}
 
+	FORCEINLINE bool GetSlideToRightCover() const {
+		return bSlideToRightCover;
+	}
+
+	FORCEINLINE bool GetSlideToLeftCover() const {
+		return bSlideToLeftCover;
+	}
+
 	FORCEINLINE bool GetIsMoveLeft() const {
 		return bMoveLeft;
 	}
@@ -903,6 +923,14 @@ public:
 
 	FORCEINLINE void SetCoverPeakTop(bool InCoverPeakTop) {
 		bCoverPeakTop = InCoverPeakTop;
+	}
+
+	FORCEINLINE void SetSlideToRightCover(bool InSlideToRightCover) {
+		bSlideToRightCover = InSlideToRightCover;
+	}
+
+	FORCEINLINE void SetSlideToLeftCover(bool InSlideToLeftCover) {
+		bSlideToLeftCover = InSlideToLeftCover;
 	}
 
 	FORCEINLINE ACover* GetCurrentCover() {

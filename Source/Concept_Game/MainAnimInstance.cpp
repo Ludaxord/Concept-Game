@@ -51,6 +51,8 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bCoverMontageEnded = MainCharacter->GetCoverMontageEnded();
 		bCoveringActive = MainCharacter->GetCoveringActive();
 		bMoveInCover = MainCharacter->GetMoveInCover();
+		bSlideLeftInCover = MainCharacter->GetSlideToLeftCover();
+		bSlideRightInCover = MainCharacter->GetSlideToRightCover();
 		// UE_LOG(LogTemp, Warning, TEXT("bIsMoveLeft %s bIsMoveRight %s bTraceCoverLeft %s bTraceCoverRight %s bMouseLeftForwardMove %s bMouseRightForwardMove %s bIsPeakLeft %s bIsPeakRight %s"),
 		// 	bIsMoveLeft ? TEXT("true") : TEXT("false"),
 		// 	bIsMoveRight ? TEXT("true") : TEXT("false"),
