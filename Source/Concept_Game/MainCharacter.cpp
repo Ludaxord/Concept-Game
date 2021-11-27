@@ -978,15 +978,25 @@ void AMainCharacter::Jump() {
 				if (CurrentCover)
 					CurrentCover->GetRootComponent()->SetVisibility(true);
 
-				FRotator CoverRot;
-				FRotator TargetRot;
+				FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CoverPointEndTrace->GetCoverNormal());
+				FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
+				                              - 180.0f
+				                              , CoverRot.Roll);
 				FLatentActionInfo Info = FLatentActionInfo();
 				Info.CallbackTarget = this;
 				Info.ExecutionFunction = "MoveBetweenCovers";
 				Info.Linkage = 0;
 				Info.UUID = FMath::Rand();
-				float Dist = 1;
-				FVector NewLocation;
+
+				float Dist = FVector::Dist(GetActorLocation(), CoverPointEndTrace->GetActorLocation());
+
+				GetCapsuleComponent()->SetWorldRotation(TargetRot);
+
+				FVector NewLocation = {
+					CoverPointEndTrace->GetActorLocation().X, CoverPointEndTrace->GetActorLocation().Y,
+					GetActorLocation().Z
+				};
+
 
 				//TODO: Calculate distances between covers
 				if (bSlideToLeftCover) {
@@ -1977,14 +1987,66 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 			ACover* LeftTraceCover = Cast<ACover>(NextCoverHitResult.GetActor());
 			if (LeftTraceCover) {
 				SlideLeftCover = LeftTraceCover;
+
+				FHitResult CoverMoveHitResult;
+				FVector CoverMoveStart = NextCoverHitResult.Location;
+				FVector CoverMoveRotFVector = {-0.7f, -1.f, -1.0f};
+				FVector CoverMoveEnd = CoverMoveStart + CoverMoveRotFVector * 100.f;
+				UKismetSystemLibrary::LineTraceSingle(this,
+				                                      CoverMoveStart,
+				                                      CoverMoveEnd,
+				                                      CoverTraceType,
+				                                      false,
+				                                      IgnoredActors,
+				                                      EDrawDebugTrace::ForOneFrame,
+				                                      CoverMoveHitResult,
+				                                      true,
+				                                      FLinearColor::MakeRandomColor(),
+				                                      FLinearColor::MakeRandomColor());
+
+				if (CoverMoveHitResult.bBlockingHit) {
+					// auto CoverPoint = SpawnCoverPoint(DefaultCoverPointClass);
+					// CoverPoint->SetActorLocation(CoverMoveHitResult.Location);
+					if (CoverPointEndTrace == nullptr)
+						CoverPointEndTrace = SpawnCoverPoint(DefaultCoverPointClass);
+
+					CoverPointEndTrace->SetActorLocation(CoverMoveHitResult.TraceEnd);
+					CoverPointEndTrace->SetCoverNormal(CoverMoveHitResult.Normal);
+
+				}
+				else {
+					if (CoverPointEndTrace != nullptr) {
+						if (RemoveCoverPoint(CoverPointEndTrace)) {
+							CoverPointEndTrace = nullptr;
+						}
+					}
+				}
+
 				UE_LOG(
 					LogTemp,
 					Warning,
-					TEXT("LeftTraceCoverJumpBetweenCovers: %s"),
-					*NextCoverHitResult.GetActor()->GetName()
+					TEXT(
+						"LeftTraceCoverJumpBetweenCovers: %s, CoverMoveHitResultNormal: %s, CoverMoveHitResultLocation: %s"
+					),
+					*NextCoverHitResult.GetActor()->GetName(),
+					*CoverMoveHitResult.Normal.ToString(),
+					*CoverMoveHitResult.Location.ToString()
 				)
 
 				return true;
+			}
+
+			if (CoverPointEndTrace != nullptr) {
+				if (RemoveCoverPoint(CoverPointEndTrace)) {
+					CoverPointEndTrace = nullptr;
+				}
+			}
+		}
+		else {
+			if (CoverPointEndTrace != nullptr) {
+				if (RemoveCoverPoint(CoverPointEndTrace)) {
+					CoverPointEndTrace = nullptr;
+				}
 			}
 		}
 	}

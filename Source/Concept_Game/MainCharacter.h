@@ -442,6 +442,9 @@ private:
 	ACoverPoint* CurrentCoverPoint;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	ACoverPoint* CoverPointEndTrace;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	ACoverPoint* LeftCoverPoint;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
