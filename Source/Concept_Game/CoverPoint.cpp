@@ -41,16 +41,16 @@ void ACoverPoint::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 	if (AttachedCharacter) {
 		AMainCharacter* Character = Cast<AMainCharacter>(AttachedCharacter);
 		if (Character) {
-			if (!Character->GetSlideToLeftCover() && !Character->GetSlideToRightCover()) {
+			// if (!Character->GetSlideToLeftCover() && !Character->GetSlideToRightCover()) {
 				ACover* CurrentCover = Character->GetCurrentCover();
 				if (CurrentOverlappingCover != CurrentCover && Cast<AMainCharacter>(OtherActor) != AttachedCharacter) {
 					PointMesh->SetVisibility(true);
-					UE_LOG(LogTemp, Warning, TEXT("Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+					UE_LOG(LogTemp, Warning, TEXT("ACoverPoint Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
 					       *OtherActor->GetName(),
 					       *OverlappedComponent->GetName(), *OtherComponent->GetName());
 					OverlappingCover = CurrentOverlappingCover;
 				}
-			}
+			// }
 		}
 	}
 }
