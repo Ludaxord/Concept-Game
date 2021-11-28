@@ -1969,7 +1969,7 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 		FVector NextCoverTraceStart = CoverLeftMovement->GetComponentLocation();
 		FVector RotFVector = -GetActorRotation().Quaternion().GetRightVector();
 		FVector NextCoverTraceEnd = CoverLeftMovement->GetComponentLocation() + RotFVector * 150.f;
-		TArray<AActor*> IgnoredActors;
+		TArray<AActor*> IgnoredActors = {CurrentCover};
 		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
 		UKismetSystemLibrary::LineTraceSingle(this,
 		                                      NextCoverTraceStart,
@@ -2049,7 +2049,7 @@ bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
 		FVector NextCoverTraceStart = CoverRightMovement->GetComponentLocation();
 		FVector RotFVector = UKismetMathLibrary::NegateVector(-GetActorRotation().Quaternion().GetRightVector());
 		FVector NextCoverTraceEnd = CoverRightMovement->GetComponentLocation() + RotFVector * 150.f;
-		TArray<AActor*> IgnoredActors;
+		TArray<AActor*> IgnoredActors = {CurrentCover};
 		ETraceTypeQuery CoverTraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
 		UKismetSystemLibrary::LineTraceSingle(this,
 		                                      NextCoverTraceStart,
