@@ -32,6 +32,7 @@ AMainCharacter::AMainCharacter():
 	HipLookUpRate(90.0f),
 	Tolerance(120.0f),
 	AimingTurnRate(20.0f),
+	CoverToCoverAnimPlayRate(1.f),
 	AimingLookUpRate(20.0f),
 	MouseHipTurnRate(1.0f),
 	MouseHipLookUpRate(1.0f),
@@ -973,8 +974,6 @@ void AMainCharacter::Jump() {
 				}
 			}
 			else {
-				bMoveInCover = true;
-
 				// Move Camera back to previous location
 				if (bCameraMoved) {
 					FollowCamera->SetRelativeLocation(RefFollowCameraLocation);
@@ -1030,12 +1029,18 @@ void AMainCharacter::Jump() {
 				       Dist,
 				       *NewLocation.ToString())
 
+				CoverToCoverAnimPlayRate = Dist / GetCharacterMovement()->MaxWalkSpeed;
+
+				UE_LOG(LogTemp, Warning, TEXT("CoverToCoverAnimPlayRate: %f"), CoverToCoverAnimPlayRate)
+
+				bMoveInCover = true;
+
 				UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
 				                                      NewLocation,
 				                                      TargetRot,
 				                                      false,
 				                                      false,
-				                                      Dist / GetCharacterMovement()->MaxWalkSpeed,
+				                                      CoverToCoverAnimPlayRate,
 				                                      false,
 				                                      EMoveComponentAction::Type::Move,
 				                                      Info);
@@ -1728,7 +1733,7 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 			FRotator NextCoverRotation = GetActorRotation();
 			FVector NextCoverTraceEnd = NextCoverTraceStart +
 				CrosshairWorldDirection
-				* 1800.f;
+				* 1000.f;
 			UKismetSystemLibrary::LineTraceSingle(this,
 			                                      NextCoverTraceStart,
 			                                      NextCoverTraceEnd,
@@ -1808,12 +1813,9 @@ void AMainCharacter::MoveRightInCover(float Value) {
 		TArray<AActor*> IgnoredActors;
 		bool bTrace = UKismetSystemLibrary::SphereTraceSingle(this,
 		                                                      GetActorLocation(),
-		                                                      GetActorLocation() +
-		                                                      GetCharacterMovement()->
-		                                                      GetPlaneConstraintNormal()
-		                                                      *
-		                                                      -1.0f *
-		                                                      300.0f,
+		                                                      GetActorLocation() + GetCharacterMovement()->
+		                                                      GetPlaneConstraintNormal() * -1.0f
+		                                                      * 300.0f,
 		                                                      60.f,
 		                                                      ETraceTypeQuery::TraceTypeQuery1,
 		                                                      false,

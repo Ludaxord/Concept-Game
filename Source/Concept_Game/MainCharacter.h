@@ -445,6 +445,9 @@ private:
 	ACoverPoint* CoverPointEndTrace;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
+	float CoverToCoverAnimPlayRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	ACoverPoint* LeftCoverPoint;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
@@ -942,6 +945,10 @@ public:
 
 	FORCEINLINE bool GetCanPeakLeft() {
 		return bCanPeakLeft;
+	}
+
+	FORCEINLINE float GetCoverToCoverAnimPlayRate() {
+		return CoverToCoverAnimPlayRate;
 	}
 
 	FORCEINLINE bool GetCanPeakRight() {

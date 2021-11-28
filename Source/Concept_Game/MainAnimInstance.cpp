@@ -50,6 +50,7 @@ void UMainAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		bMouseRightForwardMove = MainCharacter->GetMouseRightForwardMove();
 		bCoverMontageEnded = MainCharacter->GetCoverMontageEnded();
 		bCoveringActive = MainCharacter->GetCoveringActive();
+		CoverToCoverAnimPlayRate = MainCharacter->GetCoverToCoverAnimPlayRate();
 		bMoveInCover = MainCharacter->GetMoveInCover();
 		bSlideLeftInCover = MainCharacter->GetSlideToLeftCover();
 		bSlideRightInCover = MainCharacter->GetSlideToRightCover();
