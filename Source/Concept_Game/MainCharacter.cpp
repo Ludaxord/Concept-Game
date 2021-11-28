@@ -985,10 +985,17 @@ void AMainCharacter::Jump() {
 				if (CurrentCover)
 					CurrentCover->GetRootComponent()->SetVisibility(true);
 
+
 				FRotator CoverRot = UKismetMathLibrary::MakeRotFromX(CoverPointEndTrace->GetCoverNormal());
-				FRotator TargetRot = FRotator(CoverRot.Pitch, CoverRot.Yaw
-				                              - 180.0f
-				                              , CoverRot.Roll);
+				// FRotator TargetRot = FRotator(
+				// 	CoverRot.Pitch,
+				// 	CoverRot.Yaw
+				// 	// - 180.0f
+				// 	, CoverRot.Roll
+				// );
+
+				FRotator TargetRot = GetActorRotation();
+
 				FLatentActionInfo Info = FLatentActionInfo();
 				Info.CallbackTarget = this;
 				Info.ExecutionFunction = "MoveBetweenCovers";
@@ -1000,7 +1007,8 @@ void AMainCharacter::Jump() {
 				GetCapsuleComponent()->SetWorldRotation(TargetRot);
 
 				FVector NewLocation = {
-					CoverPointEndTrace->GetActorLocation().X, CoverPointEndTrace->GetActorLocation().Y,
+					CoverPointEndTrace->GetActorLocation().X,
+					CoverPointEndTrace->GetActorLocation().Y,
 					GetActorLocation().Z
 				};
 
@@ -1014,7 +1022,13 @@ void AMainCharacter::Jump() {
 					UE_LOG(LogTemp, Warning, TEXT("Can Slide To Right"))
 				}
 
-				GetCapsuleComponent()->SetWorldRotation(TargetRot);
+				UE_LOG(LogTemp, Warning,
+				       TEXT("Move To: CoverLocation: %s CoverRot %s TargetRot %s Dist %f NewLocation %s"),
+				       *CoverPointEndTrace->GetActorLocation().ToString(),
+				       *CoverRot.ToString(),
+				       *TargetRot.ToString(),
+				       Dist,
+				       *NewLocation.ToString())
 
 				UKismetSystemLibrary::MoveComponentTo(GetCapsuleComponent(),
 				                                      NewLocation,
@@ -1976,7 +1990,7 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 
 				FHitResult CoverMoveHitResult;
 				FVector CoverMoveStart = NextCoverHitResult.Location;
-				FVector CoverMoveRotFVector = {-0.5f, -1.f, -1.0f};
+				FVector CoverMoveRotFVector = {-0.7f, -1.f, -1.0f};
 				FVector CoverMoveEnd = CoverMoveStart + CoverMoveRotFVector * 100.f;
 				UKismetSystemLibrary::LineTraceSingle(this,
 				                                      CoverMoveStart,
@@ -2056,7 +2070,7 @@ bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
 
 				FHitResult CoverMoveHitResult;
 				FVector CoverMoveStart = NextCoverHitResult.Location;
-				FVector CoverMoveRotFVector = {-0.5f, 1.f, -1.0f};
+				FVector CoverMoveRotFVector = {-0.7f, 1.f, -1.0f};
 				FVector CoverMoveEnd = CoverMoveStart + CoverMoveRotFVector * 100.f;
 				UKismetSystemLibrary::LineTraceSingle(this,
 				                                      CoverMoveStart,
