@@ -62,8 +62,10 @@ void ACover::InCoverSystem() {
 		CurrentOverlappingCharacter->TraceCharacterCover();
 		CurrentOverlappingCharacter->HideCoverOnCameraTrace();
 
-		CurrentOverlappingCharacter->SetSlideToLeftCover(CurrentOverlappingCharacter->LeftTraceCoverJumpBetweenCovers());
-		CurrentOverlappingCharacter->SetSlideToRightCover(CurrentOverlappingCharacter->RightTraceCoverJumpBetweenCovers());
+		CurrentOverlappingCharacter->
+			SetSlideToLeftCover(CurrentOverlappingCharacter->LeftTraceCoverJumpBetweenCovers());
+		CurrentOverlappingCharacter->SetSlideToRightCover(
+			CurrentOverlappingCharacter->RightTraceCoverJumpBetweenCovers());
 
 		FVector OutMoveTraceStart;
 		FVector OutMoveTraceEnd;
@@ -127,47 +129,47 @@ void ACover::StopAiming() {
 void ACover::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
                             class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                             const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("ACover Cover Capsule Overlapping BEGIN!!!!! By: %s, %s, %s"),
-	       *OverlappedComp->GetName(), *OtherActor->GetName(), *OtherComp->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("ACover Cover Capsule Overlapping BEGIN!!!!! By: %s, %s, %s"),
+	//        *OverlappedComp->GetName(), *OtherActor->GetName(), *OtherComp->GetName());
 }
 
 void ACover::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
                           class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("ACover Cover Capsule Overlapping END!!!!! By: %s, %s, %s"),
-	       *OverlappedComp->GetName(), *OtherActor->GetName(), *OtherComp->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("ACover Cover Capsule Overlapping END!!!!! By: %s, %s, %s"),
+	//        *OverlappedComp->GetName(), *OtherActor->GetName(), *OtherComp->GetName());
 
 }
 
 void ACover::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                   UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                   const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("ACover Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
-	       *OtherActor->GetName(),
-	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("ACover Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+	//        *OtherActor->GetName(),
+	//        *OverlappedComponent->GetName(), *OtherComponent->GetName());
 }
 
 void ACover::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("ACover %s End Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
-	       *GetName(),
-	       *OtherActor->GetName(),
-	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("ACover %s End Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+	//        *GetName(),
+	//        *OtherActor->GetName(),
+	//        *OverlappedComponent->GetName(), *OtherComponent->GetName());
 }
 
 void ACover::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("ACover %s Box Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
-	       *GetName(),
-	       *OtherActor->GetName(),
-	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("ACover %s Box Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+	//        *GetName(),
+	//        *OtherActor->GetName(),
+	//        *OverlappedComponent->GetName(), *OtherComponent->GetName());
 }
 
 void ACover::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                              UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("ACover %s End Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
-	       *GetName(),
-	       *OtherActor->GetName(),
-	       *OverlappedComponent->GetName(), *OtherComponent->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("ACover %s End Overlapping Actor %s OverlappedComponent: %s OtherComponent: %s"),
+	//        *GetName(),
+	//        *OtherActor->GetName(),
+	//        *OverlappedComponent->GetName(), *OtherComponent->GetName());
 
 }

@@ -1966,8 +1966,13 @@ bool AMainCharacter::CrosshairTraceCoverDisable() {
 
 bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 	if (bCanPeakLeft) {
-		FHitResult NextCoverHitResult;
 		FRotator NextCoverRotation = GetActorRotation();
+		auto ControlRot = Controller->GetControlRotation();
+		// NextCoverRotation.Normalize();
+		CoverPitch = NextCoverRotation.Pitch;
+		CoverRoll = NextCoverRotation.Roll;
+
+		FHitResult NextCoverHitResult;
 		FVector NextCoverTraceStart = CoverLeftMovement->GetComponentLocation();
 		FVector RotFVector = -GetActorRotation().Quaternion().GetRightVector();
 		FVector NextCoverTraceEnd = CoverLeftMovement->GetComponentLocation() + RotFVector * 150.f;
@@ -1992,7 +1997,27 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 
 				FHitResult CoverMoveHitResult;
 				FVector CoverMoveStart = NextCoverHitResult.Location;
-				FVector CoverMoveRotFVector = {-0.7f, -1.f, -1.0f};
+
+				// float X = CoverRoll -.7f;
+				// float Y = CoverPitch - 1.f;
+
+				auto f = GetActorRotation().Quaternion().GetRightVector();
+				auto x = GetActorRotation().Quaternion().GetForwardVector();
+
+				float X = (FMath::RoundToInt(f.X) != 0.0f ? -f.X : -x.X) * 0.6;
+				float Y = -(FMath::RoundToInt(f.Y) != 0.0f ? f.Y : x.Y) * 0.6;
+				Y = (Y != 0.0f && Y != -0.0f ? Y : Y + 1.f);
+
+				FVector CoverMoveRotFVector = {
+					// -0.7f,
+					X,
+					// -1.f,
+					Y,
+					-1.0f
+				};
+				UE_LOG(LogTemp, Warning, TEXT("LEFT CoverMoveRotFVector: %s f: %s x: %s, ABS X: %s, ABS Y: %s"),
+				       *CoverMoveRotFVector.ToString(), *f.ToString(), *x.ToString(), FMath::RoundToInt(f.X) != 0.0f ? TEXT("true") : TEXT("false"), FMath::RoundToInt(f.Y) != 0.0f ? TEXT("true") : TEXT("false"))
+
 				FVector CoverMoveEnd = CoverMoveStart + CoverMoveRotFVector * 100.f;
 				UKismetSystemLibrary::LineTraceSingle(this,
 				                                      CoverMoveStart,
@@ -2046,8 +2071,13 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 
 bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
 	if (bCanPeakRight) {
-		FHitResult NextCoverHitResult;
 		FRotator NextCoverRotation = GetActorRotation();
+		auto ControlRot = Controller->GetControlRotation();
+		// NextCoverRotation.Normalize();
+		CoverPitch = NextCoverRotation.Pitch;
+		CoverRoll = NextCoverRotation.Roll;
+
+		FHitResult NextCoverHitResult;
 		FVector NextCoverTraceStart = CoverRightMovement->GetComponentLocation();
 		FVector RotFVector = UKismetMathLibrary::NegateVector(-GetActorRotation().Quaternion().GetRightVector());
 		FVector NextCoverTraceEnd = CoverRightMovement->GetComponentLocation() + RotFVector * 150.f;
@@ -2072,7 +2102,24 @@ bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
 
 				FHitResult CoverMoveHitResult;
 				FVector CoverMoveStart = NextCoverHitResult.Location;
-				FVector CoverMoveRotFVector = {-0.7f, 1.f, -1.0f};
+
+				auto f = GetActorRotation().Quaternion().GetRightVector();
+				auto x = GetActorRotation().Quaternion().GetForwardVector();
+
+				float X = (FMath::RoundToInt(f.X) != 0.0f ? f.X : -x.X) * 0.6;
+				float Y = (FMath::RoundToInt(f.Y) != 0.0f ? f.Y : -x.Y) * 0.6;
+				Y = (Y != 0.0f && Y != -0.0f ? Y : Y + 1.f);
+
+				FVector CoverMoveRotFVector = {
+					// -0.7f,
+					X,
+					// 1.f,
+					Y,
+					-1.0f
+				};
+				UE_LOG(LogTemp, Warning, TEXT("RIGHT CoverMoveRotFVector: %s f: %s x: %s, ABS X: %s, ABS Y: %s"),
+				       *CoverMoveRotFVector.ToString(), *f.ToString(), *x.ToString(), FMath::RoundToInt(f.X) != 0.0f ? TEXT("true") : TEXT("false"), FMath::RoundToInt(f.Y) != 0.0f ? TEXT("true") : TEXT("false"))
+
 				FVector CoverMoveEnd = CoverMoveStart + CoverMoveRotFVector * 100.f;
 				UKismetSystemLibrary::LineTraceSingle(this,
 				                                      CoverMoveStart,
