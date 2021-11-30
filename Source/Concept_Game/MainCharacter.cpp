@@ -1789,6 +1789,7 @@ void AMainCharacter::HideCoverOnCameraTrace() {
 				);
 
 				if (bPlayerIsOverlapped) {
+					//TODO: Make Shadow visible only mesh invisible
 					if (HitPlayer.GetActor() == CurrentCoverHitResult.GetActor()) {
 						CurrentCoverHitResult.GetActor()->GetRootComponent()->SetVisibility(false);
 					}
