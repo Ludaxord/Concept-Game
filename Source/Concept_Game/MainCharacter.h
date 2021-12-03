@@ -822,7 +822,28 @@ private:
 	class UCoverComponent* CharacterCoverComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UShootingComponent* CharacterShootingComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UMeleeComponent* CharacterMeleeComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UParkourComponent* CharacterParkourComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UEnhancementComponent* CharacterEnhancementComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* CharacterInventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UItemComponent* CharacterItemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UMainCharacterCameraComponent* CharacterCameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UMainCharacterInputComponent* CharacterInputComponent;
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ActionComponent.h"
-#include "CoverComponent.generated.h"
+#include "EnhancementComponent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UCoverComponent : public UActionComponent
+class CONCEPT_GAME_API UEnhancementComponent : public UActionComponent
 {
 	GENERATED_BODY()
 	

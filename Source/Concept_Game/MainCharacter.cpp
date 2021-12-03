@@ -3,18 +3,24 @@
 
 #include "MainCharacter.h"
 
+#include "ActionComponent.h"
 #include "Cover.h"
+// #include "CoverComponent.h"
+#include <Components/SphereComponent.h>
+
 #include "CoverComponent.h"
 #include "DrawDebugHelpers.h"
 #include "InventoryComponent.h"
+#include "ItemComponent.h"
 #include "Ladder.h"
 #include "MainAnimInstance.h"
+#include "MainCharacterCameraComponent.h"
+#include "MainCharacterInputComponent.h"
 #include "MainHUD.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -99,7 +105,15 @@ AMainCharacter::AMainCharacter():
 	ConstructCoverArrows();
 
 	CharacterCoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CharacterCoverComponent"));
+	CharacterShootingComponent = CreateDefaultSubobject<UShootingComponent>(TEXT("CharacterShootingComponent"));
+	CharacterMeleeComponent = CreateDefaultSubobject<UMeleeComponent>(TEXT("CharacterMeleeComponent"));
+	CharacterParkourComponent = CreateDefaultSubobject<UParkourComponent>(TEXT("CharacterParkourComponent"));
+
+	CharacterEnhancementComponent = CreateDefaultSubobject<UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
 	CharacterInventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventoryComponent"));
+	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
+	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
+	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -1482,7 +1496,7 @@ void AMainCharacter::InteractButtonPressed() {
 }
 
 void AMainCharacter::InventoryButtonPressed() {
-	UE_LOG(LogTemp, Warning, TEXT("Inventory Button"));
+	CharacterInventoryComponent->InventoryToggle();
 }
 
 void AMainCharacter::PauseButtonPressed() {
@@ -1496,9 +1510,7 @@ void AMainCharacter::DebugDropItem() {
 }
 
 void AMainCharacter::QuickSelectButtonPressed(float Value) {
-	if (Value > 0.0f) {
-		UE_LOG(LogTemp, Warning, TEXT("Quick Select Button"));
-	}
+	CharacterInventoryComponent->QuickSelectToggle(Value > 0.0f);
 }
 
 void AMainCharacter::SphereOverlapBegin(FGuid Guid) {
