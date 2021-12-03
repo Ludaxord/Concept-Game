@@ -4,7 +4,9 @@
 #include "MainCharacter.h"
 
 #include "Cover.h"
+#include "CoverComponent.h"
 #include "DrawDebugHelpers.h"
+#include "InventoryComponent.h"
 #include "Ladder.h"
 #include "MainAnimInstance.h"
 #include "MainHUD.h"
@@ -95,6 +97,9 @@ AMainCharacter::AMainCharacter():
 	ConstructRefFollowCamera();
 	ConstructRefFollowCameraArrowComponent();
 	ConstructCoverArrows();
+
+	CharacterCoverComponent = CreateDefaultSubobject<UCoverComponent>(TEXT("CharacterCoverComponent"));
+	CharacterInventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventoryComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -2017,7 +2022,9 @@ bool AMainCharacter::LeftTraceCoverJumpBetweenCovers() {
 					-1.0f
 				};
 				UE_LOG(LogTemp, Warning, TEXT("LEFT CoverMoveRotFVector: %s f: %s x: %s, ABS X: %s, ABS Y: %s"),
-				       *CoverMoveRotFVector.ToString(), *f.ToString(), *x.ToString(), FMath::RoundToInt(f.X) != 0.0f ? TEXT("true") : TEXT("false"), FMath::RoundToInt(f.Y) != 0.0f ? TEXT("true") : TEXT("false"))
+				       *CoverMoveRotFVector.ToString(), *f.ToString(), *x.ToString(),
+				       FMath::RoundToInt(f.X) != 0.0f ? TEXT("true") : TEXT("false"),
+				       FMath::RoundToInt(f.Y) != 0.0f ? TEXT("true") : TEXT("false"))
 
 				FVector CoverMoveEnd = CoverMoveStart + CoverMoveRotFVector * 100.f;
 				UKismetSystemLibrary::LineTraceSingle(this,
@@ -2119,7 +2126,9 @@ bool AMainCharacter::RightTraceCoverJumpBetweenCovers() {
 					-1.0f
 				};
 				UE_LOG(LogTemp, Warning, TEXT("RIGHT CoverMoveRotFVector: %s f: %s x: %s, ABS X: %s, ABS Y: %s"),
-				       *CoverMoveRotFVector.ToString(), *f.ToString(), *x.ToString(), FMath::RoundToInt(f.X) != 0.0f ? TEXT("true") : TEXT("false"), FMath::RoundToInt(f.Y) != 0.0f ? TEXT("true") : TEXT("false"))
+				       *CoverMoveRotFVector.ToString(), *f.ToString(), *x.ToString(),
+				       FMath::RoundToInt(f.X) != 0.0f ? TEXT("true") : TEXT("false"),
+				       FMath::RoundToInt(f.Y) != 0.0f ? TEXT("true") : TEXT("false"))
 
 				FVector CoverMoveEnd = CoverMoveStart + CoverMoveRotFVector * 100.f;
 				UKismetSystemLibrary::LineTraceSingle(this,

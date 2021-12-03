@@ -817,6 +817,12 @@ private:
 
 	bool bPlayClimbTurnAnimation;
 	bool bClimbingButtonPressed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UCoverComponent* CharacterCoverComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UInventoryComponent* CharacterInventoryComponent;
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;
