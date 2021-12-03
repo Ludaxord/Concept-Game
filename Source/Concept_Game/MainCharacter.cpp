@@ -10,6 +10,7 @@
 
 #include "CoverComponent.h"
 #include "DrawDebugHelpers.h"
+#include "EnhancementComponent.h"
 #include "InventoryComponent.h"
 #include "ItemComponent.h"
 #include "Ladder.h"
@@ -17,6 +18,9 @@
 #include "MainCharacterCameraComponent.h"
 #include "MainCharacterInputComponent.h"
 #include "MainHUD.h"
+#include "MeleeComponent.h"
+#include "ParkourComponent.h"
+#include "ShootingComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
