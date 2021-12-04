@@ -17,12 +17,17 @@ UInventoryComponent::UInventoryComponent() : bInventoryVisible(false), bQuickSel
 void UInventoryComponent::QuickSelectToggle(bool Visible) {
 	if (OwningCharacter) {
 		bQuickSelectVisible = Visible;
-
+		if (bQuickSelectVisible) {
+			UE_LOG(LogTemp, Warning, TEXT("Quick Select Toggle"));
+		}
 	}
 }
 
 void UInventoryComponent::InventoryToggle() {
-	UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
+	if (OwningCharacter) {
+		bInventoryVisible = !bInventoryVisible;
+		UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
+	}
 }
 
 

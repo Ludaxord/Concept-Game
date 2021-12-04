@@ -6,7 +6,6 @@
 #include "ActionComponent.h"
 #include "Cover.h"
 // #include "CoverComponent.h"
-#include <Components/SphereComponent.h>
 
 #include "CoverComponent.h"
 #include "DrawDebugHelpers.h"
@@ -23,7 +22,6 @@
 #include "ShootingComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
-#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"

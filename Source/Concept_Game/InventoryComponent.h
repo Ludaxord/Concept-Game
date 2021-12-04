@@ -85,4 +85,8 @@ public:
 	void SetToQuickSelect(AItem* InventoryItem);
 
 	void RemoveFromQuickSelect(AItem* InventoryItem);
+
+	FORCEINLINE bool GetQuickSelectVisibility() const {
+		return bQuickSelectVisible;
+	}
 };

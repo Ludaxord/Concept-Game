@@ -10,8 +10,11 @@
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UInventoryMenu : public UUserWidget
-{
+class CONCEPT_GAME_API UInventoryMenu : public UUserWidget {
 	GENERATED_BODY()
-	
+
+public:
+
+
+private:
 };

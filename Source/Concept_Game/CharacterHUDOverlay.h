@@ -4,27 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InventoryMenuItem.generated.h"
+#include "CharacterHUDOverlay.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UInventoryMenuItem : public UUserWidget {
+class CONCEPT_GAME_API UCharacterHUDOverlay : public UUserWidget
+{
 	GENERATED_BODY()
 
 public:
 	UFUNCTION(BlueprintCallable)
-	FText GetAmmo();
-
-	UFUNCTION(BlueprintCallable)
-	FText GetWeaponName();
-
-	UFUNCTION(BlueprintCallable)
-	FText GetWeaponType();
-
-	UFUNCTION(BlueprintCallable)
-	float GetWeaponDamagePercent();
+	bool ToggleVisibilityOfQuickSelect();
 
 	void CastCharacterComponents();
 

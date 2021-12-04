@@ -844,7 +844,45 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMainCharacterInputComponent* CharacterInputComponent;
+
 public:
+
+	UCoverComponent* GetCharacterCoverComponent() {
+		return CharacterCoverComponent;
+	};
+
+	UShootingComponent* GetCharacterShootingComponent() {
+		return CharacterShootingComponent;
+	};
+
+	UMeleeComponent* GetCharacterMeleeComponent() {
+		return CharacterMeleeComponent;
+	};
+
+	UParkourComponent* GetCharacterParkourComponent() {
+		return CharacterParkourComponent;
+	};
+
+	UEnhancementComponent* GetCharacterEnhancementComponent() {
+		return CharacterEnhancementComponent;
+	};
+
+	UInventoryComponent* GetCharacterInventoryComponent() {
+		return CharacterInventoryComponent;
+	};
+
+	UItemComponent* GetCharacterItemComponent() {
+		return CharacterItemComponent;
+	};
+
+	UMainCharacterCameraComponent* GetCharacterCameraComponent() {
+		return CharacterCameraComponent;
+	};
+
+	 UMainCharacterInputComponent* GetCharacterInputComponent() {
+		return CharacterInputComponent;
+	};
+
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {
 		return CameraBoom;
 	}
