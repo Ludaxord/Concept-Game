@@ -298,6 +298,8 @@ private:
 
 	TArray<FGuid> OverlappedItemIDs;
 
+	bool bPauseMenuButtonPressed;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	FVector CoverLocation;
 

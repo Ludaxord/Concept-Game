@@ -1508,6 +1508,7 @@ void AMainCharacter::InventoryButtonPressed() {
 
 void AMainCharacter::PauseButtonPressed() {
 	UE_LOG(LogTemp, Warning, TEXT("Pause Button"));
+	bPauseMenuButtonPressed = !bPauseMenuButtonPressed;
 }
 
 void AMainCharacter::DebugDropItem() {
@@ -2288,7 +2289,7 @@ bool AMainCharacter::GetPlayerHUDVisibility() const {
 
 //Add listener on pause button click
 bool AMainCharacter::GetPauseMenuVisibility() const {
-	return false;
+	return bPauseMenuButtonPressed;
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,

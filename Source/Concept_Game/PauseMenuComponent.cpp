@@ -49,6 +49,8 @@ void UPauseMenuComponent::CreatePauseMenu(UPauseMenuWidget* InPauseMenuWidget) {
 }
 
 void UPauseMenuComponent::PauseVisibilityState() {
+	UE_LOG(LogTemp, Warning, TEXT("PauseVisibilityState"));
+
 	if (OwningCharacter) {
 		bPauseMenuVisible = OwningCharacter->GetPauseMenuVisibility();
 	}
