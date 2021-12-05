@@ -16,6 +16,18 @@ bool UCharacterHUDOverlay::ToggleVisibilityOfQuickSelect() {
 	return false;
 }
 
+bool UCharacterHUDOverlay::ToggleVisibilityOfPlayerHUD() {
+	CastCharacterComponents();
+	bool bVisibility = true;
+	if (Character) {
+		bVisibility = Character->GetPlayerHUDVisibility();
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("PlayerHUDVisibility: %s"), bVisibility ? TEXT("true") : TEXT("false"));
+
+	return bVisibility;
+}
+
 void UCharacterHUDOverlay::CastCharacterComponents() {
 	if (!Character) {
 		Character = Cast<AMainCharacter>(GetOwningPlayerPawn());

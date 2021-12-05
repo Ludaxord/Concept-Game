@@ -18,6 +18,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool ToggleVisibilityOfQuickSelect();
 
+	UFUNCTION(BlueprintCallable)
+	bool ToggleVisibilityOfPlayerHUD();
+
 	void CastCharacterComponents();
 
 private:

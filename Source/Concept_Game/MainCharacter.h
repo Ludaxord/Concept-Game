@@ -255,6 +255,7 @@ public:
 
 	UFUNCTION()
 	void CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	bool GetPlayerHUDVisibility() const;
 
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",

@@ -111,7 +111,8 @@ AMainCharacter::AMainCharacter():
 	CharacterMeleeComponent = CreateDefaultSubobject<UMeleeComponent>(TEXT("CharacterMeleeComponent"));
 	CharacterParkourComponent = CreateDefaultSubobject<UParkourComponent>(TEXT("CharacterParkourComponent"));
 
-	CharacterEnhancementComponent = CreateDefaultSubobject<UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
+	CharacterEnhancementComponent = CreateDefaultSubobject<
+		UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
 	CharacterInventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventoryComponent"));
 	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
@@ -2275,6 +2276,10 @@ void AMainCharacter::MoveBetweenCovers() {
 void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
 	UE_LOG(LogTemp, Warning, TEXT("Montage End Name: %s"), *Montage->GetName());
 	bCoverMontageEnded = true;
+}
+
+bool AMainCharacter::GetPlayerHUDVisibility() const {
+	return !CharacterInventoryComponent->GetQuickSelectVisibility();
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,
