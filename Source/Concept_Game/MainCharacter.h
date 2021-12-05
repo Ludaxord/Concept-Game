@@ -255,7 +255,10 @@ public:
 
 	UFUNCTION()
 	void CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 	bool GetPlayerHUDVisibility() const;
+
+	bool GetPauseMenuVisibility() const;
 
 protected:
 	FTransform SetCameraTransform(class UCameraComponent* Camera, FName SocketName = "",
@@ -834,11 +837,17 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UEnhancementComponent* CharacterEnhancementComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* CharacterInventoryComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UItemComponent* CharacterItemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UBaseHUDComponent* CharacterBaseHUDComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UPauseMenuComponent* CharacterPauseMenuComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMainCharacterCameraComponent* CharacterCameraComponent;

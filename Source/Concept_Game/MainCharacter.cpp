@@ -7,6 +7,7 @@
 #include "Cover.h"
 // #include "CoverComponent.h"
 
+#include "BaseHUDComponent.h"
 #include "CoverComponent.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancementComponent.h"
@@ -19,6 +20,7 @@
 #include "MainHUD.h"
 #include "MeleeComponent.h"
 #include "ParkourComponent.h"
+#include "PauseMenuComponent.h"
 #include "ShootingComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
@@ -117,6 +119,8 @@ AMainCharacter::AMainCharacter():
 	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
+	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
+	CharacterPauseMenuComponent = CreateDefaultSubobject<UPauseMenuComponent>(TEXT("CharacterPauseMenuComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -2280,6 +2284,11 @@ void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 
 bool AMainCharacter::GetPlayerHUDVisibility() const {
 	return !CharacterInventoryComponent->GetQuickSelectVisibility();
+}
+
+//Add listener on pause button click
+bool AMainCharacter::GetPauseMenuVisibility() const {
+	return false;
 }
 
 FTransform AMainCharacter::SetCameraTransform(UCameraComponent* Camera, FName SocketName, bool AttackComponent,

@@ -23,6 +23,10 @@ public:
 
 	virtual void InventoryToggle();
 
+	//TODO: Move to some base class to remove duplicates
+	UFUNCTION(BlueprintCallable)
+	FVector2D GetViewportCenter();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -57,6 +61,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> QuickSelectItems;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
+	class UInventoryMenu* QuickSelectWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
+	ESlateVisibility CurrentQuickSelectWidgetVisibility;
+
 public:
 	FORCEINLINE void AddInventoryItem(AItem* InventoryItem) {
 		InventoryItems.Add(InventoryItem);
@@ -86,7 +96,15 @@ public:
 
 	void RemoveFromQuickSelect(AItem* InventoryItem);
 
+	UFUNCTION(BlueprintCallable)
+	void CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget);
+
 	FORCEINLINE bool GetQuickSelectVisibility() const {
 		return bQuickSelectVisible;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UInventoryMenu* GetQuickSelectWidget() const {
+		return QuickSelectWidget;
 	}
 };

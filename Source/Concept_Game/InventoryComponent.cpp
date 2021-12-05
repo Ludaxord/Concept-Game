@@ -3,6 +3,7 @@
 
 #include "InventoryComponent.h"
 
+#include "InventoryMenu.h"
 #include "MainCharacter.h"
 
 // Sets default values for this component's properties
@@ -18,7 +19,18 @@ void UInventoryComponent::QuickSelectToggle(bool Visible) {
 	if (OwningCharacter) {
 		bQuickSelectVisible = Visible;
 		if (bQuickSelectVisible) {
-			UE_LOG(LogTemp, Warning, TEXT("Quick Select Toggle"));
+			if (QuickSelectWidget) {
+				UE_LOG(LogTemp, Warning, TEXT("Quick Select Toggle"));
+				QuickSelectWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+				// QuickSelectWidget->AddToViewport();
+				QuickSelectWidget->SetAlignmentInViewport(GetViewportCenter());
+			}
+		}
+		else {
+			if (QuickSelectWidget) {
+				QuickSelectWidget->SetVisibility(ESlateVisibility::Hidden);
+				// QuickSelectWidget->RemoveFromViewport();
+			}
 		}
 	}
 }
@@ -49,6 +61,20 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+FVector2D UInventoryComponent::GetViewportCenter() {
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport) {
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
+
+	return {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
+}
+
+void UInventoryComponent::CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget) {
+	QuickSelectWidget = InQuickSelectWidget;
+	QuickSelectWidget->AddToViewport();
+	QuickSelectWidget->Visibility = ESlateVisibility::Hidden;
+}
 
 void UInventoryComponent::ModifyInventoryItem(AItem* InventoryItem) {
 }

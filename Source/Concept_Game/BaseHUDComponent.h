@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "PauseMenuComponent.generated.h"
+#include "BaseHUDComponent.generated.h"
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class CONCEPT_GAME_API UPauseMenuComponent : public UActorComponent {
+class CONCEPT_GAME_API UBaseHUDComponent : public UActorComponent {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UPauseMenuComponent();
+	UBaseHUDComponent();
 
 protected:
 	// Called when the game starts
@@ -31,20 +31,20 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"))
 	class AMainCharacter* OwningCharacter;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Pause", meta = (AllowPrivateAccess = "true"))
-	class UPauseMenuWidget* PauseMenuWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="HUD", meta = (AllowPrivateAccess = "true"))
+	class UBasePlayerHUDWidget* PlayerHUDWidget;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Pause", meta= (AllowPrivateAccess = "true"))
-	bool bPauseMenuVisible;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="HUD", meta= (AllowPrivateAccess = "true"))
+	bool bBaseHUDVisible;
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void CreatePauseMenu(UPauseMenuWidget* InPauseMenuWidget);
+	void CreateBasePlayerHUD(UBasePlayerHUDWidget* InPlayerHUDWidget);
 
 	UFUNCTION(BlueprintCallable)
-	void PauseVisibilityState();
+	void HUDVisibilityState();
 
-	void SetPauseMenuVisibility(bool bInVisibility) {
-		bPauseMenuVisible = bInVisibility;
+	void SetBaseHUDVisibility(bool bInVisibility) {
+		bBaseHUDVisible = bInVisibility;
 	}
 };
