@@ -4,8 +4,7 @@
 #include "SaveGameStateComponent.h"
 
 // Sets default values for this component's properties
-USaveGameStateComponent::USaveGameStateComponent()
-{
+USaveGameStateComponent::USaveGameStateComponent() {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -15,20 +14,18 @@ USaveGameStateComponent::USaveGameStateComponent()
 
 
 // Called when the game starts
-void USaveGameStateComponent::BeginPlay()
-{
+void USaveGameStateComponent::BeginPlay() {
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
 // Called every frame
-void USaveGameStateComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
+void USaveGameStateComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                            FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
-

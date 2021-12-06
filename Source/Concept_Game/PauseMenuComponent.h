@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PauseVisibilityState();
 
+	UFUNCTION(BlueprintCallable)
+	void PauseMenuToggle();
+
 	void SetPauseMenuVisibility(bool bInVisibility) {
 		bPauseMenuVisible = bInVisibility;
 	}

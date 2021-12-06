@@ -848,7 +848,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UBaseHUDComponent* CharacterBaseHUDComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UPauseMenuComponent* CharacterPauseMenuComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
@@ -858,7 +858,6 @@ private:
 	class UMainCharacterInputComponent* CharacterInputComponent;
 
 public:
-
 	UCoverComponent* GetCharacterCoverComponent() {
 		return CharacterCoverComponent;
 	};
@@ -891,7 +890,7 @@ public:
 		return CharacterCameraComponent;
 	};
 
-	 UMainCharacterInputComponent* GetCharacterInputComponent() {
+	UMainCharacterInputComponent* GetCharacterInputComponent() {
 		return CharacterInputComponent;
 	};
 

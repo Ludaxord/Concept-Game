@@ -113,14 +113,13 @@ AMainCharacter::AMainCharacter():
 	CharacterMeleeComponent = CreateDefaultSubobject<UMeleeComponent>(TEXT("CharacterMeleeComponent"));
 	CharacterParkourComponent = CreateDefaultSubobject<UParkourComponent>(TEXT("CharacterParkourComponent"));
 
-	CharacterEnhancementComponent = CreateDefaultSubobject<
-		UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
+	CharacterEnhancementComponent = CreateDefaultSubobject<UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
+	CharacterPauseMenuComponent = CreateDefaultSubobject<UPauseMenuComponent>(TEXT("CharacterPauseMenuComponent"));
 	CharacterInventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventoryComponent"));
 	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
 	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
-	CharacterPauseMenuComponent = CreateDefaultSubobject<UPauseMenuComponent>(TEXT("CharacterPauseMenuComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -1509,6 +1508,7 @@ void AMainCharacter::InventoryButtonPressed() {
 void AMainCharacter::PauseButtonPressed() {
 	UE_LOG(LogTemp, Warning, TEXT("Pause Button"));
 	bPauseMenuButtonPressed = !bPauseMenuButtonPressed;
+	CharacterPauseMenuComponent->PauseMenuToggle();
 }
 
 void AMainCharacter::DebugDropItem() {

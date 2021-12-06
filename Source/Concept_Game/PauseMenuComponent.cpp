@@ -49,12 +49,17 @@ void UPauseMenuComponent::CreatePauseMenu(UPauseMenuWidget* InPauseMenuWidget) {
 }
 
 void UPauseMenuComponent::PauseVisibilityState() {
-	UE_LOG(LogTemp, Warning, TEXT("PauseVisibilityState"));
 
+}
+
+void UPauseMenuComponent::PauseMenuToggle() {
 	if (OwningCharacter) {
-		bPauseMenuVisible = OwningCharacter->GetPauseMenuVisibility();
+		bPauseMenuVisible = !bPauseMenuVisible;
+		UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
 	}
+
 	if (PauseMenuWidget) {
+		PauseMenuWidget->SetAlignmentInViewport(GetViewportCenter());
 		PauseMenuWidget->SetVisibility(
 			bPauseMenuVisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Hidden);
 	}
