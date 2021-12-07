@@ -27,6 +27,9 @@ public:
 	//TODO: Move to some base class to remove duplicates
 	UFUNCTION(BlueprintCallable)
 	FVector2D GetViewportCenter();
+
+	UFUNCTION(BlueprintCallable)
+	void GetMouseRotationInViewport();
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"))
 	class AMainCharacter* OwningCharacter;
