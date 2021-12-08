@@ -122,9 +122,14 @@ float UInventoryComponent::GetMouseRotationInViewport() {
 	bool bSelect = MousePosition.X - ViewportCenter.X >= 0.0f;
 	float SelectedFloat = UKismetMathLibrary::SelectFloat(1.0f, -1.0f, bSelect);
 
-	UE_LOG(LogTemp, Warning, TEXT("Get MouseRotation In Viewport: %f MousePosition: %s ViewportCenter: %s"),
+	UE_LOG(LogTemp, Warning,
+	       TEXT(
+		       "Get MouseRotation In Viewport: %f ViewportMousePositionDotProd: %f MousePosition: %s MousePosition.X - ViewportCenter.X: %f ViewportCenter: %s"
+	       ),
 	       SelectedFloat * ViewportMousePositionDotProdACos,
+	       ViewportMousePositionDotProd,
 	       *MousePosition.ToString(),
+	       MousePosition.X - ViewportCenter.X,
 	       *ViewportCenter.ToString()
 	)
 
