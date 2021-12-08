@@ -45,26 +45,6 @@ FVector2D UBaseHUDComponent::GetViewportCenter() {
 	return {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
 }
 
-float UBaseHUDComponent::GetMouseRotationInViewport() {
-	FVector2D ViewportCenter = GetViewportCenter();
-	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
-	FVector2D ViewportCenterX = {ViewportCenter.X, 0.0f};
-
-	FVector2D MousePositionDiff = ViewportCenter - MousePosition;
-	UKismetMathLibrary::Normalize2D(MousePositionDiff);
-
-	FVector2D ViewportCenterXDiff = ViewportCenterX - ViewportCenter;
-	UKismetMathLibrary::Normalize2D(ViewportCenterXDiff);
-
-	float ViewportMousePositionDotProd = UKismetMathLibrary::DotProduct2D(MousePositionDiff, ViewportCenterXDiff);
-	float ViewportMousePositionDotProdACos = UKismetMathLibrary::DegAcos(ViewportMousePositionDotProd);
-
-	bool bSelect = MousePosition.X - ViewportCenter.X >= 0.0f;
-	float SelectedFloat = UKismetMathLibrary::SelectFloat(1.0f, -1.0f, bSelect);
-
-	return SelectedFloat * ViewportMousePositionDotProdACos;
-}
-
 void UBaseHUDComponent::CreateBasePlayerHUD(UBasePlayerHUDWidget* InPlayerHUDWidget) {
 	PlayerHUDWidget = InPlayerHUDWidget;
 	PlayerHUDWidget->AddToViewport();

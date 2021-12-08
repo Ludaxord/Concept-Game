@@ -27,6 +27,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector2D GetViewportCenter();
 
+	UFUNCTION(BlueprintCallable)
+	void QuickSelectInteractions();
+
+	UFUNCTION(BlueprintCallable)
+	float GetMouseRotationInViewport();
+
+	UFUNCTION(BlueprintCallable)
+	void SetQuickSelectArrowAngle(UUserWidget* ArrowWidget, float InAngle);
+
+	UFUNCTION(BlueprintCallable)
+	FIntPoint SetViewportSizeForQuickSelect();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -46,6 +58,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
 	bool bQuickSelectVisible;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
+	bool bQuickSelectVisibleRef;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
 	bool bInventoryVisible;
 
@@ -63,6 +78,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	class UInventoryMenu* QuickSelectWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
+	FIntPoint QuickSelectViewportSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	ESlateVisibility CurrentQuickSelectWidgetVisibility;
@@ -106,5 +124,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UInventoryMenu* GetQuickSelectWidget() const {
 		return QuickSelectWidget;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FIntPoint GetQuickSelectViewportSize() const {
+		return QuickSelectViewportSize;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetQuickSelectViewportSize(FIntPoint InQuickSelectViewportSize) {
+		QuickSelectViewportSize = InQuickSelectViewportSize;
 	}
 };

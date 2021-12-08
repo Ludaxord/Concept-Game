@@ -5,9 +5,14 @@
 
 #include "InventoryMenu.h"
 #include "MainCharacter.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
-UInventoryComponent::UInventoryComponent() : bInventoryVisible(false), bQuickSelectVisible(false) {
+UInventoryComponent::UInventoryComponent() : bInventoryVisible(false), bQuickSelectVisible(false),
+                                             bQuickSelectVisibleRef(false) {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -20,7 +25,16 @@ void UInventoryComponent::QuickSelectToggle(bool Visible) {
 		bQuickSelectVisible = Visible;
 		if (bQuickSelectVisible) {
 			if (QuickSelectWidget) {
-				UE_LOG(LogTemp, Warning, TEXT("Quick Select Toggle"));
+				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
+					UE_LOG(LogTemp, Warning, TEXT("Ignore Move Input"))
+					UGameplayStatics::GetPlayerController(this, 0)->SetMouseLocation(
+						GetViewportCenter().X, GetViewportCenter().Y);
+					UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
+					bQuickSelectVisibleRef = bQuickSelectVisible;
+				}
+
 				QuickSelectWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 				// QuickSelectWidget->AddToViewport();
 				QuickSelectWidget->SetAlignmentInViewport(GetViewportCenter());
@@ -28,6 +42,14 @@ void UInventoryComponent::QuickSelectToggle(bool Visible) {
 		}
 		else {
 			if (QuickSelectWidget) {
+				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
+					UE_LOG(LogTemp, Warning, TEXT("NOT Ignore Move Input"))
+					UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
+					bQuickSelectVisibleRef = bQuickSelectVisible;
+				}
+
 				QuickSelectWidget->SetVisibility(ESlateVisibility::Hidden);
 				// QuickSelectWidget->RemoveFromViewport();
 			}
@@ -58,7 +80,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                         FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	// QuickSelectInteractions();
 }
 
 FVector2D UInventoryComponent::GetViewportCenter() {
@@ -70,8 +92,64 @@ FVector2D UInventoryComponent::GetViewportCenter() {
 	return {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
 }
 
+void UInventoryComponent::QuickSelectInteractions() {
+	if (bQuickSelectVisible) {
+		float MouseRot = GetMouseRotationInViewport();
+		if (QuickSelectWidget != nullptr) {
+			SetQuickSelectArrowAngle(QuickSelectWidget, MouseRot);
+			// if (QuickSelectWidget->GetArrowWidget() != nullptr) {
+			// SetQuickSelectArrowAngle(QuickSelectWidget->GetArrowWidget(), MouseRot);
+			// }
+		}
+	}
+}
+
+float UInventoryComponent::GetMouseRotationInViewport() {
+	FVector2D ViewportCenter = GetViewportCenter();
+	// FVector2D ViewportCenter = {QuickSelectViewportSize.X / 2.f, QuickSelectViewportSize.Y / 2.f};
+	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(OwningCharacter->GetWorld());
+	FVector2D ViewportCenterX = {ViewportCenter.X, 0.0f};
+
+	FVector2D MousePositionDiff = ViewportCenter - MousePosition;
+	UKismetMathLibrary::Normalize2D(MousePositionDiff);
+
+	FVector2D ViewportCenterXDiff = ViewportCenterX - ViewportCenter;
+	UKismetMathLibrary::Normalize2D(ViewportCenterXDiff);
+
+	float ViewportMousePositionDotProd = UKismetMathLibrary::DotProduct2D(MousePositionDiff, ViewportCenterXDiff);
+	float ViewportMousePositionDotProdACos = UKismetMathLibrary::DegAcos(ViewportMousePositionDotProd);
+
+	bool bSelect = MousePosition.X - ViewportCenter.X >= 0.0f;
+	float SelectedFloat = UKismetMathLibrary::SelectFloat(1.0f, -1.0f, bSelect);
+
+	UE_LOG(LogTemp, Warning, TEXT("Get MouseRotation In Viewport: %f MousePosition: %s ViewportCenter: %s"),
+	       SelectedFloat * ViewportMousePositionDotProdACos,
+	       *MousePosition.ToString(),
+	       *ViewportCenter.ToString()
+	)
+
+	return SelectedFloat * ViewportMousePositionDotProdACos;
+}
+
+void UInventoryComponent::SetQuickSelectArrowAngle(UUserWidget* ArrowWidget, float InAngle) {
+	if (QuickSelectWidget && ArrowWidget) {
+		ArrowWidget->SetRenderTransformAngle(InAngle);
+	}
+}
+
+FIntPoint UInventoryComponent::SetViewportSizeForQuickSelect() {
+	TArray<FIntPoint> ViewportSizes;
+	UKismetSystemLibrary::GetSupportedFullscreenResolutions(ViewportSizes);
+	if (ViewportSizes.Num() <= 0) {
+		return FIntPoint();
+	}
+
+	return ViewportSizes[ViewportSizes.Num() - 1];
+}
+
 void UInventoryComponent::CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget) {
 	QuickSelectWidget = InQuickSelectWidget;
+	QuickSelectWidget->SetOwnerInventoryComponent(this);
 	QuickSelectWidget->AddToViewport();
 	QuickSelectWidget->Visibility = ESlateVisibility::Hidden;
 }

@@ -28,8 +28,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector2D GetViewportCenter();
 
-	UFUNCTION(BlueprintCallable)
-	float GetMouseRotationInViewport();
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"))
 	class AMainCharacter* OwningCharacter;
