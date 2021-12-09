@@ -5,6 +5,7 @@
 
 #include "InventoryMenu.h"
 #include "MainCharacter.h"
+#include "PieMenu.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -57,6 +58,43 @@ void UInventoryComponent::QuickSelectToggle(bool Visible) {
 	}
 }
 
+void UInventoryComponent::QuickSelectPieToggle(bool Visible) {
+	if (OwningCharacter) {
+		bQuickSelectVisible = Visible;
+		if (bQuickSelectVisible) {
+			if (QuickSelectPieWidget) {
+				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
+					UE_LOG(LogTemp, Warning, TEXT("Ignore Move Input"))
+					UGameplayStatics::GetPlayerController(this, 0)->SetMouseLocation(
+						GetViewportCenter().X, GetViewportCenter().Y);
+					// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
+					bQuickSelectVisibleRef = bQuickSelectVisible;
+				}
+
+				QuickSelectPieWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+				// QuickSelectWidget->AddToViewport();
+				QuickSelectPieWidget->SetAlignmentInViewport(GetViewportCenter());
+			}
+		}
+		else {
+			if (QuickSelectPieWidget) {
+				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
+					UE_LOG(LogTemp, Warning, TEXT("NOT Ignore Move Input"))
+					// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
+					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
+					bQuickSelectVisibleRef = bQuickSelectVisible;
+				}
+
+				QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
+				// QuickSelectWidget->RemoveFromViewport();
+			}
+		}
+	}
+}
+
 void UInventoryComponent::InventoryToggle() {
 	if (OwningCharacter) {
 		bInventoryVisible = !bInventoryVisible;
@@ -102,6 +140,9 @@ void UInventoryComponent::QuickSelectInteractions() {
 			// }
 		}
 	}
+}
+
+void UInventoryComponent::SetQuickSelectPieWidgetSelection() {
 }
 
 float UInventoryComponent::GetMouseRotationInViewport() {
@@ -157,6 +198,13 @@ void UInventoryComponent::CreateQuickSelectWidget(UInventoryMenu* InQuickSelectW
 	QuickSelectWidget->SetOwnerInventoryComponent(this);
 	QuickSelectWidget->AddToViewport();
 	QuickSelectWidget->Visibility = ESlateVisibility::Hidden;
+}
+
+void UInventoryComponent::CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget) {
+	QuickSelectPieWidget = InQuickSelectWidget;
+	QuickSelectPieWidget->SetOwnerInventoryComponent(this);
+	QuickSelectPieWidget->AddToViewport();
+	QuickSelectPieWidget->Visibility = ESlateVisibility::Hidden;
 }
 
 void UInventoryComponent::ModifyInventoryItem(AItem* InventoryItem) {

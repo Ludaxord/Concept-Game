@@ -1518,7 +1518,8 @@ void AMainCharacter::DebugDropItem() {
 }
 
 void AMainCharacter::QuickSelectButtonPressed(float Value) {
-	CharacterInventoryComponent->QuickSelectToggle(Value > 0.0f);
+	// CharacterInventoryComponent->QuickSelectToggle(Value > 0.0f);
+	CharacterInventoryComponent->QuickSelectPieToggle(Value > 0.0f);
 }
 
 void AMainCharacter::SphereOverlapBegin(FGuid Guid) {

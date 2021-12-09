@@ -21,6 +21,8 @@ public:
 
 	virtual void QuickSelectToggle(bool Visible);
 
+	virtual void QuickSelectPieToggle(bool Visible);
+
 	virtual void InventoryToggle();
 
 	//TODO: Move to some base class to remove duplicates
@@ -29,6 +31,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void QuickSelectInteractions();
+
+	UFUNCTION(BlueprintCallable)
+	void SetQuickSelectPieWidgetSelection();
 
 	UFUNCTION(BlueprintCallable)
 	float GetMouseRotationInViewport();
@@ -80,6 +85,9 @@ private:
 	class UInventoryMenu* QuickSelectWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
+	class UPieMenu* QuickSelectPieWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	FIntPoint QuickSelectViewportSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
@@ -117,6 +125,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget);
 
+	UFUNCTION(BlueprintCallable)
+	void CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget);
+
 	FORCEINLINE bool GetQuickSelectVisibility() const {
 		return bQuickSelectVisible;
 	}
@@ -124,6 +135,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UInventoryMenu* GetQuickSelectWidget() const {
 		return QuickSelectWidget;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UPieMenu* GetQuickSelectPieWidget() const {
+		return QuickSelectPieWidget;
 	}
 
 	UFUNCTION(BlueprintCallable)
