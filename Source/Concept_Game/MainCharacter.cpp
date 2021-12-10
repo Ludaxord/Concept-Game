@@ -1502,6 +1502,7 @@ void AMainCharacter::InteractButtonPressed() {
 }
 
 void AMainCharacter::InventoryButtonPressed() {
+	UE_LOG(LogTemp, Warning, TEXT("Quick Select Button"));
 	CharacterInventoryComponent->InventoryToggle();
 }
 

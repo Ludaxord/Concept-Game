@@ -19,6 +19,7 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
+	//TODO: Remove
 	virtual void QuickSelectToggle(bool Visible);
 
 	virtual void QuickSelectPieToggle(bool Visible);
@@ -26,21 +27,26 @@ public:
 	virtual void InventoryToggle();
 
 	//TODO: Move to some base class to remove duplicates
+	//TODO: Remove
 	UFUNCTION(BlueprintCallable)
 	FVector2D GetViewportCenter();
 
+	//TODO: Remove
 	UFUNCTION(BlueprintCallable)
 	void QuickSelectInteractions();
 
 	UFUNCTION(BlueprintCallable)
 	void SetQuickSelectPieWidgetSelection();
 
+	//TODO: Remove
 	UFUNCTION(BlueprintCallable)
 	float GetMouseRotationInViewport();
 
+	//TODO: Remove
 	UFUNCTION(BlueprintCallable)
 	void SetQuickSelectArrowAngle(UUserWidget* ArrowWidget, float InAngle);
 
+	//TODO: Remove
 	UFUNCTION(BlueprintCallable)
 	FIntPoint SetViewportSizeForQuickSelect();
 
@@ -81,17 +87,19 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> QuickSelectItems;
 
+	//TODO: Remove
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	class UInventoryMenu* QuickSelectWidget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
-	class UPieMenu* QuickSelectPieWidget;
-
+	//TODO: Remove
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	FIntPoint QuickSelectViewportSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	ESlateVisibility CurrentQuickSelectWidgetVisibility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
+	class UPieMenu* QuickSelectPieWidget;
 
 public:
 	FORCEINLINE void AddInventoryItem(AItem* InventoryItem) {
@@ -122,6 +130,7 @@ public:
 
 	void RemoveFromQuickSelect(AItem* InventoryItem);
 
+	//TODO: Remove
 	UFUNCTION(BlueprintCallable)
 	void CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget);
 

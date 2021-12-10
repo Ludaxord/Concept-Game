@@ -21,6 +21,7 @@ UInventoryComponent::UInventoryComponent() : bInventoryVisible(false), bQuickSel
 	// ...
 }
 
+//TODO: Remove
 void UInventoryComponent::QuickSelectToggle(bool Visible) {
 	if (OwningCharacter) {
 		bQuickSelectVisible = Visible;
@@ -96,6 +97,7 @@ void UInventoryComponent::QuickSelectPieToggle(bool Visible) {
 }
 
 void UInventoryComponent::InventoryToggle() {
+	UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
 	if (OwningCharacter) {
 		bInventoryVisible = !bInventoryVisible;
 		UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
@@ -117,10 +119,9 @@ void UInventoryComponent::BeginPlay() {
 void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                         FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// QuickSelectInteractions();
 }
 
+//TODO: Remove
 FVector2D UInventoryComponent::GetViewportCenter() {
 	FVector2D ViewportSize;
 	if (GEngine && GEngine->GameViewport) {
@@ -130,6 +131,7 @@ FVector2D UInventoryComponent::GetViewportCenter() {
 	return {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
 }
 
+//TODO: Remove
 void UInventoryComponent::QuickSelectInteractions() {
 	if (bQuickSelectVisible) {
 		float MouseRot = GetMouseRotationInViewport();
@@ -143,8 +145,13 @@ void UInventoryComponent::QuickSelectInteractions() {
 }
 
 void UInventoryComponent::SetQuickSelectPieWidgetSelection() {
+	if (QuickSelectPieWidget) {
+		QuickSelectPieWidget->UpdatePieMenuSector();
+		// QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
+//TODO: Remove
 float UInventoryComponent::GetMouseRotationInViewport() {
 	FVector2D ViewportCenter = GetViewportCenter();
 	// FVector2D ViewportCenter = {QuickSelectViewportSize.X / 2.f, QuickSelectViewportSize.Y / 2.f};
@@ -177,12 +184,14 @@ float UInventoryComponent::GetMouseRotationInViewport() {
 	return SelectedFloat * ViewportMousePositionDotProdACos;
 }
 
+//TODO: Remove
 void UInventoryComponent::SetQuickSelectArrowAngle(UUserWidget* ArrowWidget, float InAngle) {
 	if (QuickSelectWidget && ArrowWidget) {
 		ArrowWidget->SetRenderTransformAngle(InAngle);
 	}
 }
 
+//TODO: Remove
 FIntPoint UInventoryComponent::SetViewportSizeForQuickSelect() {
 	TArray<FIntPoint> ViewportSizes;
 	UKismetSystemLibrary::GetSupportedFullscreenResolutions(ViewportSizes);
@@ -193,18 +202,19 @@ FIntPoint UInventoryComponent::SetViewportSizeForQuickSelect() {
 	return ViewportSizes[ViewportSizes.Num() - 1];
 }
 
+//TODO: Remove
 void UInventoryComponent::CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget) {
 	QuickSelectWidget = InQuickSelectWidget;
 	QuickSelectWidget->SetOwnerInventoryComponent(this);
 	QuickSelectWidget->AddToViewport();
-	QuickSelectWidget->Visibility = ESlateVisibility::Hidden;
+	QuickSelectWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UInventoryComponent::CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget) {
 	QuickSelectPieWidget = InQuickSelectWidget;
 	QuickSelectPieWidget->SetOwnerInventoryComponent(this);
 	QuickSelectPieWidget->AddToViewport();
-	QuickSelectPieWidget->Visibility = ESlateVisibility::Hidden;
+	QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UInventoryComponent::ModifyInventoryItem(AItem* InventoryItem) {
