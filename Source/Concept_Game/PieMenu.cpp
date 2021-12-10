@@ -79,6 +79,12 @@ float UPieMenu::GetProperRotation() {
 	bool isMouseConnected = GetOwningPlayer()->GetMousePosition(MousePositionX, MousePositionY);
 	FVector MousePosition = {MousePositionX, MousePositionY, 0.0f};
 	FVector2D ViewportSize2D = UWidgetLayoutLibrary::GetViewportSize(GetWorld());
-	FVector ViewportSize = {ViewportSize2D.X, ViewportSize2D.Y, 0.0f};
-	return 180.f - UKismetMathLibrary::FindLookAtRotation(MousePosition, ViewportSize).Yaw;
+	FVector ViewportSize = {ViewportSize2D.X / 2, ViewportSize2D.Y / 2, 0.0f};
+	float LookAtRot = 180.f - UKismetMathLibrary::FindLookAtRotation(MousePosition, ViewportSize).Yaw;
+	UE_LOG(LogTemp, Warning, TEXT("GetMousePosition X: %s, LookAtRot: %f ViewportSize: %s"),
+	       *MousePosition.ToString(),
+	       LookAtRot,
+	       *ViewportSize.ToString()
+	)
+	return LookAtRot;
 }
