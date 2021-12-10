@@ -26,7 +26,7 @@ void UPieMenu::SetSectorsToPieMenuWidget() {
 }
 
 void UPieMenu::GetSectorBounds(int InSectorCount) {
-	for (int i = 1; i < InSectorCount; i++) {
+	for (int i = 1; i <= InSectorCount; i++) {
 		int SectorMax = (i * SectorSize) + (SectorSize / 2);
 		int SectorMin = (SectorMax - SectorSize);
 		SectorListMaxBounds.AddUnique(SectorMax);
@@ -36,9 +36,13 @@ void UPieMenu::GetSectorBounds(int InSectorCount) {
 
 void UPieMenu::UpdatePieMenuSector() {
 	if (PieMenuMaterialInstance) {
+		UE_LOG(LogTemp, Warning, TEXT("SearchAngle ProperRot %f CurrentSectorAngle %f"), GetProperRotation(),
+		       CurrentSectorAngle)
 		PieMenuMaterialInstance->SetScalarParameterValue("SearchAngle", GetProperRotation());
 		CurrentSectorAngle = GetCurrentSector(GetProperRotation());
 		PieMenuMaterialInstance->SetScalarParameterValue("ActiveAngle", CurrentSectorAngle);
+		UE_LOG(LogTemp, Error, TEXT("ActiveAngle ProperRot %f CurrentSectorAngle %f"), GetProperRotation(),
+		       CurrentSectorAngle)
 	}
 }
 
