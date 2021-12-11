@@ -14,6 +14,7 @@
 #include "DrawDebugHelpers.h"
 #include "EnhancementComponent.h"
 #include "FlashlightComponent.h"
+#include "HackingComponent.h"
 #include "InventoryComponent.h"
 #include "ItemComponent.h"
 #include "Ladder.h"
