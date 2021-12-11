@@ -857,6 +857,30 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMainCharacterInputComponent* CharacterInputComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class USkillTreeComponent* CharacterSkillTreeComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UQuestComponent* CharacterQuestComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UDialogComponent* CharacterDialogComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UStealthComponent* CharacterStealthComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class ULockpickComponent* CharacterLockpickComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UHackingComponent* CharacterHackingComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UDoorComponent* CharacterDoorComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UFlashlightComponent* CharacterFlashLightComponent;
+
 public:
 	UCoverComponent* GetCharacterCoverComponent() {
 		return CharacterCoverComponent;

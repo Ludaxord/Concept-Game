@@ -9,11 +9,15 @@
 
 #include "BaseHUDComponent.h"
 #include "CoverComponent.h"
+#include "DialogComponent.h"
+#include "DoorComponent.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancementComponent.h"
+#include "FlashlightComponent.h"
 #include "InventoryComponent.h"
 #include "ItemComponent.h"
 #include "Ladder.h"
+#include "LockpickComponent.h"
 #include "MainAnimInstance.h"
 #include "MainCharacterCameraComponent.h"
 #include "MainCharacterInputComponent.h"
@@ -21,7 +25,10 @@
 #include "MeleeComponent.h"
 #include "ParkourComponent.h"
 #include "PauseMenuComponent.h"
+#include "QuestComponent.h"
 #include "ShootingComponent.h"
+#include "SkillTreeComponent.h"
+#include "StealthComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -120,6 +127,14 @@ AMainCharacter::AMainCharacter():
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
 	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
+	CharacterSkillTreeComponent = CreateDefaultSubobject<USkillTreeComponent>(TEXT("CharacterSkillTreeComponent"));
+	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
+	CharacterDialogComponent = CreateDefaultSubobject<UDialogComponent>(TEXT("CharacterDialogComponent"));
+	 CharacterStealthComponent = CreateDefaultSubobject<UStealthComponent>(TEXT("CharacterStealthComponent"));
+	 CharacterLockpickComponent = CreateDefaultSubobject<ULockpickComponent>(TEXT("CharacterLockpickComponent"));
+	 CharacterHackingComponent = CreateDefaultSubobject<UHackingComponent>(TEXT("CharacterHackingComponent"));
+	 CharacterDoorComponent = CreateDefaultSubobject<UDoorComponent>(TEXT("CharacterDoorComponent"));
+	 CharacterFlashLightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("CharacterFlashLightComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
