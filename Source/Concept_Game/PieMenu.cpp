@@ -36,8 +36,6 @@ void UPieMenu::GetSectorBounds(int InSectorCount) {
 
 void UPieMenu::UpdatePieMenuSector() {
 	if (PieMenuMaterialInstance) {
-		UE_LOG(LogTemp, Warning, TEXT("SearchAngle ProperRot %f CurrentSectorAngle %f"), GetProperRotation(),
-		       CurrentSectorAngle)
 		PieMenuMaterialInstance->SetScalarParameterValue("SearchAngle", GetProperRotation());
 		CurrentSectorAngle = GetCurrentSector(GetProperRotation());
 		PieMenuMaterialInstance->SetScalarParameterValue("ActiveAngle", CurrentSectorAngle);
@@ -76,15 +74,14 @@ float UPieMenu::GetCurrentSector(float InCurrentAngle) {
 float UPieMenu::GetProperRotation() {
 	float MousePositionX = 0.0f;
 	float MousePositionY = 0.0f;
-	bool isMouseConnected = GetOwningPlayer()->GetMousePosition(MousePositionX, MousePositionY);
-	FVector MousePosition = {MousePositionX, MousePositionY, 0.0f};
-	FVector2D ViewportSize2D = UWidgetLayoutLibrary::GetViewportSize(GetWorld());
-	FVector ViewportSize = {ViewportSize2D.X / 2, ViewportSize2D.Y / 2, 0.0f};
-	float LookAtRot = 180.f - UKismetMathLibrary::FindLookAtRotation(MousePosition, ViewportSize).Yaw;
-	UE_LOG(LogTemp, Warning, TEXT("GetMousePosition X: %s, LookAtRot: %f ViewportSize: %s"),
-	       *MousePosition.ToString(),
-	       LookAtRot,
-	       *ViewportSize.ToString()
-	)
-	return LookAtRot;
+	if (GetOwningPlayer()) {
+		bool isMouseConnected = GetOwningPlayer()->GetMousePosition(MousePositionX, MousePositionY);
+		FVector MousePosition = {MousePositionX, MousePositionY, 0.0f};
+		FVector2D ViewportSize2D = UWidgetLayoutLibrary::GetViewportSize(GetWorld());
+		FVector ViewportSize = {ViewportSize2D.X / 2, ViewportSize2D.Y / 2, 0.0f};
+		float LookAtRot = 180.f - UKismetMathLibrary::FindLookAtRotation(MousePosition, ViewportSize).Yaw;
+		return LookAtRot;
+	}
+
+	return 0;
 }

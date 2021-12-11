@@ -6,6 +6,7 @@
 #include "InventoryMenu.h"
 #include "MainCharacter.h"
 #include "PieMenu.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -66,11 +67,14 @@ void UInventoryComponent::QuickSelectPieToggle(bool Visible) {
 			if (QuickSelectPieWidget) {
 				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
 					UE_LOG(LogTemp, Warning, TEXT("Ignore Move Input"))
-					UGameplayStatics::GetPlayerController(this, 0)->SetMouseLocation(
-						GetViewportCenter().X, GetViewportCenter().Y);
+					UGameplayStatics::GetPlayerController(this, 0)->
+						SetMouseLocation(GetViewportCenter().X, GetViewportCenter().Y);
 					// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
 					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
 					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
+					// UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(UGameplayStatics::GetPlayerController(this, 0),
+					                                                  // QuickSelectPieWidget);
+					QuickSelectPieWidget->SetSectorsToPieMenuWidget();
 					bQuickSelectVisibleRef = bQuickSelectVisible;
 				}
 
@@ -86,6 +90,7 @@ void UInventoryComponent::QuickSelectPieToggle(bool Visible) {
 					// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
 					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
 					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
+					// UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(this, 0));
 					bQuickSelectVisibleRef = bQuickSelectVisible;
 				}
 
