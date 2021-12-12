@@ -3,14 +3,11 @@
 
 #include "InventoryComponent.h"
 
-#include "InventoryMenu.h"
+#include "InventoryWidget.h"
 #include "MainCharacter.h"
 #include "PieMenu.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent() : bInventoryVisible(false), bQuickSelectVisible(false),
@@ -22,90 +19,75 @@ UInventoryComponent::UInventoryComponent() : bInventoryVisible(false), bQuickSel
 	// ...
 }
 
-//TODO: Remove
-void UInventoryComponent::QuickSelectToggle(bool Visible) {
-	if (OwningCharacter) {
-		bQuickSelectVisible = Visible;
-		if (bQuickSelectVisible) {
-			if (QuickSelectWidget) {
-				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
-					UE_LOG(LogTemp, Warning, TEXT("Ignore Move Input"))
-					UGameplayStatics::GetPlayerController(this, 0)->SetMouseLocation(
-						GetViewportCenter().X, GetViewportCenter().Y);
-					UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
-					bQuickSelectVisibleRef = bQuickSelectVisible;
-				}
-
-				QuickSelectWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-				// QuickSelectWidget->AddToViewport();
-				QuickSelectWidget->SetAlignmentInViewport(GetViewportCenter());
-			}
-		}
-		else {
-			if (QuickSelectWidget) {
-				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
-					UE_LOG(LogTemp, Warning, TEXT("NOT Ignore Move Input"))
-					UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
-					bQuickSelectVisibleRef = bQuickSelectVisible;
-				}
-
-				QuickSelectWidget->SetVisibility(ESlateVisibility::Hidden);
-				// QuickSelectWidget->RemoveFromViewport();
-			}
-		}
-	}
-}
-
 void UInventoryComponent::QuickSelectPieToggle(bool Visible) {
 	if (OwningCharacter) {
 		bQuickSelectVisible = Visible;
-		if (bQuickSelectVisible) {
-			if (QuickSelectPieWidget) {
-				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
-					UE_LOG(LogTemp, Warning, TEXT("Ignore Move Input"))
-					UGameplayStatics::GetPlayerController(this, 0)->
-						SetMouseLocation(GetViewportCenter().X, GetViewportCenter().Y);
-					// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
-					// UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(UGameplayStatics::GetPlayerController(this, 0),
-					                                                  // QuickSelectPieWidget);
-					QuickSelectPieWidget->SetSectorsToPieMenuWidget();
-					bQuickSelectVisibleRef = bQuickSelectVisible;
-				}
+		QuickSelectInteract();
+	}
+}
 
-				QuickSelectPieWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
-				// QuickSelectWidget->AddToViewport();
-				QuickSelectPieWidget->SetAlignmentInViewport(GetViewportCenter());
+void UInventoryComponent::QuickSelectInteract() {
+	if (bQuickSelectVisible) {
+		if (QuickSelectPieWidget) {
+			if (bQuickSelectVisibleRef != bQuickSelectVisible) {
+				UGameplayStatics::GetPlayerController(this, 0)->
+					SetMouseLocation(GetViewportCenter().X, GetViewportCenter().Y);
+				// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
+				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
+				// UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(UGameplayStatics::GetPlayerController(this, 0),
+				// QuickSelectPieWidget);
+				QuickSelectPieWidget->SetSectorsToPieMenuWidget();
+				bQuickSelectVisibleRef = bQuickSelectVisible;
 			}
+
+			QuickSelectPieWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+			// QuickSelectWidget->AddToViewport();
+			QuickSelectPieWidget->SetAlignmentInViewport(GetViewportCenter());
 		}
-		else {
-			if (QuickSelectPieWidget) {
-				if (bQuickSelectVisibleRef != bQuickSelectVisible) {
-					UE_LOG(LogTemp, Warning, TEXT("NOT Ignore Move Input"))
-					// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
-					UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
-					// UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(this, 0));
-					bQuickSelectVisibleRef = bQuickSelectVisible;
-				}
-
-				QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
-				// QuickSelectWidget->RemoveFromViewport();
+	}
+	else {
+		if (QuickSelectPieWidget) {
+			if (bQuickSelectVisibleRef != bQuickSelectVisible) {
+				// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
+				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
+				// UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(this, 0));
+				bQuickSelectVisibleRef = bQuickSelectVisible;
 			}
+
+			QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
+			// QuickSelectWidget->RemoveFromViewport();
 		}
 	}
 }
 
 void UInventoryComponent::InventoryToggle() {
-	UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
 	if (OwningCharacter) {
 		bInventoryVisible = !bInventoryVisible;
-		UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
+		InventoryInteract();
+	}
+}
+
+void UInventoryComponent::InventoryInteract() {
+	UE_LOG(LogTemp, Warning, TEXT("InventoryInteract"));
+	if (InventoryWidget) {
+		if (bInventoryVisible) {
+			UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(UGameplayStatics::GetPlayerController(this, 0),
+			                                                  InventoryWidget);
+			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
+			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
+			InventoryWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+			InventoryWidget->SetAlignmentInViewport(GetViewportCenter());
+		}
+		else {
+			UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(this, 0));
+			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
+			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
+			InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 
@@ -126,7 +108,6 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-//TODO: Remove
 FVector2D UInventoryComponent::GetViewportCenter() {
 	FVector2D ViewportSize;
 	if (GEngine && GEngine->GameViewport) {
@@ -136,19 +117,6 @@ FVector2D UInventoryComponent::GetViewportCenter() {
 	return {ViewportSize.X / 2.0f, ViewportSize.Y / 2.0f};
 }
 
-//TODO: Remove
-void UInventoryComponent::QuickSelectInteractions() {
-	if (bQuickSelectVisible) {
-		float MouseRot = GetMouseRotationInViewport();
-		if (QuickSelectWidget != nullptr) {
-			SetQuickSelectArrowAngle(QuickSelectWidget, MouseRot);
-			// if (QuickSelectWidget->GetArrowWidget() != nullptr) {
-			// SetQuickSelectArrowAngle(QuickSelectWidget->GetArrowWidget(), MouseRot);
-			// }
-		}
-	}
-}
-
 void UInventoryComponent::SetQuickSelectPieWidgetSelection() {
 	if (QuickSelectPieWidget) {
 		QuickSelectPieWidget->UpdatePieMenuSector();
@@ -156,63 +124,14 @@ void UInventoryComponent::SetQuickSelectPieWidgetSelection() {
 	}
 }
 
-//TODO: Remove
-float UInventoryComponent::GetMouseRotationInViewport() {
-	FVector2D ViewportCenter = GetViewportCenter();
-	// FVector2D ViewportCenter = {QuickSelectViewportSize.X / 2.f, QuickSelectViewportSize.Y / 2.f};
-	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(OwningCharacter->GetWorld());
-	FVector2D ViewportCenterX = {ViewportCenter.X, 0.0f};
-
-	FVector2D MousePositionDiff = ViewportCenter - MousePosition;
-	UKismetMathLibrary::Normalize2D(MousePositionDiff);
-
-	FVector2D ViewportCenterXDiff = ViewportCenterX - ViewportCenter;
-	UKismetMathLibrary::Normalize2D(ViewportCenterXDiff);
-
-	float ViewportMousePositionDotProd = UKismetMathLibrary::DotProduct2D(MousePositionDiff, ViewportCenterXDiff);
-	float ViewportMousePositionDotProdACos = UKismetMathLibrary::DegAcos(ViewportMousePositionDotProd);
-
-	bool bSelect = MousePosition.X - ViewportCenter.X >= 0.0f;
-	float SelectedFloat = UKismetMathLibrary::SelectFloat(1.0f, -1.0f, bSelect);
-
-	UE_LOG(LogTemp, Warning,
-	       TEXT(
-		       "Get MouseRotation In Viewport: %f ViewportMousePositionDotProd: %f MousePosition: %s MousePosition.X - ViewportCenter.X: %f ViewportCenter: %s"
-	       ),
-	       SelectedFloat * ViewportMousePositionDotProdACos,
-	       ViewportMousePositionDotProd,
-	       *MousePosition.ToString(),
-	       MousePosition.X - ViewportCenter.X,
-	       *ViewportCenter.ToString()
-	)
-
-	return SelectedFloat * ViewportMousePositionDotProdACos;
-}
-
-//TODO: Remove
-void UInventoryComponent::SetQuickSelectArrowAngle(UUserWidget* ArrowWidget, float InAngle) {
-	if (QuickSelectWidget && ArrowWidget) {
-		ArrowWidget->SetRenderTransformAngle(InAngle);
-	}
-}
-
-//TODO: Remove
-FIntPoint UInventoryComponent::SetViewportSizeForQuickSelect() {
-	TArray<FIntPoint> ViewportSizes;
-	UKismetSystemLibrary::GetSupportedFullscreenResolutions(ViewportSizes);
-	if (ViewportSizes.Num() <= 0) {
-		return FIntPoint();
+bool UInventoryComponent::QuitActionButtonPressed() {
+	bool bInteract = false;
+	if (bInventoryVisible) {
+		InventoryToggle();
+		bInteract = true;
 	}
 
-	return ViewportSizes[ViewportSizes.Num() - 1];
-}
-
-//TODO: Remove
-void UInventoryComponent::CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget) {
-	QuickSelectWidget = InQuickSelectWidget;
-	QuickSelectWidget->SetOwnerInventoryComponent(this);
-	QuickSelectWidget->AddToViewport();
-	QuickSelectWidget->SetVisibility(ESlateVisibility::Hidden);
+	return bInteract;
 }
 
 void UInventoryComponent::CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget) {
@@ -220,6 +139,13 @@ void UInventoryComponent::CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidg
 	QuickSelectPieWidget->SetOwnerInventoryComponent(this);
 	QuickSelectPieWidget->AddToViewport();
 	QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UInventoryComponent::CreateInventoryWidget(UInventoryWidget* InInventoryWidget) {
+	InventoryWidget = InInventoryWidget;
+	InventoryWidget->SetOwnerInventoryComponent(this);
+	InventoryWidget->AddToViewport();
+	InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UInventoryComponent::ModifyInventoryItem(AItem* InventoryItem) {

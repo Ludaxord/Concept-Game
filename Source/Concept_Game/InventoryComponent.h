@@ -7,9 +7,27 @@
 #include "InventoryInterface.h"
 #include "InventoryComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FQuickSelectInventoryVisibility, bool, Visible);
+USTRUCT(BlueprintType)
+struct FInventoryLine {
+	GENERATED_BODY()
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetQuickSelectMenu, bool, Setup);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D StartPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D EndPoint;
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryTile {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int X;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Y;
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UInventoryComponent : public UActorComponent, public IInventoryInterface {
@@ -19,36 +37,24 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
-	//TODO: Remove
-	virtual void QuickSelectToggle(bool Visible);
-
 	virtual void QuickSelectPieToggle(bool Visible);
+
+	virtual void QuickSelectInteract();
 
 	virtual void InventoryToggle();
 
+	virtual void InventoryInteract();
+
 	//TODO: Move to some base class to remove duplicates
-	//TODO: Remove
 	UFUNCTION(BlueprintCallable)
 	FVector2D GetViewportCenter();
-
-	//TODO: Remove
-	UFUNCTION(BlueprintCallable)
-	void QuickSelectInteractions();
 
 	UFUNCTION(BlueprintCallable)
 	void SetQuickSelectPieWidgetSelection();
 
-	//TODO: Remove
+	//TODO: Move to abstract component that manages all ui actions
 	UFUNCTION(BlueprintCallable)
-	float GetMouseRotationInViewport();
-
-	//TODO: Remove
-	UFUNCTION(BlueprintCallable)
-	void SetQuickSelectArrowAngle(UUserWidget* ArrowWidget, float InAngle);
-
-	//TODO: Remove
-	UFUNCTION(BlueprintCallable)
-	FIntPoint SetViewportSizeForQuickSelect();
+	bool QuitActionButtonPressed();
 
 protected:
 	// Called when the game starts
@@ -60,23 +66,11 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	UPROPERTY(BlueprintAssignable, Category="Inventory Delegates", meta = (AllowPrivateAccess = "true"))
-	FQuickSelectInventoryVisibility QuickSelectVisibilityDelegate;
-
-	UPROPERTY(BlueprintAssignable, Category="Inventory Delegates", meta = (AllowPrivateAccess = "true"))
-	FSetQuickSelectMenu SetQuickSelectMenuDelegate;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
-	bool bQuickSelectVisible;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
-	bool bQuickSelectVisibleRef;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"))
+	class AMainCharacter* OwningCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
 	bool bInventoryVisible;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Character", meta = (AllowPrivateAccess = "true"))
-	class AMainCharacter* OwningCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> InventoryItems;
@@ -87,21 +81,47 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> QuickSelectItems;
 
-	//TODO: Remove
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
-	class UInventoryMenu* QuickSelectWidget;
-
-	//TODO: Remove
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
-	FIntPoint QuickSelectViewportSize;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	ESlateVisibility CurrentQuickSelectWidgetVisibility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	class UPieMenu* QuickSelectPieWidget;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
+	bool bQuickSelectVisible;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
+	bool bQuickSelectVisibleRef;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Inventory Menu", meta = (AllowPrivateAccess = "true"))
+	class UInventoryWidget* InventoryWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Menu", meta = (AllowPrivateAccess = "true"))
+	int InventoryColumns;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Menu", meta = (AllowPrivateAccess = "true"))
+	int InventoryRows;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Menu", meta = (AllowPrivateAccess = "true"))
+	float TileSize;
+
 public:
+	FORCEINLINE int GetInventoryColumns() const {
+		return InventoryColumns;
+	}
+
+	FORCEINLINE int GetInventoryRows() const {
+		return InventoryRows;
+	}
+
+	void SetInventoryColumns(int InColumns) {
+		InventoryColumns = InColumns;
+	}
+
+	void SetInventoryRows(int InRows) {
+		InventoryRows = InRows;
+	}
+
 	FORCEINLINE void AddInventoryItem(AItem* InventoryItem) {
 		InventoryItems.Add(InventoryItem);
 	}
@@ -130,34 +150,18 @@ public:
 
 	void RemoveFromQuickSelect(AItem* InventoryItem);
 
-	//TODO: Remove
-	UFUNCTION(BlueprintCallable)
-	void CreateQuickSelectWidget(UInventoryMenu* InQuickSelectWidget);
-
 	UFUNCTION(BlueprintCallable)
 	void CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget);
+
+	UFUNCTION(BlueprintCallable)
+	void CreateInventoryWidget(UInventoryWidget* InInventoryWidget);
 
 	FORCEINLINE bool GetQuickSelectVisibility() const {
 		return bQuickSelectVisible;
 	}
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE UInventoryMenu* GetQuickSelectWidget() const {
-		return QuickSelectWidget;
-	}
-
-	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UPieMenu* GetQuickSelectPieWidget() const {
 		return QuickSelectPieWidget;
-	}
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE FIntPoint GetQuickSelectViewportSize() const {
-		return QuickSelectViewportSize;
-	}
-
-	UFUNCTION(BlueprintCallable)
-	void SetQuickSelectViewportSize(FIntPoint InQuickSelectViewportSize) {
-		QuickSelectViewportSize = InQuickSelectViewportSize;
 	}
 };

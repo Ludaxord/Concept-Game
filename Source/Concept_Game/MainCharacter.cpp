@@ -45,57 +45,54 @@
 
 // Sets default values
 AMainCharacter::AMainCharacter():
+	bRotationYaw(false),
+	bFPSCounter(false),
+	bCoverDisable(false),
+	bCoverLeftDisable(false),
+	bCoverRightDisable(false),
+	bCoverActive(false),
+	bMoveInCover(false),
+	bCameraMoved(false),
+	CoverToCoverAnimPlayRate(1.f),
+	Tolerance(120.0f),
+	bEnableCameraTransition(false),
+	bSwitchToFollowCamera(false),
 	BaseTurnRate(45.0f),
 	BaseLookUpRate(45.0f),
 	HipTurnRate(90.0f),
-	TimesJumped(0),
 	HipLookUpRate(90.0f),
-	Tolerance(120.0f),
 	AimingTurnRate(20.0f),
-	CoverToCoverAnimPlayRate(1.f),
 	AimingLookUpRate(20.0f),
 	MouseHipTurnRate(1.0f),
 	MouseHipLookUpRate(1.0f),
 	MouseAimingTurnRate(0.6f),
 	MouseAimingLookUpRate(0.6f),
 	bAiming(false),
-	bCoverDisable(false),
-	bMoveInCover(false),
-	bCameraMoved(false),
-	bCoverLeftDisable(false),
-	bCoverRightDisable(false),
-	bOverlappingLadderBottom(false),
-	bOverlappingLadderTop(false),
-	bJumpFromClimb(false),
-	bPlayClimbTurnAnimation(false),
-	bUseWeaponButtonPressed(false),
-	bShouldTraceForItems(false),
-	bRotationYaw(false),
-	bAimingButtonPressed(false),
-	CrouchGroundFriction(100.0f),
-	CrawlingGroundFriction(50.0f),
 	ZoomInterpolationSpeed(20.0f),
-	BaseGroundFriction(2.0f),
+	bUseWeaponButtonPressed(false),
+	bAimingButtonPressed(false),
 	bShouldAttack(false),
-	bCoverActive(false),
+	bShouldTraceForItems(false),
+	bJumpFromClimb(false),
+	PoseAxisValueCounter(0),
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
 	CameraCurrentFOV(0.0f),
+	PoseType(EPoseType::EPT_Stand),
+	bOverlappingLadderBottom(false),
+	bOverlappingLadderTop(false),
+	TimesJumped(0),
+	LastPoseType(EPoseType::EPT_Stand),
 	bRunning(false),
-	bSwitchToFollowCamera(false),
-	bEnableCameraTransition(false),
-	bFPSCounter(false),
 	CombatState(ECombatState::ECS_Unoccupied),
-	CrosshairSpreadMultiplier(0.0f),
-	CrosshairVelocityFactor(0.0f),
-	CrosshairInAirFactor(0.0f),
-	CrosshairShootingFactor(0.0f),
 	CrouchMovementSpeed(300.0f),
 	RunningMovementSpeed(650.0f),
-	PoseAxisValueCounter(0),
 	CrawlingMovementSpeed(250.0f),
 	AimingMovementSpeed(350.0f),
 	BaseMovementSpeed(350.0f),
+	CrouchGroundFriction(100.0f),
+	CrawlingGroundFriction(50.0f),
+	BaseGroundFriction(2.0f),
 	CrouchCharacterVisibility(50.0f),
 	RunningCharacterVisibility(100.0f),
 	CrawlingCharacterVisibility(30.0f),
@@ -103,10 +100,13 @@ AMainCharacter::AMainCharacter():
 	StandingCapsuleHalfHeight(88.0f),
 	CrouchingCapsuleHalfHeight(44.0f),
 	CrawlingCapsuleHalfHeight(22.0f),
-	PoseType(EPoseType::EPT_Stand),
-	LastPoseType(EPoseType::EPT_Stand),
 	Health(100.0f),
-	MaxHealth(100.0f) {
+	MaxHealth(100.0f),
+	CrosshairSpreadMultiplier(0.0f),
+	CrosshairVelocityFactor(0.0f),
+	CrosshairInAirFactor(0.0f),
+	CrosshairShootingFactor(0.0f),
+	bPlayClimbTurnAnimation(false) {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructCameraBoom();
@@ -121,7 +121,8 @@ AMainCharacter::AMainCharacter():
 	CharacterMeleeComponent = CreateDefaultSubobject<UMeleeComponent>(TEXT("CharacterMeleeComponent"));
 	CharacterParkourComponent = CreateDefaultSubobject<UParkourComponent>(TEXT("CharacterParkourComponent"));
 
-	CharacterEnhancementComponent = CreateDefaultSubobject<UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
+	CharacterEnhancementComponent = CreateDefaultSubobject<
+		UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
 	CharacterPauseMenuComponent = CreateDefaultSubobject<UPauseMenuComponent>(TEXT("CharacterPauseMenuComponent"));
 	CharacterInventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventoryComponent"));
 	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
@@ -131,11 +132,11 @@ AMainCharacter::AMainCharacter():
 	CharacterSkillTreeComponent = CreateDefaultSubobject<USkillTreeComponent>(TEXT("CharacterSkillTreeComponent"));
 	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
 	CharacterDialogComponent = CreateDefaultSubobject<UDialogComponent>(TEXT("CharacterDialogComponent"));
-	 CharacterStealthComponent = CreateDefaultSubobject<UStealthComponent>(TEXT("CharacterStealthComponent"));
-	 CharacterLockpickComponent = CreateDefaultSubobject<ULockpickComponent>(TEXT("CharacterLockpickComponent"));
-	 CharacterHackingComponent = CreateDefaultSubobject<UHackingComponent>(TEXT("CharacterHackingComponent"));
-	 CharacterDoorComponent = CreateDefaultSubobject<UDoorComponent>(TEXT("CharacterDoorComponent"));
-	 CharacterFlashLightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("CharacterFlashLightComponent"));
+	CharacterStealthComponent = CreateDefaultSubobject<UStealthComponent>(TEXT("CharacterStealthComponent"));
+	CharacterLockpickComponent = CreateDefaultSubobject<ULockpickComponent>(TEXT("CharacterLockpickComponent"));
+	CharacterHackingComponent = CreateDefaultSubobject<UHackingComponent>(TEXT("CharacterHackingComponent"));
+	CharacterDoorComponent = CreateDefaultSubobject<UDoorComponent>(TEXT("CharacterDoorComponent"));
+	CharacterFlashLightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("CharacterFlashLightComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -1518,14 +1519,15 @@ void AMainCharacter::InteractButtonPressed() {
 }
 
 void AMainCharacter::InventoryButtonPressed() {
-	UE_LOG(LogTemp, Warning, TEXT("Quick Select Button"));
 	CharacterInventoryComponent->InventoryToggle();
 }
 
 void AMainCharacter::PauseButtonPressed() {
 	UE_LOG(LogTemp, Warning, TEXT("Pause Button"));
-	bPauseMenuButtonPressed = !bPauseMenuButtonPressed;
-	CharacterPauseMenuComponent->PauseMenuToggle();
+	if (!CharacterInventoryComponent->QuitActionButtonPressed()) {
+		bPauseMenuButtonPressed = !bPauseMenuButtonPressed;
+		CharacterPauseMenuComponent->PauseMenuToggle();
+	}
 }
 
 void AMainCharacter::DebugDropItem() {

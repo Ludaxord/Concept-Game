@@ -4,34 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InventoryMenu.generated.h"
+#include "InventoryWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UInventoryMenu : public UUserWidget {
+class CONCEPT_GAME_API UInventoryWidget : public UUserWidget
+{
 	GENERATED_BODY()
-
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory SubWidgets", meta = (AllowPrivateAccess = "true"))
-	UUserWidget* ArrowWidget;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Component", meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* OwnerInventoryComponent;
 
-public:
-	UFUNCTION(BlueprintCallable)
-	void SetArrowWidget(UUserWidget* InArrowWidget) {
-		ArrowWidget = InArrowWidget;
-	}
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget Properties", meta = (AllowPrivateAccess = "true"))
+	float TileSize;
 
+public:
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerInventoryComponent(UInventoryComponent* InOwnerInventoryComponent) {
 		OwnerInventoryComponent = InOwnerInventoryComponent;
-	}
-
-	UUserWidget* GetArrowWidget() {
-		return ArrowWidget;
 	}
 };
