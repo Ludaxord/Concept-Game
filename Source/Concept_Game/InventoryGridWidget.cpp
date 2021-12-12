@@ -36,19 +36,19 @@ void UInventoryGridWidget::SetGridBorderSize() const {
 void UInventoryGridWidget::CreateLineSegments() {
 	if (InventoryGridBorder) {
 		if (OwnerInventoryComponent) {
-			for (int i = 0; i < OwnerInventoryComponent->GetInventoryColumns(); i++) {
+			for (int i = 0; i <= OwnerInventoryComponent->GetInventoryColumns(); i++) {
 				float X_ = i * TileSize;
 				FInventoryLine Line = FInventoryLine();
 				Line.StartPoint = {X_, 0.0f};
-				Line.EndPoint = {X_, OwnerInventoryComponent->GetInventoryColumns() * TileSize};
+				Line.EndPoint = {X_, OwnerInventoryComponent->GetInventoryRows() * TileSize};
 				Lines.Add(Line);
 			}
 
-			for (int i = 0; i < OwnerInventoryComponent->GetInventoryRows(); i++) {
+			for (int i = 0; i <= OwnerInventoryComponent->GetInventoryRows(); i++) {
 				float Y_ = i * TileSize;
 				FInventoryLine Line = FInventoryLine();
 				Line.StartPoint = {0.0f, Y_};
-				Line.EndPoint = {OwnerInventoryComponent->GetInventoryRows() * TileSize, Y_};
+				Line.EndPoint = {OwnerInventoryComponent->GetInventoryColumns() * TileSize, Y_};
 				Lines.Add(Line);
 			}
 		}
