@@ -122,21 +122,19 @@ public:
 		InventoryRows = InRows;
 	}
 
-	FORCEINLINE void AddInventoryItem(AItem* InventoryItem) {
-		InventoryItems.Add(InventoryItem);
-	}
+	FInventoryTile IndexToTile(int Index) const;
 
-	FORCEINLINE void RemoveInventoryItem(AItem* InventoryItem) {
-		InventoryItems.Remove(InventoryItem);
-	}
+	FInventoryTile OutputEachTile(AItem* InInventoryItem, int TopLeftIndex) ;
 
-	FORCEINLINE void RemoveInventoryItemAtLocation(int32 Index) {
-		InventoryItems.RemoveAt(Index);
-	}
+	bool CheckInventorySpace(AItem* InInventoryItem, int TopLeftIndex);
 
-	FORCEINLINE AItem* GetInventoryItemAtLocation(int32 Index) {
-		return InventoryItems[Index];
-	}
+	bool AddInventoryItem(AItem* InInventoryItem);
+
+	bool RemoveInventoryItem(AItem* InInventoryItem);
+
+	bool RemoveInventoryItemAtLocation(int32 Index);
+
+	AItem* GetInventoryItemAtLocation(int32 Index);
 
 	void ModifyInventoryItem(AItem* InventoryItem);
 

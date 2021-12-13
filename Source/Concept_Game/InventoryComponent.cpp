@@ -148,6 +148,41 @@ void UInventoryComponent::CreateInventoryWidget(UInventoryWidget* InInventoryWid
 	InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
+FInventoryTile UInventoryComponent::IndexToTile(int Index) const {
+	return {Index % InventoryColumns, Index / InventoryColumns};
+}
+
+FInventoryTile UInventoryComponent::OutputEachTile(AItem* InInventoryItem, int TopLeftIndex) {
+	FIntPoint ItemDimension = InInventoryItem->GetItemDimensions();
+	FInventoryTile Tiles = IndexToTile(TopLeftIndex);
+	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
+		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
+			// return {i, j};
+		}
+	}
+	return {};
+}
+
+bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLeftIndex) {
+
+
+}
+
+bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem) {
+	for (AItem* InventoryItem : InventoryItems) {
+
+	}
+}
+
+bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
+}
+
+bool UInventoryComponent::RemoveInventoryItemAtLocation(int32 Index) {
+}
+
+AItem* UInventoryComponent::GetInventoryItemAtLocation(int32 Index) {
+}
+
 void UInventoryComponent::ModifyInventoryItem(AItem* InventoryItem) {
 }
 

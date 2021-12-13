@@ -61,10 +61,7 @@ struct FItemDataTable : public FTableRowBase {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 ItemSpaceX;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 ItemSpaceY;
+	FIntPoint ItemDimensions;
 };
 
 USTRUCT()
@@ -261,10 +258,7 @@ private:
 	int32 SlotIndexY;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory", meta = (AllowPrivateAccess = "true"))
-	int32 ItemSpaceX;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory", meta = (AllowPrivateAccess = "true"))
-	int32 ItemSpaceY;
+	FIntPoint ItemDimensions;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory", meta = (AllowPrivateAccess = "true"))
 	bool bCharacterInventoryFull;
@@ -310,6 +304,14 @@ public:
 
 	FORCEINLINE EItemState GetItemState() const {
 		return ItemState;
+	}
+
+	FORCEINLINE void SetItemDimensions(FIntPoint InItemDimensions) {
+		ItemDimensions = InItemDimensions;
+	}
+
+	FIntPoint GetItemDimensions() {
+		return ItemDimensions;
 	}
 
 	FORCEINLINE USkeletalMeshComponent* GetItemMesh() const {

@@ -4,6 +4,7 @@
 #include "Weapon.h"
 
 #include "DrawDebugHelpers.h"
+#include "InventoryComponent.h"
 #include "MainCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -72,7 +73,10 @@ void AWeapon::InteractWithItem(AMainCharacter* InCharacter) {
 	//TODO: create inventory and check if there is place in inventory
 	//TODO: If there is a place then swap weapon and currently equipped store in inventory
 	//TODO: If there is no place in inventory, show error message.
-	Character->SwapWeapon(this);
+	if (Character) {
+		Character->GetCharacterInventoryComponent()->AddInventoryItem(this);		
+	}
+	// Character->SwapWeapon(this);
 }
 
 void AWeapon::PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
