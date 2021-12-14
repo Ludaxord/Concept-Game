@@ -8,10 +8,13 @@
 #include "PieMenu.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetArrayLibrary.h"
 
 // Sets default values for this component's properties
-UInventoryComponent::UInventoryComponent() : bInventoryVisible(false), bQuickSelectVisible(false),
-                                             bQuickSelectVisibleRef(false) {
+UInventoryComponent::UInventoryComponent() : bInventoryVisible(false),
+                                             bQuickSelectVisible(false),
+                                             bQuickSelectVisibleRef(false),
+                                             bInventoryDirty(false) {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -98,7 +101,7 @@ void UInventoryComponent::BeginPlay() {
 
 	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 	// ...
-
+	InventoryItems.SetNum(InventoryColumns * InventoryRows);
 }
 
 
@@ -152,35 +155,83 @@ FInventoryTile UInventoryComponent::IndexToTile(int Index) const {
 	return {Index % InventoryColumns, Index / InventoryColumns};
 }
 
+int UInventoryComponent::TileToIndex(FInventoryTile InTile) const {
+	return InTile.X + (InTile.Y * InventoryColumns);
+}
+
 FInventoryTile UInventoryComponent::OutputEachTile(AItem* InInventoryItem, int TopLeftIndex) {
-	FIntPoint ItemDimension = InInventoryItem->GetItemDimensions();
-	FInventoryTile Tiles = IndexToTile(TopLeftIndex);
-	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
-		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
-			// return {i, j};
-		}
-	}
 	return {};
 }
 
 bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLeftIndex) {
+	const FIntPoint ItemDimension = InInventoryItem->GetItemDimensions();
+	const FInventoryTile Tiles = IndexToTile(TopLeftIndex);
+	UE_LOG(LogTemp, Warning, TEXT("Check Inventory Space: %s Tiles: X -> %i Y -> %i"), *ItemDimension.ToString(),
+	       Tiles.X, Tiles.Y)
+	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
+		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
+			const FInventoryTile NewTile = {i, j};
+			if (NewTile.X >= 0 && NewTile.Y >= 0
+				// && NewTile.X < 0 && NewTile.Y < 0
+			) {
+				if (GetItemAtIndex(TileToIndex(NewTile)) != nullptr) {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+	}
 
+	return true;
 
 }
 
-bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem) {
-	for (AItem* InventoryItem : InventoryItems) {
-
+bool UInventoryComponent::TryAddInventoryItem(AItem* InInventoryItem) {
+	bool bInventoryItemAdded = false;
+	for (int i = 0; i <= InventoryItems.Num(); i++) {
+		UE_LOG(LogTemp, Error, TEXT("Inventory -> %i"), i)
+		if (CheckInventorySpace(InInventoryItem, i)) {
+			return AddInventoryItem(InInventoryItem, i);
+		}
 	}
+
+	return bInventoryItemAdded;
+}
+
+bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIndex) {
+	const FIntPoint ItemDimension = InInventoryItem->GetItemDimensions();
+	const FInventoryTile Tiles = IndexToTile(TopLeftIndex);
+	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
+		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
+			const FInventoryTile NewTile = {i, j};
+			InventoryItems[TileToIndex(NewTile)] = InInventoryItem;
+			bInventoryDirty = true;
+		}
+	}
+
+	return bInventoryDirty;
+}
+
+AItem* UInventoryComponent::GetItemAtIndex(int InIndex) {
+	if (InventoryItems.IsValidIndex(InIndex)) {
+		return InventoryItems[InIndex];
+	}
+
+	return nullptr;
 }
 
 bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
+	return false;
 }
 
 bool UInventoryComponent::RemoveInventoryItemAtLocation(int32 Index) {
+	return false;
 }
 
 AItem* UInventoryComponent::GetInventoryItemAtLocation(int32 Index) {
+	return nullptr;
 }
 
 void UInventoryComponent::ModifyInventoryItem(AItem* InventoryItem) {

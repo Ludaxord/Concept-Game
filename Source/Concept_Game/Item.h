@@ -271,6 +271,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rarity", meta = (AllowPrivateAccess = "true"))
 	FCustomDepth CustomDepth;
+	
 
 public:
 	FORCEINLINE FGuid GetGuid() const {

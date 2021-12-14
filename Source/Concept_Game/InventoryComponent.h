@@ -75,8 +75,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> InventoryItems;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory", meta = (AllowPrivateAccess = "true"))
-	FMatrix InventoryItemsPlacement;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	bool bInventoryDirty;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> QuickSelectItems;
@@ -124,11 +124,17 @@ public:
 
 	FInventoryTile IndexToTile(int Index) const;
 
-	FInventoryTile OutputEachTile(AItem* InInventoryItem, int TopLeftIndex) ;
+	int TileToIndex(FInventoryTile InTile) const;
+
+	FInventoryTile OutputEachTile(AItem* InInventoryItem, int TopLeftIndex);
 
 	bool CheckInventorySpace(AItem* InInventoryItem, int TopLeftIndex);
 
-	bool AddInventoryItem(AItem* InInventoryItem);
+	bool TryAddInventoryItem(AItem* InInventoryItem);
+
+	bool AddInventoryItem(AItem* InInventoryItem, int TopLeftIndex);
+
+	AItem* GetItemAtIndex(int InIndex);
 
 	bool RemoveInventoryItem(AItem* InInventoryItem);
 

@@ -74,9 +74,13 @@ void AWeapon::InteractWithItem(AMainCharacter* InCharacter) {
 	//TODO: If there is a place then swap weapon and currently equipped store in inventory
 	//TODO: If there is no place in inventory, show error message.
 	if (Character) {
-		Character->GetCharacterInventoryComponent()->AddInventoryItem(this);		
+		bool bAdded = Character->GetCharacterInventoryComponent()->TryAddInventoryItem(this);
+		UE_LOG(LogTemp, Warning, TEXT("Added Weapon: %s => %s"), *GetName(), bAdded ? TEXT("true") : TEXT("false"));
+		if (bAdded) {
+			Destroy();
+		}
+		// Character->SwapWeapon(this);
 	}
-	// Character->SwapWeapon(this);
 }
 
 void AWeapon::PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
