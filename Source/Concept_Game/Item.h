@@ -289,6 +289,9 @@ private:
 
 
 public:
+	UFUNCTION(BlueprintCallable)
+	UMaterialInstance* GetInventoryImageIcon();
+
 	FORCEINLINE FGuid GetGuid() const {
 		return ID;
 	}

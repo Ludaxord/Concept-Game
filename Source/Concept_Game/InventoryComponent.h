@@ -29,6 +29,9 @@ struct FInventoryTile {
 	int Y;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<class UInventoryItemWidget>, WidgetSubclass)
+;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UInventoryComponent : public UActorComponent, public IInventoryInterface {
 	GENERATED_BODY()
@@ -105,7 +108,21 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Menu", meta = (AllowPrivateAccess = "true"))
 	float TileSize;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Widgets", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UInventoryItemWidget> ItemWidgetSubclass;
+
 public:
+	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FRefreshGridWidget RefreshGridWidgetDelegate;
+
+	FORCEINLINE void SetItemWidgetSubclass(TSubclassOf<UInventoryItemWidget> InItemWidgetSubclass) {
+		ItemWidgetSubclass = InItemWidgetSubclass;
+	}
+
+	FORCEINLINE FRefreshGridWidget GetRefreshGridWidgetDelegate() {
+		return RefreshGridWidgetDelegate;
+	}
+
 	FORCEINLINE int GetInventoryColumns() const {
 		return InventoryColumns;
 	}
@@ -121,6 +138,8 @@ public:
 	void SetInventoryRows(int InRows) {
 		InventoryRows = InRows;
 	}
+
+	TMap<AItem*, FInventoryTile> GetInventoryItems();
 
 	FInventoryTile IndexToTile(int Index) const;
 
@@ -153,6 +172,9 @@ public:
 	void SetToQuickSelect(AItem* InventoryItem);
 
 	void RemoveFromQuickSelect(AItem* InventoryItem);
+
+	UFUNCTION(BlueprintCallable)
+	void RefreshInventoryWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget);

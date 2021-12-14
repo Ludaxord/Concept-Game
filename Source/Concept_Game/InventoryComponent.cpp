@@ -109,6 +109,7 @@ void UInventoryComponent::BeginPlay() {
 void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                         FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	RefreshInventoryWidget();
 }
 
 FVector2D UInventoryComponent::GetViewportCenter() {
@@ -149,6 +150,22 @@ void UInventoryComponent::CreateInventoryWidget(UInventoryWidget* InInventoryWid
 	InventoryWidget->SetOwnerInventoryComponent(this);
 	InventoryWidget->AddToViewport();
 	InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+TMap<AItem*, FInventoryTile> UInventoryComponent::GetInventoryItems() {
+	TMap<AItem*, FInventoryTile> AllItems;
+	for (int i = 0; i <= InventoryItems.Num(); i++) {
+		if (InventoryItems.IsValidIndex(i)) {
+			AItem* InvItem = InventoryItems[i];
+			if (IsValid(InvItem)) {
+				if (!AllItems.Contains(InvItem)) {
+					AllItems.Add(InvItem, IndexToTile(i));
+				}
+			}
+		}
+	}
+
+	return AllItems;
 }
 
 FInventoryTile UInventoryComponent::IndexToTile(int Index) const {
@@ -248,4 +265,11 @@ void UInventoryComponent::SetToQuickSelect(AItem* InventoryItem) {
 }
 
 void UInventoryComponent::RemoveFromQuickSelect(AItem* InventoryItem) {
+}
+
+void UInventoryComponent::RefreshInventoryWidget() {
+	if (bInventoryDirty) {
+		RefreshGridWidgetDelegate.Broadcast(ItemWidgetSubclass);
+		bInventoryDirty = false;
+	}
 }

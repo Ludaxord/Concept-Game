@@ -323,6 +323,15 @@ void AItem::StopFalling() {
 	SetItemState(EItemState::EIS_Pickup);
 }
 
+UMaterialInstance* AItem::GetInventoryImageIcon() {
+	if (!bRotated) {
+		return InventoryItemIcon;
+	}
+	else {
+		return InventoryItemIconRotated;
+	}
+}
+
 // Called every frame
 void AItem::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);

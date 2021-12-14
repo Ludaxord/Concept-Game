@@ -22,6 +22,12 @@ public:
 private:
 	void SetGridBorderSize() const;
 
+	UFUNCTION(BlueprintCallable)
+	void RefreshWidget(TSubclassOf<class UInventoryItemWidget> WidgetSubclass);
+
+	UFUNCTION(BlueprintCallable)
+	void BindInventoryComponentEvents(TSubclassOf<UInventoryItemWidget> WidgetSubclass);
+
 	void CreateLineSegments();
 
 	UFUNCTION(BlueprintCallable)

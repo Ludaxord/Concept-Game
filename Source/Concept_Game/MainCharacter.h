@@ -60,7 +60,6 @@ struct FInterpLocation {
 	int32 ItemCount;
 };
 
-
 UCLASS()
 class CONCEPT_GAME_API AMainCharacter : public ACharacter, public IMainCharacterInterface {
 	GENERATED_BODY()
