@@ -62,6 +62,12 @@ struct FItemDataTable : public FTableRowBase {
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FIntPoint ItemDimensions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstance* InventoryItemIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UMaterialInstance* InventoryItemIconRotated;
 };
 
 USTRUCT()
@@ -163,6 +169,15 @@ protected:
 	float ThrowItemTime;
 
 	bool bFalling;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	bool bRotated;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UMaterialInstance* InventoryItemIconRotated;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UMaterialInstance* InventoryItemIcon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	FString ItemName;
@@ -271,7 +286,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rarity", meta = (AllowPrivateAccess = "true"))
 	FCustomDepth CustomDepth;
-	
+
 
 public:
 	FORCEINLINE FGuid GetGuid() const {
@@ -378,6 +393,26 @@ public:
 
 	FORCEINLINE void SetItemName(FString InName) {
 		ItemName = InName;
+	}
+
+	FORCEINLINE FString GetItemName() {
+		return ItemName;
+	}
+
+	FORCEINLINE void SetInventoryItemIcon(UMaterialInstance* InInventoryItemIcon) {
+		InventoryItemIcon = InInventoryItemIcon;
+	}
+
+	FORCEINLINE UMaterialInstance* GetInventoryItemIcon() {
+		return InventoryItemIcon;
+	}
+
+	FORCEINLINE void SetInventoryItemIconRotated(UMaterialInstance* InInventoryItemIconRotated) {
+		InventoryItemIconRotated = InInventoryItemIconRotated;
+	}
+
+	FORCEINLINE UMaterialInstance* GetInventoryItemIconRotated() {
+		return InventoryItemIconRotated;
 	}
 
 	FORCEINLINE void SetMaterialInstance(UMaterialInstance* Instance) {

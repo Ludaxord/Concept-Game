@@ -171,9 +171,7 @@ bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLef
 	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
 		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
 			const FInventoryTile NewTile = {i, j};
-			if (NewTile.X >= 0 && NewTile.Y >= 0
-				// && NewTile.X < 0 && NewTile.Y < 0
-			) {
+			if (NewTile.X >= 0 && NewTile.Y >= 0 && NewTile.X < InventoryColumns && NewTile.Y < InventoryRows) {
 				if (GetItemAtIndex(TileToIndex(NewTile)) != nullptr) {
 					return false;
 				}

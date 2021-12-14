@@ -157,6 +157,8 @@ void AFireWeapon::InitializeWeaponDataTable() {
 			HeadShotDamage = FireWeaponDataRow->BaseHeadShotDamage;
 			bThrowable = FireWeaponDataRow->bThrowable;
 			SetItemDimensions(FireWeaponDataRow->ItemDimensions);
+			SetInventoryItemIconRotated(FireWeaponDataRow->InventoryItemIcon);
+			SetInventoryItemIcon(FireWeaponDataRow->InventoryItemIconRotated);
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Failed to load Fire Weapon Data Row"));

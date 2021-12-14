@@ -164,9 +164,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	UTexture2D* CrosshairsTop;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
-	bool bRotated;
 public:
 	USoundCue* GetUsageSound() const {
 		return UseSound;
