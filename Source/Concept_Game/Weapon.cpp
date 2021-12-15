@@ -77,7 +77,9 @@ void AWeapon::InteractWithItem(AMainCharacter* InCharacter) {
 		bool bAdded = Character->GetCharacterInventoryComponent()->TryAddInventoryItem(this);
 		UE_LOG(LogTemp, Warning, TEXT("Added Weapon: %s => %s"), *GetName(), bAdded ? TEXT("true") : TEXT("false"));
 		if (bAdded) {
-			Destroy();
+			// Destroy();
+			// GetWorld()->DestroyActor(this);
+			SetItemState(EItemState::EIS_PickedUp);
 		}
 		// Character->SwapWeapon(this);
 	}

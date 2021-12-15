@@ -4,10 +4,12 @@
 #include "InventoryItemWidget.h"
 
 #include "Item.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void UInventoryItemWidget::Refresh(UImage* InItemImage, USizeBox* InBackgroundSizeBox,
                                    UBorder* InBackgroundBorder) {
@@ -23,4 +25,15 @@ void UInventoryItemWidget::Refresh(UImage* InItemImage, USizeBox* InBackgroundSi
 	BackgroundSizeBox->SetHeightOverride(Size.Y);
 	UWidgetLayoutLibrary::SlotAsCanvasSlot(ItemImage)->SetSize(Size);
 
+}
+
+void UInventoryItemWidget::SetIconImage(UMaterialInstance* Icon) {
+	if (ItemImage && Icon) {
+
+		// FSlateBrush Brush = UWidgetBlueprintLibrary::MakeBrushFromMaterial(Icon,
+		//                                                                    UKismetMathLibrary::FTrunc(Size.X),
+		//                                                                    UKismetMathLibrary::FTrunc(Size.Y)
+		// );
+		ItemImage->SetBrushFromMaterial(Icon);
+	}
 }

@@ -5,6 +5,7 @@
 
 #include "InventoryComponent.h"
 #include "InventoryItemWidget.h"
+#include "Item.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
@@ -37,21 +38,22 @@ void UInventoryGridWidget::SetGridBorderSize() const {
 
 void UInventoryGridWidget::RefreshWidget(TSubclassOf<UInventoryItemWidget> WidgetSubclass) {
 	if (OwnerInventoryComponent) {
-		UE_LOG(LogTemp, Error, TEXT("Refreshing Grid..."))
 		InventoryCanvasPanel->ClearChildren();
 		TMap<AItem*, FInventoryTile> InventoryItemsMap = OwnerInventoryComponent->GetInventoryItems();
 		TArray<AItem*> ItemKeys;
 		InventoryItemsMap.GetKeys(ItemKeys);
+		UE_LOG(LogTemp, Error, TEXT("Refreshing Grid... of Items: %i"), ItemKeys.Num())
 		for (AItem* Key : ItemKeys) {
 			FInventoryTile* TileValue = InventoryItemsMap.Find(Key);
 			UInventoryItemWidget* ItemWidget = CreateWidget<UInventoryItemWidget>(GetWorld(), WidgetSubclass);
 			ItemWidget->SetItem(Key);
 			ItemWidget->SetTileSize(TileSize);
+			UE_LOG(LogTemp, Warning, TEXT("New Widget Created: %s, Widget Item: %s"), *ItemWidget->GetName(), *ItemWidget->GetItem()->GetName())
 			//TODO: Add OnRemoved Bind Event Function
 			UPanelSlot* PanelSlot = InventoryCanvasPanel->AddChild(ItemWidget);
-			UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(PanelSlot);
-			CanvasSlot->SetAutoSize(true);
-			CanvasSlot->SetPosition({TileValue->X * TileSize, TileValue->Y * TileSize});
+			// UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(PanelSlot);
+			Cast<UCanvasPanelSlot>(PanelSlot)->SetAutoSize(true);
+			Cast<UCanvasPanelSlot>(PanelSlot)->SetPosition({TileValue->X * TileSize, TileValue->Y * TileSize});
 		}
 	}
 }

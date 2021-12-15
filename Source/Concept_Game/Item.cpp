@@ -324,12 +324,12 @@ void AItem::StopFalling() {
 }
 
 UMaterialInstance* AItem::GetInventoryImageIcon() {
-	if (!bRotated) {
+	if (bRotated) {
 		return InventoryItemIcon;
 	}
-	else {
-		return InventoryItemIconRotated;
-	}
+
+	return InventoryItemIconRotated;
+
 }
 
 // Called every frame

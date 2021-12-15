@@ -157,7 +157,10 @@ TMap<AItem*, FInventoryTile> UInventoryComponent::GetInventoryItems() {
 	for (int i = 0; i <= InventoryItems.Num(); i++) {
 		if (InventoryItems.IsValidIndex(i)) {
 			AItem* InvItem = InventoryItems[i];
-			if (IsValid(InvItem)) {
+			if (InvItem != nullptr)
+				UE_LOG(LogTemp, Error, TEXT("IsNotItemNull__: %s"), InvItem != nullptr ? TEXT("true") : TEXT("false"))
+			if (InvItem != nullptr) {
+				UE_LOG(LogTemp, Warning, TEXT("InventoryItem Current Item: %s Valid Index: %i"), *InvItem->GetName(), i)
 				if (!AllItems.Contains(InvItem)) {
 					AllItems.Add(InvItem, IndexToTile(i));
 				}
@@ -221,8 +224,12 @@ bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIn
 	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
 		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
 			const FInventoryTile NewTile = {i, j};
-			InventoryItems[TileToIndex(NewTile)] = InInventoryItem;
+			// InventoryItems[TileToIndex(NewTile)] = InInventoryItem;
+			InventoryItems.EmplaceAt(TileToIndex(NewTile), InInventoryItem);
 			bInventoryDirty = true;
+			AItem* AddedItem = InventoryItems[TileToIndex(NewTile)];
+			UE_LOG(LogTemp, Warning, TEXT("Current Inventory Item added: %s at %i"),
+			       *AddedItem->GetName(), TileToIndex(NewTile))
 		}
 	}
 

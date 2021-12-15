@@ -35,11 +35,20 @@ public:
 	FORCEINLINE void SetTileSize(float InTileSize) {
 		TileSize = InTileSize;
 	}
+
 	FORCEINLINE void SetItem(AItem* InItem) {
 		Item = InItem;
 	}
 
+	FORCEINLINE AItem* GetItem() const {
+		return Item;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	void Refresh(class UImage* InItemImage,
-	            class USizeBox* InBackgroundSizeBox, class UBorder* InBackgroundBorder);
+	             class USizeBox* InBackgroundSizeBox,
+	             class UBorder* InBackgroundBorder);
+
+	UFUNCTION(BlueprintCallable)
+	void SetIconImage(class UMaterialInstance* Icon);
 };
