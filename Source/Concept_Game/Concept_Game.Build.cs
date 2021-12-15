@@ -11,7 +11,7 @@ public class Concept_Game : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[]
         {
             "Core", "CoreUObject", "Engine", "InputCore", "UMG", "PhysicsCore", "NavigationSystem", "AIModule",
-            "Paper2D", "UMGEditor", "Niagara"
+            "Paper2D", "UMGEditor", "Niagara", "Slate", "SlateCore"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] { });

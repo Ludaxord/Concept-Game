@@ -30,10 +30,11 @@ void UInventoryItemWidget::Refresh(UImage* InItemImage, USizeBox* InBackgroundSi
 void UInventoryItemWidget::SetIconImage(UMaterialInstance* Icon) {
 	if (ItemImage && Icon) {
 
-		// FSlateBrush Brush = UWidgetBlueprintLibrary::MakeBrushFromMaterial(Icon,
-		//                                                                    UKismetMathLibrary::FTrunc(Size.X),
-		//                                                                    UKismetMathLibrary::FTrunc(Size.Y)
-		// );
-		ItemImage->SetBrushFromMaterial(Icon);
+		FSlateBrush Brush = UWidgetBlueprintLibrary::MakeBrushFromMaterial(Icon,
+		                                                                   UKismetMathLibrary::FTrunc(Size.X),
+		                                                                   UKismetMathLibrary::FTrunc(Size.Y)
+		);
+		ItemImage->SetBrush(Brush);
+		// ItemImage->SetBrushFromMaterial(Icon);
 	}
 }
