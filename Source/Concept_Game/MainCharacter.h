@@ -87,16 +87,6 @@ public:
 
 	void SetDefaultCameras();
 
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void ClimbRight(float Value);
-	void ClimbRightActionPressed();
-	void ClimbRightActionReleased();
-	void TurnRate(float Rate);
-	void Turn(float Value);
-	void LookUpAtRate(float Rate);
-	void LookUp(float Value);
-
 	//TODO: Move systems like covers, using weapons, using environment and jumping/parkour to different class to make it usable for AI Character and Player Character
 	void Cover();
 	void PeakLeft();
@@ -117,15 +107,6 @@ public:
 	virtual bool TraceForLevelChange(FHitResult& OutHitResult, FVector& OutHitLocation);
 	virtual bool TraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutHitLocation);
 
-	void AimingButtonPressed();
-	void AimingButtonReleased();
-
-	void RunningButtonPressed(float Value);
-	void RunningButtonReleased();
-
-	void ChangePoseButtonPressed(FKey Key);
-	void ChangePoseAxisButtonPressed(float Value);
-
 	void Jump() override;
 	void StopJumping() override;
 
@@ -142,9 +123,6 @@ public:
 
 	void AimingFieldOfView(float DeltaTime);
 
-	void UseWeaponButtonPressed();
-	void UseWeaponButtonReleased();
-
 	void StartFireTimer();
 
 	void InterpCapsuleHalfHeight(float DeltaTime);
@@ -152,9 +130,9 @@ public:
 	//TODO: In Target only change camera to Follow Camera when player stick to cover,
 	//TODO: NOTE: Button need to be pressed to stick to cover, when only close to cover player will lean from cover. 
 	//TODO: NOTE: When stick to cover mode is on, there is no need to press aiming, only analog/mouse movement will give ability to aim. Like Deus Ex Aiming mechanic.
-	void ChangeDebugCamera();
-	void ChangeDebugTriggerRotationYaw();
-	void TriggerFPSCounter();
+	// void ChangeDebugCamera();
+	// void ChangeDebugTriggerRotationYaw();
+	// void TriggerFPSCounter();
 
 	void SwitchCamera(bool bFollowCamera);
 
@@ -194,15 +172,6 @@ public:
 
 	void SwapWeapon(AWeapon* WeaponToSwap);
 
-	void InteractButtonPressed();
-
-	void InventoryButtonPressed();
-
-	void PauseButtonPressed();
-
-	void DebugDropItem();
-
-	void QuickSelectButtonPressed(float Value);
 	void SphereOverlapBegin(FGuid Guid);
 	void SphereOverlapEnd(FGuid Guid);
 

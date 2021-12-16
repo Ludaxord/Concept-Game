@@ -333,39 +333,6 @@ void AMainCharacter::Tick(float DeltaTime) {
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	CharacterInputComponent->SetupPlayerInputComponent(PlayerInputComponent);
-	// check(PlayerInputComponent);
-	// PlayerInputComponent->BindAxis("MoveForward", this, &AMainCharacter::MoveForward);
-	// PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
-	// PlayerInputComponent->BindAxis("ClimbRight", this, &AMainCharacter::ClimbRight);
-	// PlayerInputComponent->BindAxis("TurnRate", this, &AMainCharacter::TurnRate);
-	// PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpAtRate);
-	// PlayerInputComponent->BindAxis("PoseChange", this, &AMainCharacter::ChangePoseAxisButtonPressed);
-	// PlayerInputComponent->BindAxis("Running", this, &AMainCharacter::RunningButtonPressed);
-	// PlayerInputComponent->BindAxis("Turn", this, &AMainCharacter::Turn);
-	// PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
-	// PlayerInputComponent->BindAxis("QuickSelect", this, &AMainCharacter::QuickSelectButtonPressed);
-	//
-	// //NOTE, Debug bindings, remove in production
-	// PlayerInputComponent->BindAction("DebugChangeCamera", IE_Pressed, this, &AMainCharacter::ChangeDebugCamera);
-	// PlayerInputComponent->BindAction("FPSCounterTrigger", IE_Pressed, this, &AMainCharacter::TriggerFPSCounter);
-	// PlayerInputComponent->BindAction("DebugTriggerRotationYaw", IE_Pressed, this,
-	//                                  &AMainCharacter::ChangeDebugTriggerRotationYaw);
-	//
-	// PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
-	// PlayerInputComponent->BindAction("ClimbRightAction", IE_Pressed, this, &AMainCharacter::ClimbRightActionPressed);
-	// PlayerInputComponent->BindAction("ClimbRightAction", IE_Released, this, &AMainCharacter::ClimbRightActionReleased);
-	// PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
-	// PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	// PlayerInputComponent->BindAction("Cover", IE_Pressed, this, &AMainCharacter::Cover);
-	// PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &AMainCharacter::AimingButtonPressed);
-	// PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
-	// PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
-	// PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
-	// PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacter::InteractButtonPressed);
-	// PlayerInputComponent->BindAction("DebugDropItem", IE_Pressed, this, &AMainCharacter::DebugDropItem);
-	// PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &AMainCharacter::InventoryButtonPressed);
-	// PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMainCharacter::PauseButtonPressed);
-
 }
 
 void AMainCharacter::ConstructCharacterMovement() const {
@@ -403,15 +370,6 @@ void AMainCharacter::SetDefaultCameras() {
 	}
 }
 
-//TODO: Make it more simple
-void AMainCharacter::MoveForward(float Value) {
-	CharacterInputComponent->MoveForward(Value);
-}
-
-void AMainCharacter::MoveRight(float Value) {
-	CharacterInputComponent->MoveRight(Value);
-}
-
 bool AMainCharacter::TraceCoverMovement(float Orientation) {
 	FHitResult OutHitResult;
 	FVector CharacterNormalVector = GetCharacterMovement()->GetPlaneConstraintNormal() * Orientation;
@@ -432,42 +390,7 @@ bool AMainCharacter::TraceCoverMovement(float Orientation) {
 	                                                     true
 	);
 
-
 	return Trace;
-}
-
-void AMainCharacter::ClimbRight(float Value) {
-	CharacterInputComponent->ClimbRight(Value);
-
-
-}
-
-void AMainCharacter::ClimbRightActionPressed() {
-	CharacterInputComponent->ClimbRightActionPressed();
-}
-
-void AMainCharacter::ClimbRightActionReleased() {
-	CharacterInputComponent->ClimbRightActionReleased();
-}
-
-void AMainCharacter::TurnRate(float Rate) {
-	CharacterInputComponent->TurnRate(Rate);
-}
-
-void AMainCharacter::Turn(float Value) {
-	CharacterInputComponent->Turn(Value);
-}
-
-void AMainCharacter::LookUpAtRate(float Rate) {
-	CharacterInputComponent->LookUpAtRate(Rate);
-}
-
-void AMainCharacter::LookUp(float Value) {
-	CharacterInputComponent->LookUp(Value);
-}
-
-void AMainCharacter::Cover() {
-	CharacterInputComponent->Cover();
 }
 
 void AMainCharacter::PeakLeft() {
@@ -747,31 +670,6 @@ void AMainCharacter::UseWeapon() {
 
 }
 
-void AMainCharacter::AimingButtonPressed() {
-	CharacterInputComponent->AimingButtonPressed();
-}
-
-void AMainCharacter::AimingButtonReleased() {
-	CharacterInputComponent->AimingButtonReleased();
-}
-
-void AMainCharacter::RunningButtonPressed(float Value) {
-	CharacterInputComponent->RunningButtonPressed(Value);
-}
-
-void AMainCharacter::RunningButtonReleased() {
-	CharacterInputComponent->RunningButtonReleased();
-}
-
-void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
-	CharacterInputComponent->ChangePoseButtonPressed(Key);
-}
-
-void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
-	CharacterInputComponent->ChangePoseAxisButtonPressed(Value);
-
-}
-
 void AMainCharacter::Jump() {
 	if (PoseType != EPoseType::EPT_Climb) {
 		if (PoseType != EPoseType::EPT_Stand && (!bInCover || !bCoverActive || !bCoveringActive)) {
@@ -985,14 +883,6 @@ void AMainCharacter::AimingFieldOfView(float DeltaTime) {
 
 }
 
-void AMainCharacter::UseWeaponButtonPressed() {
-	CharacterInputComponent->UseWeaponButtonPressed();
-}
-
-void AMainCharacter::UseWeaponButtonReleased() {
-	CharacterInputComponent->UseWeaponButtonReleased();
-}
-
 void AMainCharacter::StartFireTimer() {
 }
 
@@ -1034,18 +924,6 @@ void AMainCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
 	GetMesh()->AddLocalOffset(MeshOffset);
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
-}
-
-void AMainCharacter::ChangeDebugCamera() {
-	CharacterInputComponent->ChangeDebugCamera();
-}
-
-void AMainCharacter::ChangeDebugTriggerRotationYaw() {
-	CharacterInputComponent->ChangeDebugTriggerRotationYaw();
-}
-
-void AMainCharacter::TriggerFPSCounter() {
-	CharacterInputComponent->TriggerFPSCounter();
 }
 
 void AMainCharacter::SwitchCamera(bool bFollowCamera) {
@@ -1253,26 +1131,6 @@ void AMainCharacter::SwapWeapon(AWeapon* WeaponToSwap) {
 	DropItem(EquippedWeapon);
 	SetEquippedWeapon(nullptr);
 	EquipWeapon(WeaponToSwap);
-}
-
-void AMainCharacter::InteractButtonPressed() {
-	CharacterInputComponent->InteractButtonPressed();
-}
-
-void AMainCharacter::InventoryButtonPressed() {
-	CharacterInputComponent->InventoryButtonPressed();
-}
-
-void AMainCharacter::PauseButtonPressed() {
-	CharacterInputComponent->PauseButtonPressed();
-}
-
-void AMainCharacter::DebugDropItem() {
-	CharacterInputComponent->DebugDropItem();
-}
-
-void AMainCharacter::QuickSelectButtonPressed(float Value) {
-	CharacterInputComponent->QuickSelectButtonPressed(Value);
 }
 
 void AMainCharacter::SphereOverlapBegin(FGuid Guid) {
