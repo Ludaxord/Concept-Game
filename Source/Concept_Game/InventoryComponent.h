@@ -186,6 +186,10 @@ public:
 		return bQuickSelectVisible;
 	}
 
+	FORCEINLINE bool GetInventoryVisible() const {
+		return bInventoryVisible;
+	}
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UPieMenu* GetQuickSelectPieWidget() const {
 		return QuickSelectPieWidget;

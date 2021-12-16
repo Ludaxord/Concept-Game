@@ -332,39 +332,39 @@ void AMainCharacter::Tick(float DeltaTime) {
 // Called to bind functionality to input
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	check(PlayerInputComponent);
-	PlayerInputComponent->BindAxis("MoveForward", this, &AMainCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("ClimbRight", this, &AMainCharacter::ClimbRight);
-	PlayerInputComponent->BindAxis("TurnRate", this, &AMainCharacter::TurnRate);
-	PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpAtRate);
-	PlayerInputComponent->BindAxis("PoseChange", this, &AMainCharacter::ChangePoseAxisButtonPressed);
-	PlayerInputComponent->BindAxis("Running", this, &AMainCharacter::RunningButtonPressed);
-	PlayerInputComponent->BindAxis("Turn", this, &AMainCharacter::Turn);
-	PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
-	PlayerInputComponent->BindAxis("QuickSelect", this, &AMainCharacter::QuickSelectButtonPressed);
-
-	//NOTE, Debug bindings, remove in production
-	PlayerInputComponent->BindAction("DebugChangeCamera", IE_Pressed, this, &AMainCharacter::ChangeDebugCamera);
-	PlayerInputComponent->BindAction("FPSCounterTrigger", IE_Pressed, this, &AMainCharacter::TriggerFPSCounter);
-	PlayerInputComponent->BindAction("DebugTriggerRotationYaw", IE_Pressed, this,
-	                                 &AMainCharacter::ChangeDebugTriggerRotationYaw);
-
-
-	PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
-	PlayerInputComponent->BindAction("ClimbRightAction", IE_Pressed, this, &AMainCharacter::ClimbRightActionPressed);
-	PlayerInputComponent->BindAction("ClimbRightAction", IE_Released, this, &AMainCharacter::ClimbRightActionReleased);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("Cover", IE_Pressed, this, &AMainCharacter::Cover);
-	PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &AMainCharacter::AimingButtonPressed);
-	PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
-	PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
-	PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacter::InteractButtonPressed);
-	PlayerInputComponent->BindAction("DebugDropItem", IE_Pressed, this, &AMainCharacter::DebugDropItem);
-	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &AMainCharacter::InventoryButtonPressed);
-	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMainCharacter::PauseButtonPressed);
+	CharacterInputComponent->SetupPlayerInputComponent(PlayerInputComponent);
+	// check(PlayerInputComponent);
+	// PlayerInputComponent->BindAxis("MoveForward", this, &AMainCharacter::MoveForward);
+	// PlayerInputComponent->BindAxis("MoveRight", this, &AMainCharacter::MoveRight);
+	// PlayerInputComponent->BindAxis("ClimbRight", this, &AMainCharacter::ClimbRight);
+	// PlayerInputComponent->BindAxis("TurnRate", this, &AMainCharacter::TurnRate);
+	// PlayerInputComponent->BindAxis("LookupRate", this, &AMainCharacter::LookUpAtRate);
+	// PlayerInputComponent->BindAxis("PoseChange", this, &AMainCharacter::ChangePoseAxisButtonPressed);
+	// PlayerInputComponent->BindAxis("Running", this, &AMainCharacter::RunningButtonPressed);
+	// PlayerInputComponent->BindAxis("Turn", this, &AMainCharacter::Turn);
+	// PlayerInputComponent->BindAxis("LookUp", this, &AMainCharacter::LookUp);
+	// PlayerInputComponent->BindAxis("QuickSelect", this, &AMainCharacter::QuickSelectButtonPressed);
+	//
+	// //NOTE, Debug bindings, remove in production
+	// PlayerInputComponent->BindAction("DebugChangeCamera", IE_Pressed, this, &AMainCharacter::ChangeDebugCamera);
+	// PlayerInputComponent->BindAction("FPSCounterTrigger", IE_Pressed, this, &AMainCharacter::TriggerFPSCounter);
+	// PlayerInputComponent->BindAction("DebugTriggerRotationYaw", IE_Pressed, this,
+	//                                  &AMainCharacter::ChangeDebugTriggerRotationYaw);
+	//
+	// PlayerInputComponent->BindAction("PoseChange", IE_Pressed, this, &AMainCharacter::ChangePoseButtonPressed);
+	// PlayerInputComponent->BindAction("ClimbRightAction", IE_Pressed, this, &AMainCharacter::ClimbRightActionPressed);
+	// PlayerInputComponent->BindAction("ClimbRightAction", IE_Released, this, &AMainCharacter::ClimbRightActionReleased);
+	// PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMainCharacter::Jump);
+	// PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	// PlayerInputComponent->BindAction("Cover", IE_Pressed, this, &AMainCharacter::Cover);
+	// PlayerInputComponent->BindAction("Aiming", IE_Pressed, this, &AMainCharacter::AimingButtonPressed);
+	// PlayerInputComponent->BindAction("Aiming", IE_Released, this, &AMainCharacter::AimingButtonReleased);
+	// PlayerInputComponent->BindAction("UseWeapon", IE_Pressed, this, &AMainCharacter::UseWeaponButtonPressed);
+	// PlayerInputComponent->BindAction("UseWeapon", IE_Released, this, &AMainCharacter::UseWeaponButtonReleased);
+	// PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AMainCharacter::InteractButtonPressed);
+	// PlayerInputComponent->BindAction("DebugDropItem", IE_Pressed, this, &AMainCharacter::DebugDropItem);
+	// PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &AMainCharacter::InventoryButtonPressed);
+	// PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &AMainCharacter::PauseButtonPressed);
 
 }
 
@@ -405,56 +405,11 @@ void AMainCharacter::SetDefaultCameras() {
 
 //TODO: Make it more simple
 void AMainCharacter::MoveForward(float Value) {
-	if (Controller != nullptr && (Value != 0.0f)) {
-		FVector Direction;
-		if (!bInCover || ! bCoverActive || !bCoveringActive) {
-			const FRotator Rotation = Controller->GetControlRotation();
-			const FRotator YawRotation = {0, Rotation.Yaw, 0};
-			if (PoseType == EPoseType::EPT_Climb) {
-				Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Z);
-				if (Value < 0.0f) {
-					if (GetOverlappingLadderBottom() && bTouchingFloor) {
-						PoseType = EPoseType::EPT_Stand;
-						GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
-						SwitchCamera(false);
-					}
-				}
-				else if (Value > 0.0f) {
-					if (GetOverlappingLadderTop()) {
-
-					}
-				}
-			}
-			else {
-				Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-			}
-		}
-		else {
-			if (CurrentCover)
-				CurrentCover->MoveForward(Value);
-		}
-
-		AddMovementInput(Direction, Value);
-	}
+	CharacterInputComponent->MoveForward(Value);
 }
 
 void AMainCharacter::MoveRight(float Value) {
-	MoveRightValue = Value;
-	if (Controller != nullptr && (Value != 0.0f)) {
-		if (PoseType != EPoseType::EPT_Climb && !bInCover) {
-			const FRotator Rotation = Controller->GetControlRotation();
-			const FRotator YawRotation = {0, Rotation.Yaw, 0};
-			const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-			AddMovementInput(Direction, Value);
-			ClimbStartRotationYaw = Controller->GetControlRotation().Yaw;
-			ClimbStartRotationYawLeft = ClimbStartRotationYaw + 45.0f;
-			ClimbStartRotationYawRight = ClimbStartRotationYaw - 45.0f;
-		}
-		else if (bInCover) {
-			if (CurrentCover)
-				CurrentCover->MoveRight(Value);
-		}
-	}
+	CharacterInputComponent->MoveRight(Value);
 }
 
 bool AMainCharacter::TraceCoverMovement(float Orientation) {
@@ -482,122 +437,37 @@ bool AMainCharacter::TraceCoverMovement(float Orientation) {
 }
 
 void AMainCharacter::ClimbRight(float Value) {
-	if (Controller != nullptr) {
-		if (PoseType == EPoseType::EPT_Climb) {
-			ClimbRightValue = Value;
-			if (bClimbingButtonPressed) {
-				if (bPlayClimbTurnAnimation)
-					ClimbingTransitionTimeline->PlayFromStart();
-			}
-			else {
-				if (bPlayClimbTurnAnimation)
-					ClimbingTransitionTimeline->PlayFromStart();
-			}
-		}
-	}
+	CharacterInputComponent->ClimbRight(Value);
+
 
 }
 
 void AMainCharacter::ClimbRightActionPressed() {
-	bPlayClimbTurnAnimation = true;
-	bClimbingButtonPressed = true;
+	CharacterInputComponent->ClimbRightActionPressed();
 }
 
 void AMainCharacter::ClimbRightActionReleased() {
-	bPlayClimbTurnAnimation = true;
-	bClimbingButtonPressed = false;
+	CharacterInputComponent->ClimbRightActionReleased();
 }
 
 void AMainCharacter::TurnRate(float Rate) {
-	TurnValue = Rate;
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	CharacterInputComponent->TurnRate(Rate);
 }
 
 void AMainCharacter::Turn(float Value) {
-	if (PoseType == EPoseType::EPT_Climb) return;
-	TurnVal = Value;
-	if (bInCover || bCoverActive || bCoveringActive) return;
-	float TurnScaleFactor = bAiming ? MouseAimingTurnRate : MouseHipTurnRate;
-	AddControllerYawInput(Value * TurnScaleFactor);
+	CharacterInputComponent->Turn(Value);
 }
 
 void AMainCharacter::LookUpAtRate(float Rate) {
-	LookValue = Rate;
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	CharacterInputComponent->LookUpAtRate(Rate);
 }
 
 void AMainCharacter::LookUp(float Value) {
-	if (PoseType == EPoseType::EPT_Climb) return;
-	LookUpVal = Value;
-	if (bInCover || bCoverActive || bCoveringActive) return;
-	float LookUpScaleFactor = bAiming ? MouseAimingLookUpRate : MouseHipLookUpRate;
-	AddControllerPitchInput(Value * LookUpScaleFactor);
+	CharacterInputComponent->LookUp(Value);
 }
 
 void AMainCharacter::Cover() {
-	if (!bCoverActive) {
-		if (!bCoverDisable) {
-			FVector OutStart;
-			FVector OutEnd;
-			FHitResult Res;
-			GetForwardTracers(OutStart, OutEnd, Res);
-
-			TArray<AActor*> IgnoredActors;
-			FHitResult OutHitResult;
-			bool bTraced = UKismetSystemLibrary::SphereTraceSingle(this,
-			                                                       OutStart,
-			                                                       OutEnd,
-			                                                       80.0f,
-			                                                       ETraceTypeQuery::TraceTypeQuery1,
-			                                                       false,
-			                                                       IgnoredActors,
-			                                                       EDrawDebugTrace::Type::ForOneFrame,
-			                                                       OutHitResult,
-			                                                       true
-			);
-			if (bTraced) {
-				if (OutHitResult.bBlockingHit) {
-					CurrentCoverHitResult = OutHitResult;
-
-					OutHitResult.Actor->GetActorBounds(false, CurrentCoverOrigin, CurrentCoverBoxExtend);
-					CoverLocation = OutHitResult.Location;
-					CoverNormal = OutHitResult.Normal;
-					CurrentCover = Cast<ACover>(OutHitResult.Actor);
-					if (CurrentCover) {
-						CurrentCover->SetCurrentOverlappingCharacter(this);
-						CurrentCover->TakeCover();
-						//TODO: Add anim montage And rotation Root Yaw.
-						bCoveringActive = true;
-					}
-				}
-			}
-		}
-	}
-	else {
-		if (bInCover) {
-			CurrentCover->QuitCover();
-			bCoveringActive = false;
-			CurrentCoverHitResult = FHitResult();
-			if (CurrentCoverPoint != nullptr) {
-				if (RemoveCoverPoint(CurrentCoverPoint)) {
-					CurrentCoverPoint = nullptr;
-				}
-			}
-
-			CurrentCover = nullptr;
-			// PlayMontage(ECharacterMontage::ECM_ExitCover);
-			//TODO: Add anim montage And rotation Root Yaw.
-		}
-	}
-	if (!bCoverDisable) {
-		bCoverActive = !bCoverActive;
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("CoverDisable: %s CoverActive: %s InCover: %s CanCover: %s"),
-	       bCoverDisable ? TEXT("true") : TEXT("false"),
-	       bCoverActive ? TEXT("true") : TEXT("false"),
-	       bInCover ? TEXT("true") : TEXT("false"),
-	       bCanCover ? TEXT("true") : TEXT("false"));
+	CharacterInputComponent->Cover();
 }
 
 void AMainCharacter::PeakLeft() {
@@ -878,93 +748,27 @@ void AMainCharacter::UseWeapon() {
 }
 
 void AMainCharacter::AimingButtonPressed() {
-	AMainHUD* HUD = Cast<AMainHUD>(UGameplayStatics::GetPlayerController(this, 0)->GetHUD());
-	CrossHairSpreadMulti = HUD->GetCrossHairSpreadMultiplier();
-	CrossHairSpreadMax = HUD->GetCrossHairSpreadMax();
-	CrossHairHalfHeight = HUD->GetCrossHairHalfHeight();
-	CrossHairHalfWidth = HUD->GetCrossHairHalfWidth();
-	ScreenCenter = HUD->GetScreenCenter();
-	CrossHairLocation = HUD->GetCrossHairLocation();
-	CrossHairBaseCenter = HUD->GetCrossHairBaseCenter();
-
-	bAimingButtonPressed = true;
-	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping && CombatState !=
-		ECombatState::ECS_Stunned) {
-		if (!bInCover && !bCoverActive && !bCoveringActive) {
-			Aim();
-		}
-		else {
-			if (CurrentCover)
-				CurrentCover->Aim();
-		}
-	}
+	CharacterInputComponent->AimingButtonPressed();
 }
 
 void AMainCharacter::AimingButtonReleased() {
-	bAimingButtonPressed = false;
-	if (!bInCover && !bCoverActive && !bCoveringActive) {
-		StopAiming();
-	}
-	else {
-		if (CurrentCover)
-			CurrentCover->StopAiming();
-	}
+	CharacterInputComponent->AimingButtonReleased();
 }
 
 void AMainCharacter::RunningButtonPressed(float Value) {
-	bRunning = (PoseType == EPoseType::EPT_Stand && Value > 0);
-	// UE_LOG(LogTemp, Warning, TEXT("Running %s"), bRunning ? TEXT("true") : TEXT("false"))
+	CharacterInputComponent->RunningButtonPressed(Value);
 }
 
 void AMainCharacter::RunningButtonReleased() {
-	if (PoseType == EPoseType::EPT_Stand)
-		bRunning = false;
+	CharacterInputComponent->RunningButtonReleased();
 }
 
 void AMainCharacter::ChangePoseButtonPressed(FKey Key) {
-	APlayerController* Player = UGameplayStatics::GetPlayerController(this, 0);
-	auto KeyTime = Player->GetInputKeyTimeDown(Key);
-
-	switch (PoseType) {
-	case EPoseType::EPT_Stand:
-		Crouching();
-		break;
-	case EPoseType::EPT_Crouch: {
-		Standing();
-	}
-	break;
-	case EPoseType::EPT_Crawl:
-		Crouching();
-		break;
-	case EPoseType::EPT_Run:
-		break;
-	case EPoseType::EPT_Aim:
-		break;
-	case EPoseType::EPT_Climb:
-		Climbing();
-		break;
-	case EPoseType::EPT_MAX: break;
-	default:
-		Standing();
-		break;
-	}
-
-	const TEnumAsByte<EPoseType> PoseEnum = PoseType;
-	FString EnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
-
-	UE_LOG(LogTemp, Warning, TEXT("Pose: %s, Pressed Key %s, Key Time %f Key Value"), *EnumAsString,
-	       *(Key.GetDisplayName().ToString()), KeyTime)
+	CharacterInputComponent->ChangePoseButtonPressed(Key);
 }
 
 void AMainCharacter::ChangePoseAxisButtonPressed(float Value) {
-	if (PoseAxisValueCounter > 80) {
-		Crawling();
-	}
-
-	if (Value == 0)
-		PoseAxisValueCounter = 0;
-	else
-		PoseAxisValueCounter += Value;
+	CharacterInputComponent->ChangePoseAxisButtonPressed(Value);
 
 }
 
@@ -1120,6 +924,10 @@ void AMainCharacter::Jump() {
 
 }
 
+void AMainCharacter::StopJumping() {
+	Super::StopJumping();
+}
+
 void AMainCharacter::Landed(const FHitResult& MovieSceneBlends) {
 	TimesJumped = 0;
 	Super::Landed(MovieSceneBlends);
@@ -1178,47 +986,11 @@ void AMainCharacter::AimingFieldOfView(float DeltaTime) {
 }
 
 void AMainCharacter::UseWeaponButtonPressed() {
-	bUseWeaponButtonPressed = true;
-	if (bInCover) {
-		if (bCanPeakLeft || bCanPeakRight || bCanPeakTop) {
-			if (!bAimingButtonPressed) {
-				if (bCanPeakLeft) {
-					bCoverPeakLeft = true;
-				}
-				PeakLeft();
-
-				if (bCanPeakRight) {
-					bCoverPeakRight = true;
-				}
-				PeakRight();
-
-				if (!bCoverPeakRight && !bCoverPeakLeft) {
-					if (bCanPeakTop) {
-						bCoverPeakTop = true;
-					}
-					PeakTop();
-				}
-			}
-			UseWeapon();
-		}
-	}
-	else {
-		UseWeapon();
-	}
+	CharacterInputComponent->UseWeaponButtonPressed();
 }
 
 void AMainCharacter::UseWeaponButtonReleased() {
-	bUseWeaponButtonPressed = false;
-	if (!bAimingButtonPressed) {
-		if (bCanPeakLeft || bCanPeakRight || bCanPeakTop) {
-			bCoverPeakLeft = false;
-			PeakLeft();
-			bCoverPeakRight = false;
-			PeakRight();
-			bCoverPeakTop = false;
-			PeakTop();
-		}
-	}
+	CharacterInputComponent->UseWeaponButtonReleased();
 }
 
 void AMainCharacter::StartFireTimer() {
@@ -1265,42 +1037,15 @@ void AMainCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
 }
 
 void AMainCharacter::ChangeDebugCamera() {
-
-	if (!GetCharacterMovement()->IsFalling()) {
-		DisableInput(UGameplayStatics::GetPlayerController(this, 0));
-		EyesCameraTransform = SetCameraTransform(EyesCamera, "head", true, GetMesh());
-		bSwitchToFollowCamera = !bSwitchToFollowCamera;
-		UE_LOG(LogTemp, Error, TEXT("Camera TPP: %s"), bSwitchToFollowCamera ? TEXT("true") : TEXT("false"))
-
-		if (!bSwitchToFollowCamera) {
-			FollowCameraTransform = SetCameraTransform(FollowCamera);
-			ChangeCameraTimeline->PlayFromStart();
-
-			bUseControllerRotationPitch = false;
-			bUseControllerRotationYaw = true;
-			bUseControllerRotationRoll = false;
-		}
-		else {
-			SetActiveCameras(true);
-			FollowCameraTransform = RefFollowCamera->GetComponentTransform();
-			ChangeCameraTimeline->ReverseFromEnd();
-			//TODO: Fix animation when change controller rotation Yaw to false;
-			bUseControllerRotationPitch = false;
-			bUseControllerRotationYaw = bRotationYaw;
-			bUseControllerRotationRoll = false;
-
-		}
-	}
+	CharacterInputComponent->ChangeDebugCamera();
 }
 
 void AMainCharacter::ChangeDebugTriggerRotationYaw() {
-	bRotationYaw = !bRotationYaw;
-	UE_LOG(LogTemp, Warning, TEXT("Change Debug Trigger Rotation Yaw %s"), bRotationYaw ? TEXT("true") : TEXT("false"));
+	CharacterInputComponent->ChangeDebugTriggerRotationYaw();
 }
 
 void AMainCharacter::TriggerFPSCounter() {
-	bFPSCounter = !bFPSCounter;
-	UKismetSystemLibrary::ExecuteConsoleCommand(this, "stat fps");
+	CharacterInputComponent->TriggerFPSCounter();
 }
 
 void AMainCharacter::SwitchCamera(bool bFollowCamera) {
@@ -1511,34 +1256,23 @@ void AMainCharacter::SwapWeapon(AWeapon* WeaponToSwap) {
 }
 
 void AMainCharacter::InteractButtonPressed() {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
-	if (TraceHitItem) {
-		TraceHitItem->InteractWithItem(this);
-		TraceHitItem = nullptr;
-	}
+	CharacterInputComponent->InteractButtonPressed();
 }
 
 void AMainCharacter::InventoryButtonPressed() {
-	CharacterInventoryComponent->InventoryToggle();
+	CharacterInputComponent->InventoryButtonPressed();
 }
 
 void AMainCharacter::PauseButtonPressed() {
-	UE_LOG(LogTemp, Warning, TEXT("Pause Button"));
-	if (!CharacterInventoryComponent->QuitActionButtonPressed()) {
-		bPauseMenuButtonPressed = !bPauseMenuButtonPressed;
-		CharacterPauseMenuComponent->PauseMenuToggle();
-	}
+	CharacterInputComponent->PauseButtonPressed();
 }
 
 void AMainCharacter::DebugDropItem() {
-	DropItem(EquippedWeapon);
-	SetEquippedWeapon(nullptr);
-	UE_LOG(LogTemp, Warning, TEXT("Item Dropped"));
+	CharacterInputComponent->DebugDropItem();
 }
 
 void AMainCharacter::QuickSelectButtonPressed(float Value) {
-	// CharacterInventoryComponent->QuickSelectToggle(Value > 0.0f);
-	CharacterInventoryComponent->QuickSelectPieToggle(Value > 0.0f);
+	CharacterInputComponent->QuickSelectButtonPressed(Value);
 }
 
 void AMainCharacter::SphereOverlapBegin(FGuid Guid) {

@@ -50,4 +50,8 @@ public:
 	void SetPauseMenuVisibility(bool bInVisibility) {
 		bPauseMenuVisible = bInVisibility;
 	}
+
+	bool GetPauseMenuVisibility() {
+		return bPauseMenuVisible ;
+	}
 };

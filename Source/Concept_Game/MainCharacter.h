@@ -127,6 +127,7 @@ public:
 	void ChangePoseAxisButtonPressed(float Value);
 
 	void Jump() override;
+	void StopJumping() override;
 
 	virtual void Landed(const FHitResult& Hit) override;
 
@@ -271,6 +272,8 @@ protected:
 	void OnCameraTimelineFinished();
 
 private:
+	friend class UMainCharacterInputComponent;
+
 	UFUNCTION()
 	void UpdateClimbingTransitionTimeline(float Output);
 
