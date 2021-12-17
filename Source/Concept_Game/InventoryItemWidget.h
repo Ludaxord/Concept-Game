@@ -31,7 +31,14 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget Properties", meta = (AllowPrivateAccess = "true"))
 	FVector2D Size;
+
 public:
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	//
+	// virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	//
+	// virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
+
 	FORCEINLINE void SetTileSize(float InTileSize) {
 		TileSize = InTileSize;
 	}

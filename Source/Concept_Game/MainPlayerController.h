@@ -15,6 +15,8 @@ class CONCEPT_GAME_API AMainPlayerController : public APlayerController {
 public:
 	AMainPlayerController();
 
+	void SetInputModeGameOnly(bool InConsumeCaptureMouseDown);
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -7,6 +7,7 @@
 #include "InventoryComponent.h"
 #include "MainCharacter.h"
 #include "MainHUD.h"
+#include "MainPlayerController.h"
 #include "PauseMenuComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -328,6 +329,7 @@ void UMainCharacterInputComponent::Jump() {
 }
 
 void UMainCharacterInputComponent::UseWeaponButtonPressed() {
+	UE_LOG(LogTemp, Warning, TEXT("UseWeaponButtonPressed"));
 	if (UseWeaponPressedBlocked()) {
 		return;
 	}
@@ -361,6 +363,7 @@ void UMainCharacterInputComponent::UseWeaponButtonPressed() {
 }
 
 void UMainCharacterInputComponent::UseWeaponButtonReleased() {
+	UE_LOG(LogTemp, Warning, TEXT("UseWeaponButtonReleased"));
 	if (UseWeaponReleasedBlocked()) {
 		return;
 	}
@@ -487,6 +490,7 @@ bool UMainCharacterInputComponent::UseWeaponPressedBlocked() {
 	}
 
 	if (OwningCharacter->CharacterInventoryComponent->GetInventoryVisible()) {
+		OwningCharacter->CharacterInventoryComponent->MouseButtonPressed();
 		return true;
 	}
 

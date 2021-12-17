@@ -3,10 +3,18 @@
 
 #include "InventoryComponent.h"
 
+#include "InventoryGridWidget.h"
+#include "InventoryItemWidget.h"
 #include "InventoryWidget.h"
 #include "MainCharacter.h"
+#include "MainPlayerController.h"
 #include "PieMenu.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Border.h"
+#include "Components/CanvasPanel.h"
+#include "Components/Overlay.h"
+#include "Components/PanelSlot.h"
+#include "Components/VerticalBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetArrayLibrary.h"
 
@@ -33,13 +41,19 @@ void UInventoryComponent::QuickSelectInteract() {
 	if (bQuickSelectVisible) {
 		if (QuickSelectPieWidget) {
 			if (bQuickSelectVisibleRef != bQuickSelectVisible) {
-				UGameplayStatics::GetPlayerController(this, 0)->
+				Cast<AMainPlayerController>(OwningCharacter->GetController())->
 					SetMouseLocation(GetViewportCenter().X, GetViewportCenter().Y);
-				// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
-				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
-				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
-				// UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(UGameplayStatics::GetPlayerController(this, 0),
-				// QuickSelectPieWidget);
+				// Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = true;
+				Cast<AMainPlayerController>(OwningCharacter->GetController())->ClientIgnoreMoveInput(true);
+				Cast<AMainPlayerController>(OwningCharacter->GetController())->ClientIgnoreLookInput(true);
+				// UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(UGameplayStatics::GetPlayerController(this, 0),
+				//                                                QuickSelectPieWidget);
+				UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(
+					Cast<AMainPlayerController>(OwningCharacter->GetController()),
+					QuickSelectPieWidget);
+				Cast<AMainPlayerController>(OwningCharacter->GetController())->
+					SetInputModeGameOnly(false);
+
 				QuickSelectPieWidget->SetSectorsToPieMenuWidget();
 				bQuickSelectVisibleRef = bQuickSelectVisible;
 			}
@@ -52,10 +66,11 @@ void UInventoryComponent::QuickSelectInteract() {
 	else {
 		if (QuickSelectPieWidget) {
 			if (bQuickSelectVisibleRef != bQuickSelectVisible) {
-				// UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
-				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
-				UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
-				// UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(this, 0));
+				// Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = false;
+				Cast<AMainPlayerController>(OwningCharacter->GetController())->ClientIgnoreMoveInput(false);
+				Cast<AMainPlayerController>(OwningCharacter->GetController())->ClientIgnoreLookInput(false);
+				UWidgetBlueprintLibrary::SetInputMode_GameOnly(
+					Cast<AMainPlayerController>(OwningCharacter->GetController()));
 				bQuickSelectVisibleRef = bQuickSelectVisible;
 			}
 
@@ -76,21 +91,34 @@ void UInventoryComponent::InventoryInteract() {
 	UE_LOG(LogTemp, Warning, TEXT("InventoryInteract"));
 	if (InventoryWidget) {
 		if (bInventoryVisible) {
-			UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(UGameplayStatics::GetPlayerController(this, 0),
-			                                                  InventoryWidget);
-			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+			FInputModeGameAndUI InputMode = FInputModeGameAndUI();
+			InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+			Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = true;
+			Cast<AMainPlayerController>(OwningCharacter->GetController())->SetInputMode(InputMode);
+			// UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(Cast<AMainPlayerController>(OwningCharacter->GetController()),
+			//                                                   InventoryWidget);
+			// Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = true;
+			// 	Cast<AMainPlayerController>(OwningCharacter->GetController())->
+			// 		SetInputModeGameOnly(false);
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
 			InventoryWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 			InventoryWidget->SetAlignmentInViewport(GetViewportCenter());
 		}
 		else {
-			UWidgetBlueprintLibrary::SetInputMode_GameOnly(UGameplayStatics::GetPlayerController(this, 0));
-			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+			Cast<AMainPlayerController>(OwningCharacter->GetController())->SetInputMode(FInputModeGameOnly());
+			Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = false;
+			// UWidgetBlueprintLibrary::SetInputMode_GameOnly(Cast<AMainPlayerController>(OwningCharacter->GetController()));
+			// Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = false;
+			// 	Cast<AMainPlayerController>(OwningCharacter->GetController())->
+			// 		SetInputModeGameOnly(true);
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
 			InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
+	}
+	else {
+		Cast<AMainPlayerController>(OwningCharacter->GetController())->SetInputMode(FInputModeGameOnly());
 	}
 }
 
@@ -150,6 +178,42 @@ void UInventoryComponent::CreateInventoryWidget(UInventoryWidget* InInventoryWid
 	InventoryWidget->SetOwnerInventoryComponent(this);
 	InventoryWidget->AddToViewport();
 	InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UInventoryComponent::MouseButtonPressed() {
+	InventoryWidget->SetFocus();
+	// if (UCanvasPanel* OverlayWidget = Cast<UCanvasPanel>(InventoryWidget->GetRootWidget())) {
+	// 	int32 ChildrenCount = OverlayWidget->GetChildrenCount();
+	// 	for (int i = 0; i < ChildrenCount; i++) {
+	// 		if (UInventoryGridWidget* InvGridWidget = Cast<UInventoryGridWidget>(OverlayWidget->GetChildAt(i))) {
+	// 			if (UCanvasPanel* CanvasWidget = Cast<UCanvasPanel>(InvGridWidget->GetRootWidget())) {
+	// 				for (int j = 0; j < CanvasWidget->GetChildrenCount(); j++) {
+	// 					if (UBorder* BorderWidget = Cast<UBorder>(CanvasWidget->GetChildAt(j))) {
+	// 						for (int k = 0; k < BorderWidget->GetChildrenCount(); k++) {
+	// 							if (UCanvasPanel* CanvasPanelWidget = Cast<UCanvasPanel>(BorderWidget->GetChildAt(k))) {
+	// 								for (int n = 0; n < CanvasPanelWidget->GetChildrenCount(); n++) {
+	// 									if (UInventoryItemWidget* InvItemWidget = Cast<UInventoryItemWidget>(
+	// 										CanvasPanelWidget->GetChildAt(n))) {
+	// 										InvItemWidget->SetFocus();
+	// 										UE_LOG(LogTemp, Warning,
+	// 										       TEXT(
+	// 											       "GetChild: %s GetChildOfChild: %s GetChildOfChildOfChild: %s InvItemWidget: %s"
+	// 										       ),
+	// 										       *OverlayWidget->GetChildAt(i)->GetName(),
+	// 										       *CanvasWidget->GetChildAt(j)->GetName(),
+	// 										       *BorderWidget->GetChildAt(k)->GetName(),
+	// 										       *InvItemWidget->GetName()
+	// 										);
+	// 									}
+	// 								}
+	// 							}
+	// 						}
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 TMap<AItem*, FInventoryTile> UInventoryComponent::GetInventoryItems() {

@@ -54,6 +54,8 @@ void UInventoryGridWidget::RefreshWidget(TSubclassOf<UInventoryItemWidget> Widge
 			// UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(PanelSlot);
 			Cast<UCanvasPanelSlot>(PanelSlot)->SetAutoSize(true);
 			Cast<UCanvasPanelSlot>(PanelSlot)->SetPosition({TileValue->X * TileSize, TileValue->Y * TileSize});
+			ItemWidget->SetFocus();
+			ItemWidget->bIsFocusable = true;
 		}
 	}
 }

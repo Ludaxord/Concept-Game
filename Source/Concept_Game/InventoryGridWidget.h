@@ -34,6 +34,8 @@ private:
 	void DrawLines(FPaintContext Context);
 
 private:
+	friend class UInventoryComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Component", meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* OwnerInventoryComponent;
 

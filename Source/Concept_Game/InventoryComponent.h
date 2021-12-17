@@ -139,6 +139,8 @@ public:
 		InventoryRows = InRows;
 	}
 
+	void MouseButtonPressed();
+
 	TMap<AItem*, FInventoryTile> GetInventoryItems();
 
 	FInventoryTile IndexToTile(int Index) const;
