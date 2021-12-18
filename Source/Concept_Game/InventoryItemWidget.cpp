@@ -13,9 +13,9 @@
 #include "Kismet/KismetMathLibrary.h"
 
 void UInventoryItemWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) {
-	UE_LOG(LogTemp, Error, TEXT("NativeOnMouseEnter"))
+	UE_LOG(LogTemp, Error, TEXT("NativeOnMouseEnter213123"))
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
-	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseEnter"))
+	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseEnter123123"))
 }
 
 void UInventoryItemWidget::Refresh(UImage* InItemImage, USizeBox* InBackgroundSizeBox,

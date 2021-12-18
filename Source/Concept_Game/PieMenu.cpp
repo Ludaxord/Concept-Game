@@ -39,8 +39,8 @@ void UPieMenu::UpdatePieMenuSector() {
 		PieMenuMaterialInstance->SetScalarParameterValue("SearchAngle", GetProperRotation());
 		CurrentSectorAngle = GetCurrentSector(GetProperRotation());
 		PieMenuMaterialInstance->SetScalarParameterValue("ActiveAngle", CurrentSectorAngle);
-		UE_LOG(LogTemp, Error, TEXT("ActiveAngle ProperRot %f CurrentSectorAngle %f"), GetProperRotation(),
-		       CurrentSectorAngle)
+		// UE_LOG(LogTemp, Error, TEXT("ActiveAngle ProperRot %f CurrentSectorAngle %f"), GetProperRotation(),
+		//        CurrentSectorAngle)
 	}
 }
 

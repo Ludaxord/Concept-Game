@@ -13,7 +13,8 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 
-void UInventoryGridWidget::Create(UInventoryComponent* InInventoryComponent, float InTileSize,
+void UInventoryGridWidget::Create(UInventoryComponent* InInventoryComponent,
+                                  float InTileSize,
                                   UBorder* InInventoryGridBorder,
                                   UCanvasPanel* InInventoryCanvasPanel) {
 	InventoryGridWidgetRef = this;
@@ -46,9 +47,15 @@ void UInventoryGridWidget::RefreshWidget(TSubclassOf<UInventoryItemWidget> Widge
 		for (AItem* Key : ItemKeys) {
 			FInventoryTile* TileValue = InventoryItemsMap.Find(Key);
 			UInventoryItemWidget* ItemWidget = CreateWidget<UInventoryItemWidget>(GetWorld(), WidgetSubclass);
+			ItemWidget->bIsFocusable;
+			ItemWidget->SetFocus();
 			ItemWidget->SetItem(Key);
 			ItemWidget->SetTileSize(TileSize);
-			UE_LOG(LogTemp, Warning, TEXT("New Widget Created: %s, Widget Item: %s"), *ItemWidget->GetName(), *ItemWidget->GetItem()->GetName())
+			FPointerEvent Event = {};
+			// ItemWidget->NativeOnMouseEnter(ItemWidget->GetCachedGeometry(), Event);
+			// ItemWidget->OnMouseEnter(ItemWidget->GetCachedGeometry(), Event);
+			UE_LOG(LogTemp, Warning, TEXT("New Widget Created: %s, Widget Item: %s"), *ItemWidget->GetName(),
+			       *ItemWidget->GetItem()->GetName())
 			//TODO: Add OnRemoved Bind Event Function
 			UPanelSlot* PanelSlot = InventoryCanvasPanel->AddChild(ItemWidget);
 			// UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(PanelSlot);

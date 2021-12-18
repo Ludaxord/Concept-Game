@@ -182,7 +182,7 @@ public:
 	void CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget);
 
 	UFUNCTION(BlueprintCallable)
-	void CreateInventoryWidget(UInventoryWidget* InInventoryWidget);
+	void CreateInventoryWidget(UInventoryWidget* InInventoryWidget, class UInventoryGridWidget* InInventoryGridWidget);
 
 	FORCEINLINE bool GetQuickSelectVisibility() const {
 		return bQuickSelectVisible;

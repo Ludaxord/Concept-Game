@@ -33,6 +33,7 @@ private:
 	FVector2D Size;
 
 public:
+	UFUNCTION(BlueprintCallable)
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	//
 	// virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
