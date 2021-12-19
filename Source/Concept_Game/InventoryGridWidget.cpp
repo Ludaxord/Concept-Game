@@ -63,8 +63,13 @@ void UInventoryGridWidget::RefreshWidget(TSubclassOf<UInventoryItemWidget> Widge
 			Cast<UCanvasPanelSlot>(PanelSlot)->SetPosition({TileValue->X * TileSize, TileValue->Y * TileSize});
 			ItemWidget->SetFocus();
 			ItemWidget->bIsFocusable = true;
+			InventoryItemWidgets.Add(ItemWidget);
 		}
 	}
+}
+
+TArray<UInventoryItemWidget*> UInventoryGridWidget::RefreshGrid() {
+	return {};
 }
 
 void UInventoryGridWidget::BindInventoryComponentEvents(TSubclassOf<UInventoryItemWidget> WidgetSubclass) {

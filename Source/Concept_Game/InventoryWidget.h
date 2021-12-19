@@ -21,11 +21,23 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Component", meta = (AllowPrivateAccess = "true"))
 	class UInventoryGridWidget* InventoryGridWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Component", meta = (AllowPrivateAccess = "true"))
+	class UBorder* BackgroundBorder;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget Properties", meta = (AllowPrivateAccess = "true"))
 	float TileSize;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Widgets", meta = (AllowPrivateAccess = "true"))
+	FOnPointerEvent MouseDownEvent;
+
 public:
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	UFUNCTION(BlueprintCallable)
+	void CreateOnMouseDownEvent();
+
+	UFUNCTION()
+	FEventReply OnMouseDownEvent(FGeometry Geometry, const FPointerEvent& Event);
 
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerInventoryComponent(UInventoryComponent* InOwnerInventoryComponent) {
@@ -35,5 +47,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetInventoryGridWidget(class UInventoryGridWidget* InInventoryGridWidget) {
 		InventoryGridWidget = InInventoryGridWidget;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetBackgroundBorder(UBorder* InBackgroundBorder) {
+		BackgroundBorder = InBackgroundBorder;
 	}
 };

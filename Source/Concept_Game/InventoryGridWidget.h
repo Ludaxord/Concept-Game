@@ -26,6 +26,9 @@ private:
 	void RefreshWidget(TSubclassOf<class UInventoryItemWidget> WidgetSubclass);
 
 	UFUNCTION(BlueprintCallable)
+	TArray<UInventoryItemWidget*> RefreshGrid();
+
+	UFUNCTION(BlueprintCallable)
 	void BindInventoryComponentEvents(TSubclassOf<UInventoryItemWidget> WidgetSubclass);
 
 	void CreateLineSegments();
@@ -53,5 +56,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widget Properties", meta = (AllowPrivateAccess = "true"))
 	UInventoryGridWidget* InventoryGridWidgetRef;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widget Properties", meta = (AllowPrivateAccess = "true"))
+	TArray<UInventoryItemWidget*> InventoryItemWidgets;
 
 };
