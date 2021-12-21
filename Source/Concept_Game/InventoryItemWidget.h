@@ -9,6 +9,10 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemovedWidget, class AItem*, Item);
+
+
 UCLASS()
 class CONCEPT_GAME_API UInventoryItemWidget : public UUserWidget {
 	GENERATED_BODY()
@@ -33,6 +37,9 @@ private:
 	FVector2D Size;
 
 public:
+	UPROPERTY(BlueprintCallable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FOnItemRemovedWidget OnItemRemovedWidgetDelegate;
+
 	UFUNCTION(BlueprintCallable)
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	//
