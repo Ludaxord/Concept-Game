@@ -42,6 +42,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnItemMouseButton(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 	//
 	// virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 	//

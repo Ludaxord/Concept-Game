@@ -48,6 +48,8 @@ public:
 
 	virtual void InventoryInteract();
 
+	virtual void RemoveGridItem(class AItem* InItem);
+
 	//TODO: Move to some base class to remove duplicates
 	UFUNCTION(BlueprintCallable)
 	FVector2D GetViewportCenter();
@@ -174,6 +176,8 @@ public:
 	void SetToQuickSelect(AItem* InventoryItem);
 
 	void RemoveFromQuickSelect(AItem* InventoryItem);
+
+	void CallInventoryInteraction(FPointerEvent Event, UInventoryItemWidget* Widget, FKey Key);
 
 	UFUNCTION(BlueprintCallable)
 	void RefreshInventoryWidget();

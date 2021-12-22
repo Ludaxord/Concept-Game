@@ -18,6 +18,10 @@ void UInventoryItemWidget::NativeOnMouseEnter(const FGeometry& InGeometry, const
 	UE_LOG(LogTemp, Warning, TEXT("NativeOnMouseEnter123123"))
 }
 
+void UInventoryItemWidget::OnItemMouseButton(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) {
+	UE_LOG(LogTemp, Error, TEXT("OnItemMouseButton"))
+}
+
 void UInventoryItemWidget::Refresh(UImage* InItemImage, USizeBox* InBackgroundSizeBox,
                                    UBorder* InBackgroundBorder) {
 	ItemImage = InItemImage;

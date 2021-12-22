@@ -26,6 +26,9 @@ private:
 	void RefreshWidget(TSubclassOf<class UInventoryItemWidget> WidgetSubclass);
 
 	UFUNCTION(BlueprintCallable)
+	TArray<AItem*> GetInventoryWidgetItems();
+
+	UFUNCTION(BlueprintCallable)
 	void OnItemOnGridRemoved(class AItem* InItem);
 
 	UFUNCTION(BlueprintCallable)

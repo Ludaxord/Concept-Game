@@ -46,6 +46,7 @@ void UInventoryGridWidget::RefreshWidget(TSubclassOf<UInventoryItemWidget> Widge
 		UE_LOG(LogTemp, Error, TEXT("Refreshing Grid... of Items: %i"), ItemKeys.Num())
 		for (AItem* Key : ItemKeys) {
 			FInventoryTile* TileValue = InventoryItemsMap.Find(Key);
+			//TODO: 
 			UInventoryItemWidget* ItemWidget = CreateWidget<UInventoryItemWidget>(GetWorld(), WidgetSubclass);
 			ItemWidget->bIsFocusable;
 			ItemWidget->SetFocus();
@@ -69,8 +70,22 @@ void UInventoryGridWidget::RefreshWidget(TSubclassOf<UInventoryItemWidget> Widge
 	}
 }
 
+TArray<AItem*> UInventoryGridWidget::GetInventoryWidgetItems() {
+	TArray<AItem*> ItemKeys;
+	if (OwnerInventoryComponent) {
+		InventoryCanvasPanel->ClearChildren();
+		TMap<AItem*, FInventoryTile> InventoryItemsMap = OwnerInventoryComponent->GetInventoryItems();
+		InventoryItemsMap.GetKeys(ItemKeys);
+	}
+
+	return ItemKeys;
+}
+
 void UInventoryGridWidget::OnItemOnGridRemoved(AItem* InItem) {
 	UE_LOG(LogTemp, Warning, TEXT("UInventoryGridWidget::OnItemOnGridRemoved"))
+	if (OwnerInventoryComponent) {
+		OwnerInventoryComponent->RemoveGridItem(InItem);
+	}
 }
 
 TArray<UInventoryItemWidget*> UInventoryGridWidget::RefreshGrid() {
