@@ -28,16 +28,17 @@ private:
 	float TileSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Widgets", meta = (AllowPrivateAccess = "true"))
-	FOnPointerEvent MouseDownEvent;
+	FOnInputAction MouseDownEvent;
 
 public:
-	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-
 	UFUNCTION(BlueprintCallable)
 	void CreateOnMouseDownEvent();
 
-	UFUNCTION()
-	FEventReply OnMouseDownEvent(FGeometry Geometry, const FPointerEvent& Event);
+	UFUNCTION(BlueprintCallable)
+	void OnMouseDownEvent();
+
+	UFUNCTION(BlueprintCallable)
+	FEventReply OnMouseDownEventCallable(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerInventoryComponent(UInventoryComponent* InOwnerInventoryComponent) {

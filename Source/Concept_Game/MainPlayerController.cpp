@@ -25,4 +25,5 @@ void AMainPlayerController::SetInputModeGameOnly(bool InConsumeCaptureMouseDown)
 	InputMode.SetConsumeCaptureMouseDown(
 		InConsumeCaptureMouseDown);
 	SetInputMode(InputMode);
+
 }

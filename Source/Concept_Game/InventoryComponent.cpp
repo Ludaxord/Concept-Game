@@ -3,6 +3,7 @@
 
 #include "InventoryComponent.h"
 
+#include "BaseHUDComponent.h"
 #include "InventoryGridWidget.h"
 #include "InventoryItemWidget.h"
 #include "InventoryWidget.h"
@@ -91,37 +92,44 @@ void UInventoryComponent::InventoryInteract() {
 	UE_LOG(LogTemp, Warning, TEXT("InventoryInteract"));
 	if (InventoryWidget) {
 		if (bInventoryVisible) {
+			OwningCharacter->GetCharacterBaseHUDComponent()->SetBaseHUDVisibility(false);
 			FInputModeGameAndUI InputMode = FInputModeGameAndUI();
 			// InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
-			Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = true;
 			// Cast<AMainPlayerController>(OwningCharacter->GetController())->SetInputMode(InputMode);
 			/////
-			// UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(
-			// Cast<AMainPlayerController>(OwningCharacter->GetController()), InventoryWidget,
-			// EMouseLockMode::DoNotLock, false);
+			UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(
+				Cast<AMainPlayerController>(OwningCharacter->GetController()), InventoryWidget,
+				EMouseLockMode::DoNotLock, false);
 			/////
 
-			UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(
-				Cast<AMainPlayerController>(OwningCharacter->GetController()), InventoryWidget,
-				EMouseLockMode::DoNotLock);
-			// Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = true;
-			// 	Cast<AMainPlayerController>(OwningCharacter->GetController())->
-			// 		SetInputModeGameOnly(false);
+			InventoryWidget->SetInputActionPriority(9999);
+			// UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(
+			// Cast<AMainPlayerController>(OwningCharacter->GetController()), InventoryWidget,
+			// EMouseLockMode::DoNotLock);
+			/////
+
+			Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = true;
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(true);
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(true);
 			InventoryWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 			InventoryWidget->SetAlignmentInViewport(GetViewportCenter());
+			InventoryWidget->ListenForInputAction(TEXT("UseWeapon"), IE_Pressed, true, InventoryWidget->MouseDownEvent);
 		}
 		else {
+			OwningCharacter->GetCharacterBaseHUDComponent()->SetBaseHUDVisibility(true);
+			InventoryWidget->SetInputActionPriority(-999);
 			// Cast<AMainPlayerController>(OwningCharacter->GetController())->SetInputMode(FInputModeGameOnly());
 			Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = false;
 			UWidgetBlueprintLibrary::SetInputMode_GameOnly(
 				Cast<AMainPlayerController>(OwningCharacter->GetController()));
 			// Cast<AMainPlayerController>(OwningCharacter->GetController())->bShowMouseCursor = false;
-			Cast<AMainPlayerController>(OwningCharacter->GetController())->SetInputModeGameOnly(true);
+			Cast<AMainPlayerController>(OwningCharacter->GetController())->
+				SetInputModeGameOnly(false);
+
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreMoveInput(false);
 			// UGameplayStatics::GetPlayerController(this, 0)->ClientIgnoreLookInput(false);
 			InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
+			InventoryWidget->StopListeningForInputAction(TEXT("UseWeapon"), IE_Pressed);
 		}
 	}
 	else {
@@ -189,11 +197,10 @@ void UInventoryComponent::CreateInventoryWidget(UInventoryWidget* InInventoryWid
 	InventoryWidget = InInventoryWidget;
 	InventoryWidget->SetOwnerInventoryComponent(this);
 	InventoryWidget->CreateOnMouseDownEvent();
-	InventoryWidget->AddToViewport(999);
+	InventoryWidget->AddToViewport();
 	InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 	InventoryWidget->SetInventoryGridWidget(InInventoryGridWidget);
 	InventoryWidget->SetBackgroundBorder(InBackgroundBorder);
-	InventoryWidget->BackgroundBorder->OnMouseButtonDownEvent = InventoryWidget->MouseDownEvent;
 }
 
 void UInventoryComponent::MouseButtonPressed() {
@@ -201,51 +208,8 @@ void UInventoryComponent::MouseButtonPressed() {
 	for (UInventoryItemWidget* Widget : InventoryWidget->InventoryGridWidget->InventoryItemWidgets) {
 		Widget->SetFocus();
 		Widget->SetVisibility(ESlateVisibility::HitTestInvisible);
-		UE_LOG(LogTemp, Warning, TEXT("Widget: %s Has Capture: %s Is Hovered: %s"), *Widget->GetName(),
-		       Widget->HasMouseCapture() ? TEXT("true") : TEXT("false"),
-		       Widget->IsHovered() ? TEXT("true") : TEXT("false"))
 	}
-	InventoryWidget->InventoryGridWidget->SetFocus();
-	if (UCanvasPanel* OverlayWidget = Cast<UCanvasPanel>(InventoryWidget->GetRootWidget())) {
-		int32 ChildrenCount = OverlayWidget->GetChildrenCount();
-		for (int i = 0; i < ChildrenCount; i++) {
-			if (UInventoryGridWidget* InvGridWidget = Cast<UInventoryGridWidget>(OverlayWidget->GetChildAt(i))) {
-				if (UCanvasPanel* CanvasWidget = Cast<UCanvasPanel>(InvGridWidget->GetRootWidget())) {
-					for (int j = 0; j < CanvasWidget->GetChildrenCount(); j++) {
-						if (UBorder* BorderWidget = Cast<UBorder>(CanvasWidget->GetChildAt(j))) {
-							for (int k = 0; k < BorderWidget->GetChildrenCount(); k++) {
-								if (UCanvasPanel* CanvasPanelWidget = Cast<UCanvasPanel>(BorderWidget->GetChildAt(k))) {
-									for (int n = 0; n < CanvasPanelWidget->GetChildrenCount(); n++) {
-										if (UInventoryItemWidget* InvItemWidget = Cast<UInventoryItemWidget>(
-											CanvasPanelWidget->GetChildAt(n))) {
-											InvItemWidget->bIsFocusable = true;
-											InvItemWidget->SetFocus();
-											FPointerEvent Event = {};
-											// InvItemWidget->
-											// 	NativeOnMouseEnter(InvItemWidget->GetCachedGeometry(), Event);
-											// InvItemWidget->OnMouseEnter(InvItemWidget->GetCachedGeometry(), Event);
-											InvItemWidget->OnMouseButtonDown(InvItemWidget->GetCachedGeometry(), Event);
-											CallInventoryInteraction(Event, InvItemWidget, FKey("LeftMouseButton"));
-											UE_LOG(LogTemp, Warning,
-											       TEXT(
-												       "GetChild: %s GetChildOfChild: %s GetChildOfChildOfChild: %s InvItemWidget: %s InvItemWidget->HasMouseCapture(): %s"
-											       ),
-											       *OverlayWidget->GetChildAt(i)->GetName(),
-											       *CanvasWidget->GetChildAt(j)->GetName(),
-											       *BorderWidget->GetChildAt(k)->GetName(),
-											       *InvItemWidget->GetName(),
-											       InvItemWidget->HasMouseCapture() ? TEXT("true") : TEXT("false")
-											);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+
 }
 
 TMap<AItem*, FInventoryTile> UInventoryComponent::GetInventoryItems() {

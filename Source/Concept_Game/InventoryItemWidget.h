@@ -18,6 +18,9 @@ class CONCEPT_GAME_API UInventoryItemWidget : public UUserWidget {
 	GENERATED_BODY()
 
 private:
+	friend class UInventoryGridWidget;
+	friend class UInventoryWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget Properties", meta = (AllowPrivateAccess = "true"))
 	float TileSize;
 
@@ -36,19 +39,23 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget Properties", meta = (AllowPrivateAccess = "true"))
 	FVector2D Size;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Widgets", meta = (AllowPrivateAccess = "true"))
+	FOnInputAction OnMouseEnterEvent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Widgets", meta = (AllowPrivateAccess = "true"))
+	FOnInputAction OnMouseLeaveEvent;
 public:
 	UPROPERTY(BlueprintCallable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FOnItemRemovedWidget OnItemRemovedWidgetDelegate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Widgets", meta = (AllowPrivateAccess = "true"))
+	FOnInputAction MouseDownEvent;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnItemMouseButton(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
-	//
-	// virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-	//
-	// virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 
 	FORCEINLINE void SetTileSize(float InTileSize) {
 		TileSize = InTileSize;
@@ -69,4 +76,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIconImage(class UMaterialInstance* Icon);
+
+	void CreateEvents();
+
+	UFUNCTION(BlueprintCallable)
+	void OnDragItem();
 };

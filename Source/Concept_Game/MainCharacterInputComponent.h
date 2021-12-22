@@ -49,6 +49,7 @@ public:
 	void TriggerFPSCounter();
 	void InteractButtonPressed();
 	void InventoryButtonPressed();
+	void DebugWidgetButtonPressed();
 	void PauseButtonPressed();
 	void DebugDropItem();
 	void QuickSelectButtonPressed(float Value);

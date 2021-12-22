@@ -55,7 +55,7 @@ void UPauseMenuComponent::PauseVisibilityState() {
 void UPauseMenuComponent::PauseMenuToggle() {
 	if (OwningCharacter) {
 		bPauseMenuVisible = !bPauseMenuVisible;
-		UE_LOG(LogTemp, Warning, TEXT("Inventory Toggle"));
+		UE_LOG(LogTemp, Warning, TEXT("Pause Toggle"));
 	}
 
 	if (PauseMenuWidget) {

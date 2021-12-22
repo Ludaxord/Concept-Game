@@ -835,6 +835,9 @@ private:
 	class UQuestComponent* CharacterQuestComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UDebugWidgetComponent* DebugWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UDialogComponent* CharacterDialogComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
@@ -859,6 +862,10 @@ public:
 
 	UShootingComponent* GetCharacterShootingComponent() {
 		return CharacterShootingComponent;
+	};
+
+	UBaseHUDComponent* GetCharacterBaseHUDComponent() {
+		return CharacterBaseHUDComponent;
 	};
 
 	UMeleeComponent* GetCharacterMeleeComponent() {

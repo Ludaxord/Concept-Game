@@ -52,12 +52,12 @@ void UInventoryGridWidget::RefreshWidget(TSubclassOf<UInventoryItemWidget> Widge
 			ItemWidget->SetFocus();
 			ItemWidget->SetItem(Key);
 			ItemWidget->SetTileSize(TileSize);
-			FPointerEvent Event = {};
+			ItemWidget->CreateEvents();
+
+			// FPointerEvent Event = {};
 			// ItemWidget->NativeOnMouseEnter(ItemWidget->GetCachedGeometry(), Event);
 			// ItemWidget->OnMouseEnter(ItemWidget->GetCachedGeometry(), Event);
-			UE_LOG(LogTemp, Warning, TEXT("New Widget Created: %s, Widget Item: %s"), *ItemWidget->GetName(),
-			       *ItemWidget->GetItem()->GetName())
-			//TODO: Add OnRemoved Bind Event Function
+
 			ItemWidget->OnItemRemovedWidgetDelegate.AddDynamic(this, &UInventoryGridWidget::OnItemOnGridRemoved);
 			UPanelSlot* PanelSlot = InventoryCanvasPanel->AddChild(ItemWidget);
 			// UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(PanelSlot);

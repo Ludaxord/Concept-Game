@@ -49,3 +49,12 @@ void UInventoryItemWidget::SetIconImage(UMaterialInstance* Icon) {
 		// ItemImage->SetBrushFromMaterial(Icon);
 	}
 }
+
+void UInventoryItemWidget::CreateEvents() {
+	MouseDownEvent.BindDynamic(this, &UInventoryItemWidget::OnDragItem);
+
+}
+
+void UInventoryItemWidget::OnDragItem() {
+	UE_LOG(LogTemp, Warning, TEXT("UInventoryItemWidget::OnDragItem"));
+}

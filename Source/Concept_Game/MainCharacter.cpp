@@ -9,6 +9,7 @@
 
 #include "BaseHUDComponent.h"
 #include "CoverComponent.h"
+#include "DebugWidgetComponent.h"
 #include "DialogComponent.h"
 #include "DoorComponent.h"
 #include "DrawDebugHelpers.h"
@@ -131,6 +132,7 @@ AMainCharacter::AMainCharacter():
 	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
 	CharacterSkillTreeComponent = CreateDefaultSubobject<USkillTreeComponent>(TEXT("CharacterSkillTreeComponent"));
 	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
+	DebugWidgetComponent = CreateDefaultSubobject<UDebugWidgetComponent>(TEXT("DebugWidgetComponent"));
 	CharacterDialogComponent = CreateDefaultSubobject<UDialogComponent>(TEXT("CharacterDialogComponent"));
 	CharacterStealthComponent = CreateDefaultSubobject<UStealthComponent>(TEXT("CharacterStealthComponent"));
 	CharacterLockpickComponent = CreateDefaultSubobject<ULockpickComponent>(TEXT("CharacterLockpickComponent"));
@@ -1896,7 +1898,7 @@ void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 }
 
 bool AMainCharacter::GetPlayerHUDVisibility() const {
-	return !CharacterInventoryComponent->GetQuickSelectVisibility();
+	return !CharacterInventoryComponent->GetQuickSelectVisibility() && !CharacterInventoryComponent->GetInventoryVisible();
 }
 
 //Add listener on pause button click

@@ -4,6 +4,7 @@
 #include "MainCharacterInputComponent.h"
 
 #include "Cover.h"
+#include "DebugWidgetComponent.h"
 #include "InventoryComponent.h"
 #include "MainCharacter.h"
 #include "MainHUD.h"
@@ -431,6 +432,10 @@ void UMainCharacterInputComponent::InteractButtonPressed() {
 
 void UMainCharacterInputComponent::InventoryButtonPressed() {
 	OwningCharacter->CharacterInventoryComponent->InventoryToggle();
+}
+
+void UMainCharacterInputComponent::DebugWidgetButtonPressed() {
+	OwningCharacter->DebugWidgetComponent->Toggle();
 }
 
 void UMainCharacterInputComponent::PauseButtonPressed() {
