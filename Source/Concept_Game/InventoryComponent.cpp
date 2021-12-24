@@ -84,7 +84,7 @@ void UInventoryComponent::QuickSelectInteract() {
 void UInventoryComponent::InventoryToggle() {
 	if (OwningCharacter) {
 		bInventoryVisible = !bInventoryVisible;
-		InventoryInteract();
+		// InventoryInteract();
 	}
 }
 
@@ -342,7 +342,9 @@ void UInventoryComponent::CallInventoryInteraction(FPointerEvent Event, UInvento
 
 void UInventoryComponent::RefreshInventoryWidget() {
 	if (bInventoryDirty) {
-		RefreshGridWidgetDelegate.Broadcast(ItemWidgetSubclass);
+		UE_LOG(LogTemp, Warning, TEXT("Broadcasting RefreshSpatialGridWidgetDelegate"))
+		RefreshSpatialGridWidgetDelegate.Broadcast();
+		// RefreshGridWidgetDelegate.Broadcast(ItemWidgetSubclass);
 		bInventoryDirty = false;
 	}
 }

@@ -81,8 +81,9 @@ void UMainCharacterInputComponent::SetupPlayerInputComponent(UInputComponent* Pl
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this,
 	                                 &UMainCharacterInputComponent::InteractButtonPressed);
 	PlayerInputComponent->BindAction("DebugDropItem", IE_Pressed, this, &UMainCharacterInputComponent::DebugDropItem);
-	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this,
-	                                 &UMainCharacterInputComponent::InventoryButtonPressed);
+
+	//TODO: Temporary moved to blueprint, if blueprint will work recreate system in cpp
+	// PlayerInputComponent->BindAction("Inventory", IE_Pressed, this,&UMainCharacterInputComponent::InventoryButtonPressed);
 	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &UMainCharacterInputComponent::PauseButtonPressed);
 }
 

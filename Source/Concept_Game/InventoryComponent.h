@@ -29,8 +29,10 @@ struct FInventoryTile {
 	int Y;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<class UInventoryItemWidget>, WidgetSubclass)
-;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<class UInventoryItemWidget>, WidgetSubclass);
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshSpatialGridWidget);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UInventoryComponent : public UActorComponent, public IInventoryInterface {
@@ -101,6 +103,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Inventory Menu", meta = (AllowPrivateAccess = "true"))
 	class UInventoryWidget* InventoryWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Inventory Menu", meta = (AllowPrivateAccess = "true"))
+	class UUserWidget* SpatialInventoryWidget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Menu", meta = (AllowPrivateAccess = "true"))
 	int InventoryColumns;
 
@@ -116,6 +121,9 @@ private:
 public:
 	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FRefreshGridWidget RefreshGridWidgetDelegate;
+
+	UPROPERTY(EditAnywhere, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FRefreshSpatialGridWidget RefreshSpatialGridWidgetDelegate;
 
 	FORCEINLINE void SetItemWidgetSubclass(TSubclassOf<UInventoryItemWidget> InItemWidgetSubclass) {
 		ItemWidgetSubclass = InItemWidgetSubclass;
@@ -143,6 +151,7 @@ public:
 
 	void MouseButtonPressed();
 
+	UFUNCTION(BlueprintCallable)
 	TMap<AItem*, FInventoryTile> GetInventoryItems();
 
 	FInventoryTile IndexToTile(int Index) const;
@@ -159,6 +168,7 @@ public:
 
 	AItem* GetItemAtIndex(int InIndex);
 
+	UFUNCTION(BlueprintCallable)
 	bool RemoveInventoryItem(AItem* InInventoryItem);
 
 	bool RemoveInventoryItemAtLocation(int32 Index);
