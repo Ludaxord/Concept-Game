@@ -8,7 +8,9 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+class UItemProperties;
 class AMainCharacter;
+
 UENUM(BlueprintType)
 enum class EItemRarity : uint8 {
 	EIR_Unspecified UMETA(DisplayName = "Unspecified"),
@@ -160,7 +162,13 @@ public:
 	void ThrowItem();
 
 	void StopFalling();
+
+	UFUNCTION(BlueprintCallable)
+	void DropItemFromInventory(AActor* InActor, bool bGroundClamp);
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item", meta = (AllowPrivateAccess = "true"))
+	UItemProperties* ItemProperties;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	class AMainCharacter* Character;
 

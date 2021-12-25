@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AItem::AItem(): ItemName(FString("Default")),
@@ -321,6 +322,44 @@ void AItem::ThrowItem() {
 void AItem::StopFalling() {
 	bFalling = false;
 	SetItemState(EItemState::EIS_Pickup);
+}
+
+void AItem::DropItemFromInventory(AActor* InActor, bool bGroundClamp) {
+	FVector SpawnLocation = InActor->GetActorLocation() + InActor->GetActorForwardVector() * 150.0f;
+	if (bGroundClamp) {
+		TArray<AActor*> IgnoredActors;
+		FHitResult HitResult;
+		ETraceTypeQuery TraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
+		bool bHit = UKismetSystemLibrary::LineTraceSingle(this,
+		                                                  SpawnLocation,
+		                                                  SpawnLocation - FVector(0.0f, 0.0f, 1000.0f),
+		                                                  TraceType,
+		                                                  false,
+		                                                  IgnoredActors,
+		                                                  EDrawDebugTrace::ForOneFrame,
+		                                                  HitResult,
+		                                                  true,
+		                                                  FLinearColor::MakeRandomColor(),
+		                                                  FLinearColor::MakeRandomColor());
+		if (bHit || HitResult.bBlockingHit) {
+			SpawnLocation = HitResult.Location;
+
+			FRotator MeshRotation = {
+				GetItemMesh()->GetComponentRotation().Pitch,
+				GetItemMesh()->GetComponentRotation().Yaw,
+				GetItemMesh()->GetComponentRotation().Roll
+			};
+			GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+
+			bFalling = true;
+
+			SetActorLocation(SpawnLocation, false, nullptr, ETeleportType::TeleportPhysics);
+
+			StopFalling();
+
+			// GetWorldTimerManager().SetTimer(ThrowItemTimer, this, &AItem::StopFalling, ThrowItemTime);
+		}
+	}
 }
 
 UMaterialInstance* AItem::GetInventoryImageIcon() {

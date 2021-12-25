@@ -218,13 +218,13 @@ TMap<AItem*, FInventoryTile> UInventoryComponent::GetInventoryItems() {
 		if (InventoryItems.IsValidIndex(i)) {
 			AItem* InvItem = InventoryItems[i];
 			if (InvItem != nullptr)
-				UE_LOG(LogTemp, Error, TEXT("IsNotItemNull__: %s"), InvItem != nullptr ? TEXT("true") : TEXT("false"))
-			if (InvItem != nullptr) {
-				UE_LOG(LogTemp, Warning, TEXT("InventoryItem Current Item: %s Valid Index: %i"), *InvItem->GetName(), i)
-				if (!AllItems.Contains(InvItem)) {
-					AllItems.Add(InvItem, IndexToTile(i));
+				// UE_LOG(LogTemp, Error, TEXT("IsNotItemNull__: %s"), InvItem != nullptr ? TEXT("true") : TEXT("false"))
+				if (InvItem != nullptr) {
+					// UE_LOG(LogTemp, Warning, TEXT("InventoryItem Current Item: %s Valid Index: %i"), *InvItem->GetName(), i)
+					if (!AllItems.Contains(InvItem)) {
+						AllItems.Add(InvItem, IndexToTile(i));
+					}
 				}
-			}
 		}
 	}
 
@@ -288,8 +288,8 @@ bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIn
 			InventoryItems.EmplaceAt(TileToIndex(NewTile), InInventoryItem);
 			bInventoryDirty = true;
 			AItem* AddedItem = InventoryItems[TileToIndex(NewTile)];
-			UE_LOG(LogTemp, Warning, TEXT("Current Inventory Item added: %s at %i"),
-			       *AddedItem->GetName(), TileToIndex(NewTile))
+			// UE_LOG(LogTemp, Warning, TEXT("Current Inventory Item added: %s at %i"),
+			//        *AddedItem->GetName(), TileToIndex(NewTile))
 		}
 	}
 
@@ -305,6 +305,20 @@ AItem* UInventoryComponent::GetItemAtIndex(int InIndex) {
 }
 
 bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
+	if (InInventoryItem != nullptr) {
+		for (int i = 0; i <= InventoryItems.Num(); i++) {
+			if (InventoryItems.IsValidIndex(i)) {
+				if (InInventoryItem == InventoryItems[i]) {
+					InventoryItems.RemoveAt(i, 1, false);
+					bInventoryDirty = true;
+					UE_LOG(LogTemp, Warning, TEXT("Found Item To Remove: %s Still Exists: %s"),
+					       *InInventoryItem->GetName(),
+					       InventoryItems.IsValidIndex(i) ? TEXT("true") : TEXT("false"))
+				}
+			}
+		}
+	}
+
 	return false;
 }
 

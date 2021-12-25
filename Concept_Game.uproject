@@ -13,7 +13,8 @@
 				"AIModule",
 				"UMG",
 				"UMGEditor",
-				"Niagara"
+				"Niagara",
+				"CoreUObject"
 			]
 		}
 	]
