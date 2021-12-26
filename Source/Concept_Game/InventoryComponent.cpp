@@ -311,9 +311,11 @@ bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
 				if (InInventoryItem == InventoryItems[i]) {
 					InventoryItems.RemoveAt(i, 1, false);
 					bInventoryDirty = true;
-					UE_LOG(LogTemp, Warning, TEXT("Found Item To Remove: %s Still Exists: %s"),
+					UE_LOG(LogTemp, Warning, TEXT("Found Item To Remove: %s Still Exists: %s at: %i"),
 					       *InInventoryItem->GetName(),
-					       InventoryItems.IsValidIndex(i) ? TEXT("true") : TEXT("false"))
+					       InventoryItems.IsValidIndex(i) ? TEXT("true") : TEXT("false"),
+					       i
+					)
 				}
 			}
 		}

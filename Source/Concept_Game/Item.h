@@ -161,10 +161,19 @@ public:
 
 	void ThrowItem();
 
-	void StopFalling();
+	virtual void StopFalling();
 
 	UFUNCTION(BlueprintCallable)
 	void DropItemFromInventory(AActor* InActor, bool bGroundClamp);
+
+	UFUNCTION(BlueprintCallable)
+	void RotateInventoryItem();
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool IsRotated() const {
+		return bRotated;
+	};
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item", meta = (AllowPrivateAccess = "true"))
 	UItemProperties* ItemProperties;
@@ -337,7 +346,12 @@ public:
 		ItemDimensions = InItemDimensions;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	FIntPoint GetItemDimensions() {
+		if (bRotated) {
+			return {ItemDimensions.Y, ItemDimensions.X};
+		}
+
 		return ItemDimensions;
 	}
 

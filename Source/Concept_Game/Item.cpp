@@ -362,6 +362,10 @@ void AItem::DropItemFromInventory(AActor* InActor, bool bGroundClamp) {
 	}
 }
 
+void AItem::RotateInventoryItem() {
+	bRotated = !bRotated;
+}
+
 UMaterialInstance* AItem::GetInventoryImageIcon() {
 	if (bRotated) {
 		return InventoryItemIcon;

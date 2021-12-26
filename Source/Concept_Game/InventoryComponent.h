@@ -29,7 +29,8 @@ struct FInventoryTile {
 	int Y;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<class UInventoryItemWidget>, WidgetSubclass);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<class UInventoryItemWidget>, WidgetSubclass)
+;
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshSpatialGridWidget);
@@ -154,16 +155,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TMap<AItem*, FInventoryTile> GetInventoryItems();
 
+	UFUNCTION(BlueprintCallable)
 	FInventoryTile IndexToTile(int Index) const;
 
+	UFUNCTION(BlueprintCallable)
 	int TileToIndex(FInventoryTile InTile) const;
 
 	FInventoryTile OutputEachTile(AItem* InInventoryItem, int TopLeftIndex);
 
+	UFUNCTION(BlueprintCallable)
 	bool CheckInventorySpace(AItem* InInventoryItem, int TopLeftIndex);
 
+	UFUNCTION(BlueprintCallable)
 	bool TryAddInventoryItem(AItem* InInventoryItem);
 
+	UFUNCTION(BlueprintCallable)
 	bool AddInventoryItem(AItem* InInventoryItem, int TopLeftIndex);
 
 	AItem* GetItemAtIndex(int InIndex);
