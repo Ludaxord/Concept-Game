@@ -161,7 +161,7 @@ public:
 
 	void ThrowItem();
 
-	virtual void StopFalling();
+	void StopFalling();
 
 	UFUNCTION(BlueprintCallable)
 	void DropItemFromInventory(AActor* InActor, bool bGroundClamp);

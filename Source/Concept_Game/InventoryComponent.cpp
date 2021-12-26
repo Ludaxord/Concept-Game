@@ -287,7 +287,7 @@ bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIn
 			// InventoryItems[TileToIndex(NewTile)] = InInventoryItem;
 			InventoryItems.EmplaceAt(TileToIndex(NewTile), InInventoryItem);
 			bInventoryDirty = true;
-			AItem* AddedItem = InventoryItems[TileToIndex(NewTile)];
+			// AItem* AddedItem = InventoryItems[TileToIndex(NewTile)];
 			// UE_LOG(LogTemp, Warning, TEXT("Current Inventory Item added: %s at %i"),
 			//        *AddedItem->GetName(), TileToIndex(NewTile))
 		}

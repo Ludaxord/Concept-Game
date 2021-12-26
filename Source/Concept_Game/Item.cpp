@@ -357,6 +357,7 @@ void AItem::DropItemFromInventory(AActor* InActor, bool bGroundClamp) {
 
 			StopFalling();
 
+			UE_LOG(LogTemp, Warning, TEXT("Item Dropped %s"), *GetName())
 			// GetWorldTimerManager().SetTimer(ThrowItemTimer, this, &AItem::StopFalling, ThrowItemTime);
 		}
 	}
