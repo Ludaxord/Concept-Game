@@ -72,6 +72,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void SetTestWeapon();
+
 public:
 	void SetLookUpRates(float DeltaTime);
 	void CalculateCrosshairSpread(float DeltaTime);

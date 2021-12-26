@@ -159,8 +159,8 @@ void AMainCharacter::BeginPlay() {
 
 	SetDefaultCameras();
 
-	//TODO: Add Weapon and inventory (Depend on game progress)
-	EquipWeapon(SpawnDefaultWeapon());
+	SetTestWeapon();
+
 	EquippedWeapon->SetSlotIndexX(0);
 	EquippedWeapon->SetSlotIndexY(0);
 	EquippedWeapon->SetCharacter(this);
@@ -182,6 +182,18 @@ void AMainCharacter::BeginPlay() {
 	GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &AMainCharacter::CoverMontageEnded);
 
 	InCoverMoving();
+}
+
+void AMainCharacter::SetTestWeapon() {
+	AWeapon* Weapon = SpawnDefaultWeapon();
+	bool bAdded = GetCharacterInventoryComponent()->TryAddInventoryItem(Weapon);
+	UE_LOG(LogTemp, Warning, TEXT("Added Test Weapon: %s => %s"), *GetName(),
+	       bAdded ? TEXT("true") : TEXT("false"));
+	if (bAdded) {
+		// Destroy();
+		// GetWorld()->DestroyActor(this);
+		EquipWeapon(Weapon);
+	}
 }
 
 void AMainCharacter::SetLookUpRates(float DeltaTime) {
@@ -1898,7 +1910,8 @@ void AMainCharacter::CoverMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 }
 
 bool AMainCharacter::GetPlayerHUDVisibility() const {
-	return !CharacterInventoryComponent->GetQuickSelectVisibility() && !CharacterInventoryComponent->GetInventoryVisible();
+	return !CharacterInventoryComponent->GetQuickSelectVisibility() && !CharacterInventoryComponent->
+		GetInventoryVisible();
 }
 
 //Add listener on pause button click

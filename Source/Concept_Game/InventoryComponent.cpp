@@ -319,6 +319,12 @@ bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
 				}
 			}
 		}
+
+		//if player is holding dropped item, drop it (it will change pose of character)
+		if (InInventoryItem == OwningCharacter->GetEquippedWeapon()) {
+			OwningCharacter->DropItem(InInventoryItem);
+			OwningCharacter->SetEquippedWeapon(nullptr);
+		}
 	}
 
 	return false;
