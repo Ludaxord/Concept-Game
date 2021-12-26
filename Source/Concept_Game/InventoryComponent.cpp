@@ -269,8 +269,8 @@ bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLef
 bool UInventoryComponent::TryAddInventoryItem(AItem* InInventoryItem) {
 	bool bInventoryItemAdded = false;
 	for (int i = 0; i <= InventoryItems.Num(); i++) {
-		UE_LOG(LogTemp, Error, TEXT("Inventory -> %i"), i)
 		if (CheckInventorySpace(InInventoryItem, i)) {
+			UE_LOG(LogTemp, Error, TEXT("Inventory -> %i"), i)
 			return AddInventoryItem(InInventoryItem, i);
 		}
 	}
