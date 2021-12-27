@@ -84,6 +84,7 @@ void UInventoryComponent::QuickSelectInteract() {
 void UInventoryComponent::InventoryToggle() {
 	if (OwningCharacter) {
 		bInventoryVisible = !bInventoryVisible;
+		UE_LOG(LogTemp, Warning, TEXT("Inventory Visible: %s"), bInventoryVisible ? TEXT("true"): TEXT("false"))
 		// InventoryInteract();
 	}
 }

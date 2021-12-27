@@ -47,6 +47,7 @@ public:
 
 	virtual void QuickSelectInteract();
 
+	UFUNCTION(BlueprintCallable)
 	virtual void InventoryToggle();
 
 	virtual void InventoryInteract();

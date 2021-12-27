@@ -464,6 +464,7 @@ bool UMainCharacterInputComponent::AimButtonPressedBlocked() {
 	}
 
 	if (OwningCharacter->CharacterInventoryComponent->GetInventoryVisible()) {
+		UE_LOG(LogTemp, Warning, TEXT("AIM BUTTON BLOCKED"))
 		return true;
 	}
 
