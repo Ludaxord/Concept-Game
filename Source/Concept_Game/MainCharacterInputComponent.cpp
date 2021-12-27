@@ -450,7 +450,7 @@ void UMainCharacterInputComponent::PauseButtonPressed() {
 void UMainCharacterInputComponent::DebugDropItem() {
 	OwningCharacter->DropItem(OwningCharacter->EquippedWeapon);
 	OwningCharacter->SetEquippedWeapon(nullptr);
-	UE_LOG(LogTemp, Warning, TEXT("Item Dropped"));
+	// UE_LOG(LogTemp, Warning, TEXT("Item Dropped"));
 }
 
 void UMainCharacterInputComponent::QuickSelectButtonPressed(float Value) {

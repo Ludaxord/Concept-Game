@@ -177,6 +177,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool RemoveInventoryItem(AItem* InInventoryItem);
 
+	UFUNCTION(BlueprintCallable)
+	bool RemoveCurrentEquippedItem(AItem* InInventoryItem);
+
 	bool RemoveInventoryItemAtLocation(int32 Index);
 
 	AItem* GetInventoryItemAtLocation(int32 Index);

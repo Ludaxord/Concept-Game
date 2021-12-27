@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
@@ -325,42 +326,77 @@ void AItem::StopFalling() {
 }
 
 void AItem::DropItemFromInventory(AActor* InActor, bool bGroundClamp) {
-	FVector SpawnLocation = InActor->GetActorLocation() + InActor->GetActorForwardVector() * 150.0f;
-	if (bGroundClamp) {
-		TArray<AActor*> IgnoredActors;
-		FHitResult HitResult;
-		ETraceTypeQuery TraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
-		bool bHit = UKismetSystemLibrary::LineTraceSingle(this,
-		                                                  SpawnLocation,
-		                                                  SpawnLocation - FVector(0.0f, 0.0f, 1000.0f),
-		                                                  TraceType,
-		                                                  false,
-		                                                  IgnoredActors,
-		                                                  EDrawDebugTrace::ForOneFrame,
-		                                                  HitResult,
-		                                                  true,
-		                                                  FLinearColor::MakeRandomColor(),
-		                                                  FLinearColor::MakeRandomColor());
-		if (bHit || HitResult.bBlockingHit) {
-			SpawnLocation = HitResult.Location;
+	float RandomRotation = FMath::FRandRange(-200.f, 200.0f);
+	FVector SpawnLocation = InActor->GetActorLocation() + InActor->GetActorForwardVector() * RandomRotation;
 
-			FRotator MeshRotation = {
-				GetItemMesh()->GetComponentRotation().Pitch,
-				GetItemMesh()->GetComponentRotation().Yaw,
-				GetItemMesh()->GetComponentRotation().Roll
-			};
-			GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+	bool bUseGroundClamp = true;
 
-			bFalling = true;
+	if (Cast<AMainCharacter>(InActor)) {
+		UE_LOG(LogTemp, Warning, TEXT("Casting Actor to Main Character"))
+		const USkeletalMeshSocket* HandSocket = Cast<AMainCharacter>(InActor)->GetMesh()->GetSocketByName(
+			FName("RightHandSocket"));
+		FVector NewSpawnLocation = HandSocket->GetSocketLocation(Cast<AMainCharacter>(InActor)->GetMesh());
+		UE_LOG(LogTemp, Warning, TEXT("Change Spawn Location From: %s To: %s"), *SpawnLocation.ToString(),
+		       *NewSpawnLocation.ToString())
 
-			SetActorLocation(SpawnLocation, false, nullptr, ETeleportType::TeleportPhysics);
+		SpawnLocation = NewSpawnLocation;
+		bUseGroundClamp = false;
 
-			StopFalling();
-
-			UE_LOG(LogTemp, Warning, TEXT("Item Dropped %s"), *GetName())
-			// GetWorldTimerManager().SetTimer(ThrowItemTimer, this, &AItem::StopFalling, ThrowItemTime);
+		if (this == Cast<AMainCharacter>(InActor)->GetEquippedWeapon()) {
+			GetItemMesh()->DetachFromComponent({EDetachmentRule::KeepWorld, true});
+			Cast<AMainCharacter>(InActor)->SetEquippedWeapon(nullptr);
 		}
 	}
+
+	if (bUseGroundClamp) {
+		if (bGroundClamp) {
+			TArray<AActor*> IgnoredActors;
+			FHitResult HitResult;
+			ETraceTypeQuery TraceType = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility);
+			bool bHit = UKismetSystemLibrary::LineTraceSingle(this,
+			                                                  SpawnLocation,
+			                                                  SpawnLocation - FVector(0.0f, 0.0f, 1000.0f),
+			                                                  TraceType,
+			                                                  false,
+			                                                  IgnoredActors,
+			                                                  EDrawDebugTrace::ForOneFrame,
+			                                                  HitResult,
+			                                                  true,
+			                                                  FLinearColor::MakeRandomColor(),
+			                                                  FLinearColor::MakeRandomColor());
+			if (bHit || HitResult.bBlockingHit) {
+				SpawnLocation = HitResult.Location;
+			}
+		}
+	}
+
+
+	FRotator MeshRotation = {
+		GetItemMesh()->GetComponentRotation().Pitch,
+		GetItemMesh()->GetComponentRotation().Yaw,
+		GetItemMesh()->GetComponentRotation().Roll
+	};
+	GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+
+	// {
+	// 	FVector MeshForward = GetItemMesh()->GetForwardVector();
+	// 	FVector MeshRight = GetItemMesh()->GetRightVector();
+	// 	FVector ImpulseDirection = MeshRight.RotateAngleAxis(-40.0f, MeshForward);
+	//
+	// 	float RandomRot = FMath::FRandRange(0.0f, 100.0f);
+	// 	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRot, FVector(0.0f, 0.0f, 1.0f));
+	// 	ImpulseDirection *= 200.0f;
+	// 	GetItemMesh()->AddImpulse(ImpulseDirection);
+	// }
+
+	bFalling = true;
+	SetItemState(EItemState::EIS_Falling);
+
+	SetActorLocation(SpawnLocation, false, nullptr, ETeleportType::TeleportPhysics);
+
+	GetWorldTimerManager().SetTimer(ThrowItemTimer, this, &AItem::StopFalling, ThrowItemTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("Item Dropped %s"), *GetName())
 }
 
 void AItem::RotateInventoryItem() {

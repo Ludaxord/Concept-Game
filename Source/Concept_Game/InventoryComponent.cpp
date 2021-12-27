@@ -247,8 +247,8 @@ FInventoryTile UInventoryComponent::OutputEachTile(AItem* InInventoryItem, int T
 bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLeftIndex) {
 	const FIntPoint ItemDimension = InInventoryItem->GetItemDimensions();
 	const FInventoryTile Tiles = IndexToTile(TopLeftIndex);
-	UE_LOG(LogTemp, Warning, TEXT("Check Inventory Space: %s Tiles: X -> %i Y -> %i"), *ItemDimension.ToString(),
-	       Tiles.X, Tiles.Y)
+	// UE_LOG(LogTemp, Warning, TEXT("Check Inventory Space: %s Tiles: X -> %i Y -> %i"), *ItemDimension.ToString(),
+	       // Tiles.X, Tiles.Y)
 	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
 		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
 			const FInventoryTile NewTile = {i, j};
@@ -290,6 +290,7 @@ bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIn
 		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
 			const FInventoryTile NewTile = {i, j};
 			InventoryItems[TileToIndex(NewTile)] = InInventoryItem;
+			InInventoryItem->SetItemState(EItemState::EIS_Equipped);
 			// InventoryItems.EmplaceAt(TileToIndex(NewTile), InInventoryItem);
 			bInventoryDirty = true;
 			// AItem* AddedItem = InventoryItems[TileToIndex(NewTile)];
@@ -310,6 +311,7 @@ AItem* UInventoryComponent::GetItemAtIndex(int InIndex) {
 }
 
 bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
+	bool bItemRemoved = false;
 	if (InInventoryItem != nullptr) {
 		for (int i = 0; i <= InventoryItems.Num(); i++) {
 			if (InventoryItems.IsValidIndex(i)) {
@@ -317,6 +319,7 @@ bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
 					// InventoryItems.RemoveAt(i, 1, false);
 					InventoryItems[i] = nullptr;
 					bInventoryDirty = true;
+					bItemRemoved = true;
 					// UE_LOG(LogTemp, Warning, TEXT("Found Item To Remove: %s Still Exists: %s at: %i"),
 					//        *InInventoryItem->GetName(),
 					//        InventoryItems.IsValidIndex(i) ? TEXT("true") : TEXT("false"),
@@ -327,10 +330,21 @@ bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
 		}
 
 		//if player is holding dropped item, drop it (it will change pose of character)
-		if (InInventoryItem == OwningCharacter->GetEquippedWeapon()) {
-			OwningCharacter->DropItem(InInventoryItem);
-			OwningCharacter->SetEquippedWeapon(nullptr);
-		}
+		// if (InInventoryItem == OwningCharacter->GetEquippedWeapon()) {
+		// 	OwningCharacter->DropItem(InInventoryItem);
+		// 	OwningCharacter->SetEquippedWeapon(nullptr);
+		// }
+	}
+
+	return bItemRemoved;
+}
+
+bool UInventoryComponent::RemoveCurrentEquippedItem(AItem* InInventoryItem) {
+	//if player is holding dropped item, drop it (it will change pose of character)
+	if (InInventoryItem == OwningCharacter->GetEquippedWeapon()) {
+		OwningCharacter->DropItem(InInventoryItem);
+		OwningCharacter->SetEquippedWeapon(nullptr);
+		return true;
 	}
 
 	return false;
