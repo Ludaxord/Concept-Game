@@ -147,7 +147,8 @@ void UInventoryComponent::BeginPlay() {
 
 	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 	// ...
-	InventoryItems.SetNum(InventoryColumns * InventoryRows);
+	InventoryItems.Init(nullptr, InventoryColumns * InventoryRows);
+	// InventoryItems.SetNum(InventoryColumns * InventoryRows);
 }
 
 
@@ -252,7 +253,7 @@ bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLef
 		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
 			const FInventoryTile NewTile = {i, j};
 			if (NewTile.X >= 0 && NewTile.Y >= 0 && NewTile.X < InventoryColumns && NewTile.Y < InventoryRows) {
-				if (GetItemAtIndex(TileToIndex(NewTile)) != nullptr) {
+				if (GetItemAtIndex(TileToIndex(NewTile)) != nullptr || IsValid(GetItemAtIndex(TileToIndex(NewTile)))) {
 					return false;
 				}
 			}
@@ -267,15 +268,19 @@ bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLef
 }
 
 bool UInventoryComponent::TryAddInventoryItem(AItem* InInventoryItem) {
-	bool bInventoryItemAdded = false;
-	for (int i = 0; i <= InventoryItems.Num(); i++) {
-		if (CheckInventorySpace(InInventoryItem, i)) {
-			UE_LOG(LogTemp, Error, TEXT("Inventory -> %i"), i)
-			return AddInventoryItem(InInventoryItem, i);
+	if (IsValid(InInventoryItem)) {
+		// int i = 0;
+		// for (AItem* InventoryItem : InventoryItems) {
+		for (int i = 0; i <= InventoryItems.Num(); i++) {
+			if (CheckInventorySpace(InInventoryItem, i)) {
+				UE_LOG(LogTemp, Error, TEXT("TryAddInventoryItem -> %i"), i)
+				return AddInventoryItem(InInventoryItem, i);
+			}
+			// i++;
 		}
 	}
 
-	return bInventoryItemAdded;
+	return false;
 }
 
 bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIndex) {
@@ -284,12 +289,12 @@ bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIn
 	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
 		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
 			const FInventoryTile NewTile = {i, j};
-			// InventoryItems[TileToIndex(NewTile)] = InInventoryItem;
-			InventoryItems.EmplaceAt(TileToIndex(NewTile), InInventoryItem);
+			InventoryItems[TileToIndex(NewTile)] = InInventoryItem;
+			// InventoryItems.EmplaceAt(TileToIndex(NewTile), InInventoryItem);
 			bInventoryDirty = true;
 			// AItem* AddedItem = InventoryItems[TileToIndex(NewTile)];
-			// UE_LOG(LogTemp, Warning, TEXT("Current Inventory Item added: %s at %i"),
-			//        *AddedItem->GetName(), TileToIndex(NewTile))
+			// UE_LOG(LogTemp, Warning, TEXT("Current Inventory Item added at %i for Tile {%i, %i}"), TileToIndex(NewTile),
+			//        i, j)
 		}
 	}
 
@@ -309,13 +314,14 @@ bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
 		for (int i = 0; i <= InventoryItems.Num(); i++) {
 			if (InventoryItems.IsValidIndex(i)) {
 				if (InInventoryItem == InventoryItems[i]) {
-					InventoryItems.RemoveAt(i, 1, false);
+					// InventoryItems.RemoveAt(i, 1, false);
+					InventoryItems[i] = nullptr;
 					bInventoryDirty = true;
-					UE_LOG(LogTemp, Warning, TEXT("Found Item To Remove: %s Still Exists: %s at: %i"),
-					       *InInventoryItem->GetName(),
-					       InventoryItems.IsValidIndex(i) ? TEXT("true") : TEXT("false"),
-					       i
-					)
+					// UE_LOG(LogTemp, Warning, TEXT("Found Item To Remove: %s Still Exists: %s at: %i"),
+					//        *InInventoryItem->GetName(),
+					//        InventoryItems.IsValidIndex(i) ? TEXT("true") : TEXT("false"),
+					//        i
+					// )
 				}
 			}
 		}
