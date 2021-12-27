@@ -248,7 +248,7 @@ bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLef
 	const FIntPoint ItemDimension = InInventoryItem->GetItemDimensions();
 	const FInventoryTile Tiles = IndexToTile(TopLeftIndex);
 	// UE_LOG(LogTemp, Warning, TEXT("Check Inventory Space: %s Tiles: X -> %i Y -> %i"), *ItemDimension.ToString(),
-	       // Tiles.X, Tiles.Y)
+	// Tiles.X, Tiles.Y)
 	for (int i = Tiles.X; i <= Tiles.X + (ItemDimension.X - 1); i++) {
 		for (int j = Tiles.Y; j <= Tiles.Y + (ItemDimension.Y - 1); j++) {
 			const FInventoryTile NewTile = {i, j};
@@ -268,19 +268,40 @@ bool UInventoryComponent::CheckInventorySpace(AItem* InInventoryItem, int TopLef
 }
 
 bool UInventoryComponent::TryAddInventoryItem(AItem* InInventoryItem) {
+	bool bInventoryItemAdded = false;
 	if (IsValid(InInventoryItem)) {
 		// int i = 0;
 		// for (AItem* InventoryItem : InventoryItems) {
 		for (int i = 0; i <= InventoryItems.Num(); i++) {
 			if (CheckInventorySpace(InInventoryItem, i)) {
-				UE_LOG(LogTemp, Error, TEXT("TryAddInventoryItem -> %i"), i)
-				return AddInventoryItem(InInventoryItem, i);
+				// UE_LOG(LogTemp, Error, TEXT("TryAddInventoryItem -> %i"), i)
+				bInventoryItemAdded = AddInventoryItem(InInventoryItem, i);
+				if (bInventoryItemAdded) {
+					break;
+				}
 			}
 			// i++;
 		}
+
+		if (!bInventoryItemAdded) {
+			InInventoryItem->RotateInventoryItem();
+			for (int i = 0; i <= InventoryItems.Num(); i++) {
+				if (CheckInventorySpace(InInventoryItem, i)) {
+					// UE_LOG(LogTemp, Error, TEXT("TryAddInventoryItemRotated -> %i"), i)
+					bInventoryItemAdded = AddInventoryItem(InInventoryItem, i);
+					if (bInventoryItemAdded) {
+						break;
+					}
+				}
+			}
+
+			if (!bInventoryItemAdded) {
+				InInventoryItem->RotateInventoryItem();
+			}
+		}
 	}
 
-	return false;
+	return bInventoryItemAdded;
 }
 
 bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIndex) {
