@@ -78,7 +78,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UItemContextObject* CreateMenuItemContextFromItem(FText InActionName, AItem* InItem,
-	                                                  EContextMenuType InContextMenuType);
+	                                                  EContextMenuType InContextMenuType, int Index);
 
 protected:
 	// Called when the game starts

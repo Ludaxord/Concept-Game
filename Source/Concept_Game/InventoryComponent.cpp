@@ -183,8 +183,9 @@ bool UInventoryComponent::QuitActionButtonPressed() {
 }
 
 UItemContextObject* UInventoryComponent::CreateMenuItemContextFromItem(FText InActionName, AItem* InItem,
-                                                                       EContextMenuType InContextMenuType) {
-	UItemContextObject* MenuItemContext = CreateDefaultSubobject<UItemContextObject>(TEXT("MenuItemContext"));
+                                                                       EContextMenuType InContextMenuType, int Index) {
+	FString MenuItemContextName = "MenuItemContext_" + FString::FromInt(Index);
+	UItemContextObject* MenuItemContext = NewObject<UItemContextObject>(this, *MenuItemContextName);
 	MenuItemContext->OwningItemReference = InItem;
 	MenuItemContext->ContextMenuType = InContextMenuType;
 	MenuItemContext->MenuActionName = InActionName;
