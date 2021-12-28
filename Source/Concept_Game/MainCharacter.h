@@ -7,6 +7,7 @@
 #include "CoverPoint.h"
 #include "CyberWeapon.h"
 #include "FireWeapon.h"
+#include "InventoryComponent.h"
 #include "MainCharacterInterface.h"
 #include "MeleeWeapon.h"
 #include "PoseType.h"
@@ -856,7 +857,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UFlashlightComponent* CharacterFlashLightComponent;
-
 public:
 	UCoverComponent* GetCharacterCoverComponent() {
 		return CharacterCoverComponent;

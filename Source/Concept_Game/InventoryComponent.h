@@ -7,6 +7,18 @@
 #include "InventoryInterface.h"
 #include "InventoryComponent.generated.h"
 
+class UItemContextObject;
+
+UENUM(BlueprintType)
+enum class EContextMenuType: uint8 {
+	ECMT_Equip UMETA(DisplayName= "Equip"),
+	ECMT_Drop UMETA(DisplayName= "Drop"),
+	ECMT_QuickSelect UMETA(DisplayName= "Add To Quick Select"),
+	ECMT_Modify UMETA(DisplayName= "Modify"),
+	ECMT_Combine UMETA(DisplayName= "Combine"),
+	ECMT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 USTRUCT(BlueprintType)
 struct FInventoryLine {
 	GENERATED_BODY()
@@ -31,7 +43,6 @@ struct FInventoryTile {
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<class UInventoryItemWidget>, WidgetSubclass)
 ;
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshSpatialGridWidget);
 
@@ -64,6 +75,10 @@ public:
 	//TODO: Move to abstract component that manages all ui actions
 	UFUNCTION(BlueprintCallable)
 	bool QuitActionButtonPressed();
+
+	UFUNCTION(BlueprintCallable)
+	UItemContextObject* CreateMenuItemContextFromItem(FText InActionName, AItem* InItem,
+	                                                  EContextMenuType InContextMenuType);
 
 protected:
 	// Called when the game starts

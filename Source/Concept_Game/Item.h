@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Effects.h"
+#include "InventoryComponent.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
@@ -70,6 +71,9 @@ struct FItemDataTable : public FTableRowBase {
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UMaterialInstance* InventoryItemIconRotated;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EContextMenuType> ContextMenus;
 };
 
 USTRUCT()
@@ -204,6 +208,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* CollisionBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Context Menu", meta= (AllowPrivateAccess = "true"))
+	TArray<EContextMenuType> ContextMenus;
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* ItemMesh;
@@ -303,8 +310,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Rarity", meta = (AllowPrivateAccess = "true"))
 	FCustomDepth CustomDepth;
-
-
 public:
 	UFUNCTION(BlueprintCallable)
 	UMaterialInstance* GetInventoryImageIcon();

@@ -7,17 +7,13 @@
 #include "InventoryGridWidget.h"
 #include "InventoryItemWidget.h"
 #include "InventoryWidget.h"
+#include "ItemContextObject.h"
 #include "MainCharacter.h"
 #include "MainPlayerController.h"
 #include "PieMenu.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Border.h"
-#include "Components/CanvasPanel.h"
-#include "Components/Overlay.h"
-#include "Components/PanelSlot.h"
-#include "Components/VerticalBox.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetArrayLibrary.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent() : bInventoryVisible(false),
@@ -184,6 +180,15 @@ bool UInventoryComponent::QuitActionButtonPressed() {
 	}
 
 	return bInteract;
+}
+
+UItemContextObject* UInventoryComponent::CreateMenuItemContextFromItem(FText InActionName, AItem* InItem,
+                                                                       EContextMenuType InContextMenuType) {
+	UItemContextObject* MenuItemContext = CreateDefaultSubobject<UItemContextObject>(TEXT("MenuItemContext"));
+	MenuItemContext->OwningItemReference = InItem;
+	MenuItemContext->ContextMenuType = InContextMenuType;
+	MenuItemContext->MenuActionName = InActionName;
+	return MenuItemContext;
 }
 
 void UInventoryComponent::CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget) {
