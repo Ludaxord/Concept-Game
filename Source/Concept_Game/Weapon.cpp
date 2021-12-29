@@ -53,7 +53,7 @@ bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult
 		                                     ECollisionChannel::ECC_Visibility);
 		if (OutHitResult.bBlockingHit)
 			UE_LOG(LogTemp, Warning, TEXT("Trace line position: %s HIT: %s"), *OutHitResult.Location.ToString(),
-		       *OutHitResult.Actor->GetName())
+		       *OutHitResult.GetActor()->GetName())
 
 		// DrawDebugLine(GetWorld(), WeaponTraceStart, WeaponTraceEnd, FColor::Red, false, 50.0f);
 

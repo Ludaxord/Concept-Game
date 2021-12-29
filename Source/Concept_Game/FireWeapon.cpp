@@ -25,7 +25,7 @@ void AFireWeapon::PerformAttack() {
 		FHitResult BeamHitResult;
 		//TODO: Add Types of actor that is able to be hit by BeamHitResult...
 		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult)) {
-			if (BeamHitResult.Actor.IsValid()) {
+			if (IsValid(BeamHitResult.GetActor())) {
 				//TODO Add bullet hit interface
 				//TODO Add Damage to enemies && objects.
 			}

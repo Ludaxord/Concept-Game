@@ -24,6 +24,7 @@
 #include "MainCharacterCameraComponent.h"
 #include "MainCharacterInputComponent.h"
 #include "MainHUD.h"
+#include "MapComponent.h"
 #include "MeleeComponent.h"
 #include "ParkourComponent.h"
 #include "PauseMenuComponent.h"
@@ -139,6 +140,7 @@ AMainCharacter::AMainCharacter():
 	CharacterHackingComponent = CreateDefaultSubobject<UHackingComponent>(TEXT("CharacterHackingComponent"));
 	CharacterDoorComponent = CreateDefaultSubobject<UDoorComponent>(TEXT("CharacterDoorComponent"));
 	CharacterFlashLightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("CharacterFlashLightComponent"));
+	CharacterMapComponent = CreateDefaultSubobject<UMapComponent>(TEXT("CharacterMapComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -233,7 +235,7 @@ void AMainCharacter::TraceForItems() {
 		FVector HitLocation;
 		TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
 		if (ItemTraceHitResult.bBlockingHit) {
-			TraceHitItem = Cast<AItem>(ItemTraceHitResult.Actor);
+			TraceHitItem = Cast<AItem>(ItemTraceHitResult.GetActor());
 
 			//TODO: If Trace hit item exists, switch between item types...
 			if (TraceHitItem) {
@@ -1183,7 +1185,7 @@ void AMainCharacter::CoverSystem() {
 
 		if (bInCover) {
 			CurrentCoverHitResult = TracerResult;
-			CurrentCover = Cast<ACover>(TracerResult.Actor);
+			CurrentCover = Cast<ACover>(TracerResult.GetActor());
 			if (CurrentCover) {
 				CurrentCover->SetCurrentOverlappingCharacter(this);
 				CurrentCover->InCoverSystem();

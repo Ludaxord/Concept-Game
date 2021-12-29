@@ -184,11 +184,11 @@ void UMainCharacterInputComponent::Cover() {
 				if (OutHitResult.bBlockingHit) {
 					OwningCharacter->CurrentCoverHitResult = OutHitResult;
 
-					OutHitResult.Actor->GetActorBounds(false, OwningCharacter->CurrentCoverOrigin,
+					OutHitResult.GetActor()->GetActorBounds(false, OwningCharacter->CurrentCoverOrigin,
 					                                   OwningCharacter->CurrentCoverBoxExtend);
 					OwningCharacter->CoverLocation = OutHitResult.Location;
 					OwningCharacter->CoverNormal = OutHitResult.Normal;
-					OwningCharacter->CurrentCover = Cast<ACover>(OutHitResult.Actor);
+					OwningCharacter->CurrentCover = Cast<ACover>(OutHitResult.GetActor());
 					if (OwningCharacter->CurrentCover) {
 						OwningCharacter->CurrentCover->SetCurrentOverlappingCharacter(OwningCharacter);
 						OwningCharacter->CurrentCover->TakeCover();

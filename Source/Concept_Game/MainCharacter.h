@@ -857,6 +857,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UFlashlightComponent* CharacterFlashLightComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UMapComponent* CharacterMapComponent;
 public:
 	UCoverComponent* GetCharacterCoverComponent() {
 		return CharacterCoverComponent;
