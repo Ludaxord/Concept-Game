@@ -24,6 +24,7 @@
 #include "MainCharacterCameraComponent.h"
 #include "MainCharacterInputComponent.h"
 #include "MainHUD.h"
+#include "MapComponent.h"
 #include "MeleeComponent.h"
 #include "ParkourComponent.h"
 #include "PauseMenuComponent.h"
@@ -139,6 +140,7 @@ AMainCharacter::AMainCharacter():
 	CharacterHackingComponent = CreateDefaultSubobject<UHackingComponent>(TEXT("CharacterHackingComponent"));
 	CharacterDoorComponent = CreateDefaultSubobject<UDoorComponent>(TEXT("CharacterDoorComponent"));
 	CharacterFlashLightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("CharacterFlashLightComponent"));
+	CharacterMapComponent = CreateDefaultSubobject<UMapComponent>(TEXT("CharacterMapComponent"));
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
