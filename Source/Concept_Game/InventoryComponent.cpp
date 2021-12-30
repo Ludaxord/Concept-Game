@@ -20,7 +20,8 @@ UInventoryComponent::UInventoryComponent() : bInventoryVisible(false),
                                              bQuickSelectVisible(false),
                                              bQuickSelectVisibleRef(false),
                                              bInventoryDirty(false),
-                                             bQuickSelectDirty(false) {
+                                             bQuickSelectDirty(false),
+                                             SectorCount(6) {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -31,7 +32,7 @@ UInventoryComponent::UInventoryComponent() : bInventoryVisible(false),
 void UInventoryComponent::QuickSelectPieToggle(bool Visible) {
 	if (OwningCharacter) {
 		bQuickSelectVisible = Visible;
-		QuickSelectInteract();
+		// QuickSelectInteract();
 	}
 }
 
@@ -146,6 +147,7 @@ void UInventoryComponent::BeginPlay() {
 	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 	// ...
 	InventoryItems.Init(nullptr, InventoryColumns * InventoryRows);
+	QuickSelectItems.Init(nullptr, SectorCount);
 	// InventoryItems.SetNum(InventoryColumns * InventoryRows);
 }
 
@@ -199,7 +201,6 @@ void UInventoryComponent::CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidg
 	QuickSelectPieWidget->SetOwnerInventoryComponent(this);
 	QuickSelectPieWidget->AddToViewport();
 	QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
-	QuickSelectItems.Init(nullptr, QuickSelectPieWidget->GetSectorCount());
 }
 
 void UInventoryComponent::CreateInventoryWidget(UInventoryWidget* InInventoryWidget,
@@ -337,12 +338,12 @@ bool UInventoryComponent::TryAddInventoryItem(AItem* InInventoryItem) {
 
 bool UInventoryComponent::TryAddQuickSelectItem(AItem* InInventoryItem) {
 	bool bQuickSelectAdded = false;
-
 	if (IsValid(InInventoryItem)) {
 		for (int i = 0; i <= QuickSelectItems.Num(); i++) {
 			if (InInventoryItem->GetAllowQuickSelect()) {
 				if (QuickSelectItems[i] == nullptr) {
 					QuickSelectItems[i] = InInventoryItem;
+					UE_LOG(LogTemp, Warning, TEXT("Adding Quick Select Item at: %i"), i)
 					bQuickSelectAdded = true;
 					break;
 				}
@@ -478,8 +479,8 @@ void UInventoryComponent::RefreshInventoryWidget() {
 
 void UInventoryComponent::RefreshQuickSelectWidget() {
 	if (bQuickSelectDirty) {
-		UE_LOG(LogTemp, Warning, TEXT("Broadcasting RefreshQuickSelectWidget"))
-		GetQuickSelectItems();
+		UE_LOG(LogTemp, Warning, TEXT("Broadcasting RefreshQuickSelectWidgetDelegate"))
+		RefreshQuickSelectWidgetDelegate.Broadcast();
 		bQuickSelectDirty = false;
 	}
 }

@@ -455,7 +455,7 @@ void UMainCharacterInputComponent::DebugDropItem() {
 
 void UMainCharacterInputComponent::QuickSelectButtonPressed(float Value) {
 	// CharacterInventoryComponent->QuickSelectToggle(Value > 0.0f);
-	OwningCharacter->CharacterInventoryComponent->QuickSelectPieToggle(Value > 0.0f);
+	// OwningCharacter->CharacterInventoryComponent->QuickSelectPieToggle(Value > 0.0f);
 }
 
 bool UMainCharacterInputComponent::AimButtonPressedBlocked() {

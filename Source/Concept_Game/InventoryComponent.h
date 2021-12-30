@@ -46,6 +46,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<clas
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshSpatialGridWidget);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshQuickSelectWidget);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UInventoryComponent : public UActorComponent, public IInventoryInterface {
 	GENERATED_BODY()
@@ -54,6 +56,7 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
+	UFUNCTION(BlueprintCallable)
 	virtual void QuickSelectPieToggle(bool Visible);
 
 	virtual void QuickSelectInteract();
@@ -105,6 +108,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
 	bool bQuickSelectDirty;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
+	int SectorCount;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> QuickSelectItems;
 
@@ -119,6 +125,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
 	bool bQuickSelectVisibleRef;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Inventory Menu", meta = (AllowPrivateAccess = "true"))
+	class UUserWidget* QuickSelectRadialMenuWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Inventory Menu", meta = (AllowPrivateAccess = "true"))
 	class UInventoryWidget* InventoryWidget;
@@ -142,6 +151,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FRefreshGridWidget RefreshGridWidgetDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FRefreshQuickSelectWidget RefreshQuickSelectWidgetDelegate;
+
 	UPROPERTY(EditAnywhere, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FRefreshSpatialGridWidget RefreshSpatialGridWidgetDelegate;
 
@@ -151,6 +163,10 @@ public:
 
 	FORCEINLINE FRefreshGridWidget GetRefreshGridWidgetDelegate() {
 		return RefreshGridWidgetDelegate;
+	}
+
+	FORCEINLINE FRefreshQuickSelectWidget GetFRefreshQuickSelectWidgetDelegate() {
+		return RefreshQuickSelectWidgetDelegate;
 	}
 
 	FORCEINLINE int GetInventoryColumns() const {
