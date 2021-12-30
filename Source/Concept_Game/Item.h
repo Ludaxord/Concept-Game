@@ -74,6 +74,9 @@ struct FItemDataTable : public FTableRowBase {
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<EContextMenuType> ContextMenus;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bAllowQuickSelect;
 };
 
 USTRUCT()
@@ -193,6 +196,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	bool bRotated;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	bool bAllowQuickSelect;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UMaterialInstance* InventoryItemIconRotated;
@@ -316,6 +322,10 @@ public:
 
 	FORCEINLINE FGuid GetGuid() const {
 		return ID;
+	}
+
+	FORCEINLINE bool GetAllowQuickSelect() const {
+		return bAllowQuickSelect;
 	}
 
 	//TODO: Change name to InteractWidget...

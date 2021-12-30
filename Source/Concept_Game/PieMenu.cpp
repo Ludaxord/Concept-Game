@@ -75,7 +75,7 @@ float UPieMenu::GetProperRotation() {
 	float MousePositionX = 0.0f;
 	float MousePositionY = 0.0f;
 	if (GetOwningPlayer()) {
-		bool isMouseConnected = GetOwningPlayer()->GetMousePosition(MousePositionX, MousePositionY);
+		GetOwningPlayer()->GetMousePosition(MousePositionX, MousePositionY);
 		FVector MousePosition = {MousePositionX, MousePositionY, 0.0f};
 		FVector2D ViewportSize2D = UWidgetLayoutLibrary::GetViewportSize(GetWorld());
 		FVector ViewportSize = {ViewportSize2D.X / 2, ViewportSize2D.Y / 2, 0.0f};

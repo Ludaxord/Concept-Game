@@ -160,6 +160,7 @@ void AFireWeapon::InitializeWeaponDataTable() {
 			SetInventoryItemIconRotated(FireWeaponDataRow->InventoryItemIcon);
 			SetInventoryItemIcon(FireWeaponDataRow->InventoryItemIconRotated);
 			ContextMenus = FireWeaponDataRow->ContextMenus;
+			bAllowQuickSelect = FireWeaponDataRow->bAllowQuickSelect;
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Failed to load Fire Weapon Data Row"));

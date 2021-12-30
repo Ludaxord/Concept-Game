@@ -497,7 +497,7 @@ bool UMainCharacterInputComponent::UseWeaponPressedBlocked() {
 	}
 
 	if (OwningCharacter->CharacterInventoryComponent->GetInventoryVisible()) {
-		OwningCharacter->CharacterInventoryComponent->MouseButtonPressed();
+		// OwningCharacter->CharacterInventoryComponent->MouseButtonPressed();
 		return true;
 	}
 

@@ -102,6 +102,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory", meta = (AllowPrivateAccess = "true"))
 	bool bInventoryDirty;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="QuickSelect", meta = (AllowPrivateAccess = "true"))
+	bool bQuickSelectDirty;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "QuickSelect", meta = (AllowPrivateAccess = "true"))
 	TArray<class AItem*> QuickSelectItems;
 
@@ -172,6 +175,9 @@ public:
 	TMap<AItem*, FInventoryTile> GetInventoryItems();
 
 	UFUNCTION(BlueprintCallable)
+	TMap<AItem*, int> GetQuickSelectItems();
+
+	UFUNCTION(BlueprintCallable)
 	FInventoryTile IndexToTile(int Index) const;
 
 	UFUNCTION(BlueprintCallable)
@@ -186,12 +192,18 @@ public:
 	bool TryAddInventoryItem(AItem* InInventoryItem);
 
 	UFUNCTION(BlueprintCallable)
+	bool TryAddQuickSelectItem(AItem* InInventoryItem);
+
+	UFUNCTION(BlueprintCallable)
 	bool AddInventoryItem(AItem* InInventoryItem, int TopLeftIndex);
 
 	AItem* GetItemAtIndex(int InIndex);
 
 	UFUNCTION(BlueprintCallable)
 	bool RemoveInventoryItem(AItem* InInventoryItem);
+
+	UFUNCTION(BlueprintCallable)
+	bool SwapWeapon(AItem* NewItem);
 
 	UFUNCTION(BlueprintCallable)
 	bool RemoveCurrentEquippedItem(AItem* InInventoryItem);
@@ -216,6 +228,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RefreshInventoryWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void RefreshQuickSelectWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidget);

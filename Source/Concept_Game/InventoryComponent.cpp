@@ -19,7 +19,8 @@
 UInventoryComponent::UInventoryComponent() : bInventoryVisible(false),
                                              bQuickSelectVisible(false),
                                              bQuickSelectVisibleRef(false),
-                                             bInventoryDirty(false) {
+                                             bInventoryDirty(false),
+                                             bQuickSelectDirty(false) {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -154,6 +155,7 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                         FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	RefreshInventoryWidget();
+	RefreshQuickSelectWidget();
 }
 
 FVector2D UInventoryComponent::GetViewportCenter() {
@@ -197,6 +199,7 @@ void UInventoryComponent::CreateQuickSelectPieWidget(UPieMenu* InQuickSelectWidg
 	QuickSelectPieWidget->SetOwnerInventoryComponent(this);
 	QuickSelectPieWidget->AddToViewport();
 	QuickSelectPieWidget->SetVisibility(ESlateVisibility::Hidden);
+	QuickSelectItems.Init(nullptr, QuickSelectPieWidget->GetSectorCount());
 }
 
 void UInventoryComponent::CreateInventoryWidget(UInventoryWidget* InInventoryWidget,
@@ -237,6 +240,27 @@ TMap<AItem*, FInventoryTile> UInventoryComponent::GetInventoryItems() {
 	}
 
 	return AllItems;
+}
+
+TMap<AItem*, int> UInventoryComponent::GetQuickSelectItems() {
+	TMap<AItem*, int> AllQuickSelectItems;
+	for (int i = 0; i <= QuickSelectItems.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("Quick Select Index: %i"), i)
+		if (QuickSelectItems.IsValidIndex(i)) {
+			AItem* QuickSelectItem = QuickSelectItems[i];
+			if (QuickSelectItem != nullptr) {
+				if (QuickSelectItem->GetAllowQuickSelect()) {
+					if (!AllQuickSelectItems.Contains(QuickSelectItem)) {
+						UE_LOG(LogTemp, Warning, TEXT("GetQuickSelectItem: %s"), *QuickSelectItem->GetName())
+						AllQuickSelectItems.Add(QuickSelectItem, i);
+					}
+				}
+			}
+		}
+	}
+
+
+	return AllQuickSelectItems;
 }
 
 FInventoryTile UInventoryComponent::IndexToTile(int Index) const {
@@ -311,6 +335,26 @@ bool UInventoryComponent::TryAddInventoryItem(AItem* InInventoryItem) {
 	return bInventoryItemAdded;
 }
 
+bool UInventoryComponent::TryAddQuickSelectItem(AItem* InInventoryItem) {
+	bool bQuickSelectAdded = false;
+
+	if (IsValid(InInventoryItem)) {
+		for (int i = 0; i <= QuickSelectItems.Num(); i++) {
+			if (InInventoryItem->GetAllowQuickSelect()) {
+				if (QuickSelectItems[i] == nullptr) {
+					QuickSelectItems[i] = InInventoryItem;
+					bQuickSelectAdded = true;
+					break;
+				}
+			}
+		}
+	}
+
+	bQuickSelectDirty = bQuickSelectAdded;
+
+	return bQuickSelectAdded;
+}
+
 bool UInventoryComponent::AddInventoryItem(AItem* InInventoryItem, int TopLeftIndex) {
 	const FIntPoint ItemDimension = InInventoryItem->GetItemDimensions();
 	const FInventoryTile Tiles = IndexToTile(TopLeftIndex);
@@ -367,6 +411,19 @@ bool UInventoryComponent::RemoveInventoryItem(AItem* InInventoryItem) {
 	return bItemRemoved;
 }
 
+bool UInventoryComponent::SwapWeapon(AItem* NewItem) {
+	if (NewItem == OwningCharacter->GetEquippedWeapon()) {
+		return false;
+	}
+
+	if (AWeapon* NewWeapon = Cast<AWeapon>(NewItem)) {
+		OwningCharacter->EquipWeapon(NewWeapon);
+		return true;
+	}
+
+	return false;
+}
+
 bool UInventoryComponent::RemoveCurrentEquippedItem(AItem* InInventoryItem) {
 	//if player is holding dropped item, drop it (it will change pose of character)
 	if (InInventoryItem == OwningCharacter->GetEquippedWeapon()) {
@@ -416,5 +473,13 @@ void UInventoryComponent::RefreshInventoryWidget() {
 		RefreshSpatialGridWidgetDelegate.Broadcast();
 		// RefreshGridWidgetDelegate.Broadcast(ItemWidgetSubclass);
 		bInventoryDirty = false;
+	}
+}
+
+void UInventoryComponent::RefreshQuickSelectWidget() {
+	if (bQuickSelectDirty) {
+		UE_LOG(LogTemp, Warning, TEXT("Broadcasting RefreshQuickSelectWidget"))
+		GetQuickSelectItems();
+		bQuickSelectDirty = false;
 	}
 }

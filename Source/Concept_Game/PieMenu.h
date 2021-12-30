@@ -12,9 +12,8 @@
 UCLASS()
 class CONCEPT_GAME_API UPieMenu : public UUserWidget {
 	GENERATED_BODY()
-	
-public:
 
+public:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Component", meta = (AllowPrivateAccess = "true"))
 	class UInventoryComponent* OwnerInventoryComponent;
@@ -36,7 +35,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory Component", meta = (AllowPrivateAccess = "true"))
 	TArray<int> SectorListMinBounds;
-
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetSectorsToPieMenuWidget();
@@ -66,5 +64,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UMaterialInstanceDynamic* GetPieMenuMaterialInstance() {
 		return PieMenuMaterialInstance;
+	}
+
+	FORCEINLINE int GetSectorCount() const {
+		return SectorCount;
 	}
 };
