@@ -59,4 +59,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ToggleSkillTree();
 
+	UFUNCTION(BlueprintCallable)
+	void AddSkills(FString InCategory, TArray<USkill*> InSkills);
+
+	UFUNCTION(BlueprintCallable)
+	void OnSkillFired(FString InCategory, USkill* InSkill);
+
 };

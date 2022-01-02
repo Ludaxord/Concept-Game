@@ -3,6 +3,9 @@
 
 #include "SkillComponent.h"
 
+#include "MainCharacter.h"
+#include "Skill.h"
+
 FSkills::FSkills() {
 }
 
@@ -19,7 +22,7 @@ USkillComponent::USkillComponent(): SkillPoints(0), bSkillTreeVisible(false) {
 // Called when the game starts
 void USkillComponent::BeginPlay() {
 	Super::BeginPlay();
-
+	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 	// ...
 
 }
@@ -35,4 +38,36 @@ void USkillComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void USkillComponent::ToggleSkillTree() {
 	bSkillTreeVisible = !bSkillTreeVisible;
+}
+
+void USkillComponent::AddSkills(FString InCategory, TArray<USkill*> InSkills) {
+	if (InSkills.Num() > 0 && InSkills.IsValidIndex(0)) {
+		InSkills[0]->SetSkillStatus(ESkillStatus::ESS_Unlocked);
+		FSkills Skills;
+		Skills.Skills = InSkills;
+		Root.Add(InCategory, Skills);
+		for (USkill* Skill : InSkills) {
+			Skill->RequestSkillAcquireDelegate.AddDynamic(this, &USkillComponent::OnSkillFired);
+		}
+	}
+}
+
+void USkillComponent::OnSkillFired(FString InCategory, USkill* InSkill) {
+	if (SkillPoints > 0) {
+		if (SkillPoints >= InSkill->GetPointsAmount()) {
+			SkillPoints = SkillPoints - InSkill->GetPointsAmount();
+			if (FSkills* FoundSkills = Root.Find(InCategory)) {
+				int SkillIndex = FoundSkills->Skills.Find(InSkill);
+				if (FoundSkills->Skills.IsValidIndex(SkillIndex)) {
+					FoundSkills->Skills[SkillIndex]->SetSkillStatus(ESkillStatus::ESS_Acquired);
+					SkillIndex++;
+					if (FoundSkills->Skills.IsValidIndex(SkillIndex)) {
+						FoundSkills->Skills[SkillIndex]->SetSkillStatus(ESkillStatus::ESS_Unlocked);
+					}
+				}
+			}
+			InSkill->ApplySkill(OwningCharacter);
+		}
+
+	}
 }

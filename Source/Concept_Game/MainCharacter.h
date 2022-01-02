@@ -9,7 +9,6 @@
 #include "FireWeapon.h"
 #include "InventoryComponent.h"
 #include "SkillComponent.h"
-#include "SkillTreeComponent.h"
 #include "MainCharacterInterface.h"
 #include "MeleeWeapon.h"
 #include "PoseType.h"
@@ -889,10 +888,6 @@ public:
 
 	UInventoryComponent* GetCharacterInventoryComponent() {
 		return CharacterInventoryComponent;
-	};
-
-	USkillTreeComponent* GetCharacterSkillTreeComponent() {
-		return CharacterSkillTreeComponent;
 	};
 
 	UItemComponent* GetCharacterItemComponent() {

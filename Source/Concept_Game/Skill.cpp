@@ -2,3 +2,11 @@
 
 
 #include "Skill.h"
+
+void USkill::RequestAcquire() {
+	RequestSkillAcquireDelegate.Broadcast(Category, this);
+}
+
+void USkill::ApplySkill(AActor* InOwner) {
+	SkillStatus = ESkillStatus::ESS_Acquired;
+}
