@@ -22,6 +22,7 @@ UInventoryComponent::UInventoryComponent() : bInventoryVisible(false),
                                              bInventoryDirty(false),
                                              bQuickSelectDirty(false),
                                              SectorCount(6) {
+	UE_LOG(LogTemp, Warning, TEXT("Inventory Component => Constructed...."))
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -143,6 +144,7 @@ void UInventoryComponent::RemoveGridItem(AItem* InItem) {
 // Called when the game starts
 void UInventoryComponent::BeginPlay() {
 	Super::BeginPlay();
+	UE_LOG(LogTemp, Warning, TEXT("Inventory Component => BeginPlay...."))
 
 	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 	// ...

@@ -8,6 +8,8 @@
 #include "CyberWeapon.h"
 #include "FireWeapon.h"
 #include "InventoryComponent.h"
+#include "SkillComponent.h"
+#include "SkillTreeComponent.h"
 #include "MainCharacterInterface.h"
 #include "MeleeWeapon.h"
 #include "PoseType.h"
@@ -804,6 +806,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UShootingComponent* CharacterShootingComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UInventoryComponent* CharacterInventoryComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class USkillComponent* CharacterSkillComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UBaseHUDComponent* CharacterBaseHUDComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMeleeComponent* CharacterMeleeComponent;
 
@@ -813,14 +824,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UEnhancementComponent* CharacterEnhancementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
-	class UInventoryComponent* CharacterInventoryComponent;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UItemComponent* CharacterItemComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
-	class UBaseHUDComponent* CharacterBaseHUDComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UPauseMenuComponent* CharacterPauseMenuComponent;
@@ -830,9 +835,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMainCharacterInputComponent* CharacterInputComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
-	class USkillTreeComponent* CharacterSkillTreeComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UQuestComponent* CharacterQuestComponent;
@@ -887,6 +889,10 @@ public:
 
 	UInventoryComponent* GetCharacterInventoryComponent() {
 		return CharacterInventoryComponent;
+	};
+
+	USkillTreeComponent* GetCharacterSkillTreeComponent() {
+		return CharacterSkillTreeComponent;
 	};
 
 	UItemComponent* GetCharacterItemComponent() {

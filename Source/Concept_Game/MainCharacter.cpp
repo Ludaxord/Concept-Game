@@ -23,14 +23,12 @@
 #include "MainAnimInstance.h"
 #include "MainCharacterCameraComponent.h"
 #include "MainCharacterInputComponent.h"
-#include "MainHUD.h"
 #include "MapComponent.h"
 #include "MeleeComponent.h"
 #include "ParkourComponent.h"
 #include "PauseMenuComponent.h"
 #include "QuestComponent.h"
 #include "ShootingComponent.h"
-#include "SkillTreeComponent.h"
 #include "StealthComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
@@ -127,11 +125,12 @@ AMainCharacter::AMainCharacter():
 		UEnhancementComponent>(TEXT("CharacterEnhancementComponent"));
 	CharacterPauseMenuComponent = CreateDefaultSubobject<UPauseMenuComponent>(TEXT("CharacterPauseMenuComponent"));
 	CharacterInventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("CharacterInventoryComponent"));
+	CharacterSkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("CharacterSkillComponent"));
+
 	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
 	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
-	CharacterSkillTreeComponent = CreateDefaultSubobject<USkillTreeComponent>(TEXT("CharacterSkillTreeComponent"));
 	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
 	DebugWidgetComponent = CreateDefaultSubobject<UDebugWidgetComponent>(TEXT("DebugWidgetComponent"));
 	CharacterDialogComponent = CreateDefaultSubobject<UDialogComponent>(TEXT("CharacterDialogComponent"));
