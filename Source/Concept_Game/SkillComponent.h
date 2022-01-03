@@ -63,6 +63,6 @@ public:
 	void AddSkills(FString InCategory, TArray<USkill*> InSkills);
 
 	UFUNCTION(BlueprintCallable)
-	void OnSkillFired(FString InCategory, USkill* InSkill);
+	void OnSkillAcquired(FString InCategory, USkill* InSkill);
 
 };

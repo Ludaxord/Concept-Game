@@ -47,12 +47,12 @@ void USkillComponent::AddSkills(FString InCategory, TArray<USkill*> InSkills) {
 		Skills.Skills = InSkills;
 		Root.Add(InCategory, Skills);
 		for (USkill* Skill : InSkills) {
-			Skill->RequestSkillAcquireDelegate.AddDynamic(this, &USkillComponent::OnSkillFired);
+			Skill->RequestSkillAcquireDelegate.AddDynamic(this, &USkillComponent::OnSkillAcquired);
 		}
 	}
 }
 
-void USkillComponent::OnSkillFired(FString InCategory, USkill* InSkill) {
+void USkillComponent::OnSkillAcquired(FString InCategory, USkill* InSkill) {
 	if (SkillPoints > 0) {
 		if (SkillPoints >= InSkill->GetPointsAmount()) {
 			SkillPoints = SkillPoints - InSkill->GetPointsAmount();
