@@ -12,6 +12,7 @@
 #include "DebugWidgetComponent.h"
 #include "DialogComponent.h"
 #include "DoorComponent.h"
+#include "DoubleJumpSkill.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancementComponent.h"
 #include "FlashlightComponent.h"
@@ -157,6 +158,8 @@ AMainCharacter::AMainCharacter():
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay() {
 	Super::BeginPlay();
+
+	// InitSkills();
 
 	SetDefaultCameras();
 
@@ -807,13 +810,20 @@ void AMainCharacter::Jump() {
 		}
 		else {
 			UE_LOG(LogTemp, Warning, TEXT("Jumping Base"));
+			Super::Jump();
+
 			if (TimesJumped < 2) {
 				if (GetCharacterMovement()->IsFalling()) {
-					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+					//=== UNCOMMENT TO DOUBLE JUMP
+					// GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+					//===
+
 					// LaunchCharacter(FVector(0.0f, 0.0f, 500.f), false, true);
 				}
-				Super::Jump();
-				TimesJumped++;
+				//=== UNCOMMENT TO DOUBLE JUMP
+				// Super::Jump();
+				// TimesJumped++;
+				//===
 			}
 		}
 	}
@@ -823,13 +833,19 @@ void AMainCharacter::Jump() {
 		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 		SwitchCamera(false);
 		UE_LOG(LogTemp, Warning, TEXT("Jumping From Climb %s"), bJumpFromClimb ? TEXT("true") : TEXT("false"));
+		Super::Jump();
 		if (TimesJumped < 2) {
 			if (GetCharacterMovement()->IsFalling()) {
-				GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+				//=== UNCOMMENT TO DOUBLE JUMP
+				// GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+				//===
+
 				// LaunchCharacter(FVector(0.0f, 0.0f, 500.f), false, true);
 			}
-			Super::Jump();
-			TimesJumped++;
+			//=== UNCOMMENT TO DOUBLE JUMP
+			// Super::Jump();
+			// TimesJumped++;
+			//===
 		}
 	}
 

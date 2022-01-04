@@ -3,3 +3,11 @@
 
 #include "CamoSkill.h"
 
+void UCamoSkill::ApplySkill(AActor* InOwner) {
+	Super::ApplySkill(InOwner);
+}
+
+void UCamoSkill::Init(FString InCategory, FString InName, FString InDescription, int InPointsAmount,
+	UTexture2D* InImage) {
+	Super::Init(InCategory, InName, InDescription, InPointsAmount, InImage);
+}

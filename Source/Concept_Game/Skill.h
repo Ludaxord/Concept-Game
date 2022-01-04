@@ -25,6 +25,8 @@ class CONCEPT_GAME_API USkill : public UObject {
 	GENERATED_BODY()
 
 protected:
+	virtual void Init(FString InCategory, FString InName, FString InDescription, int InPointsAmount, UTexture2D* InImage);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Properties", meta = (AllowPrivateAccess = "true"))
 	FString Category;
 
