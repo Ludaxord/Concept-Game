@@ -14,4 +14,11 @@ class CONCEPT_GAME_API USwimmingSkill : public USkill
 {
 	GENERATED_BODY()
 	
+		
+public:
+	virtual void ApplySkill(AActor* InOwner) override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Init(FString InCategory, FString InName, FString InDescription, int InPointsAmount,
+	                  UTexture2D* InImage) override;
 };

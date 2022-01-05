@@ -36,6 +36,10 @@ void USkillComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+void USkillComponent::AddPoint() {
+	SkillPoints++;
+}
+
 void USkillComponent::ToggleSkillTree() {
 	bSkillTreeVisible = !bSkillTreeVisible;
 }
@@ -70,4 +74,19 @@ void USkillComponent::OnSkillAcquired(FString InCategory, USkill* InSkill) {
 		}
 
 	}
+}
+
+TArray<FString> USkillComponent::GetCategories() {
+	TArray<FString> Categories;
+	Root.GetKeys(Categories);
+	return Categories;
+}
+
+bool USkillComponent::GetSkillsArray(FString InCategory, FSkills& OutSkills) {
+	if (Root.Contains(InCategory)) {
+		OutSkills = Root.FindRef(InCategory);
+		return true;
+	}
+
+	return false;
 }

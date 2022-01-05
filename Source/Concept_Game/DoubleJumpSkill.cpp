@@ -12,7 +12,6 @@ void UDoubleJumpSkill::ApplySkill(AActor* InOwner) {
 	AMainCharacter* Character = Cast<AMainCharacter>(InOwner);
 	if (Character) {
 		Character->JumpMaxCount = 2;
-		Character->GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
 	}
 }
 

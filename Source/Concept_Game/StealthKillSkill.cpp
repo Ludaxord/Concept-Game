@@ -3,3 +3,11 @@
 
 #include "StealthKillSkill.h"
 
+void UStealthKillSkill::ApplySkill(AActor* InOwner) {
+	Super::ApplySkill(InOwner);
+}
+
+void UStealthKillSkill::Init(FString InCategory, FString InName, FString InDescription, int InPointsAmount,
+	UTexture2D* InImage) {
+	Super::Init(InCategory, InName, InDescription, InPointsAmount, InImage);
+}

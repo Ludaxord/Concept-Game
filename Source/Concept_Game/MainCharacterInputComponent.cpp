@@ -58,6 +58,8 @@ void UMainCharacterInputComponent::SetupPlayerInputComponent(UInputComponent* Pl
 	//NOTE, Debug bindings, remove in production
 	PlayerInputComponent->BindAction("DebugChangeCamera", IE_Pressed, this,
 	                                 &UMainCharacterInputComponent::ChangeDebugCamera);
+	PlayerInputComponent->BindAction("DebugAddSkillPoints", IE_Pressed, this,
+	                                 &UMainCharacterInputComponent::DebugAddSkillPoints);
 	PlayerInputComponent->BindAction("FPSCounterTrigger", IE_Pressed, this,
 	                                 &UMainCharacterInputComponent::TriggerFPSCounter);
 	PlayerInputComponent->BindAction("DebugTriggerRotationYaw", IE_Pressed, this,
@@ -410,6 +412,10 @@ void UMainCharacterInputComponent::ChangeDebugCamera() {
 
 		}
 	}
+}
+
+void UMainCharacterInputComponent::DebugAddSkillPoints() {
+	OwningCharacter->CharacterSkillComponent->AddPoint();
 }
 
 void UMainCharacterInputComponent::ChangeDebugTriggerRotationYaw() {

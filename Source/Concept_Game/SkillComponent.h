@@ -65,4 +65,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnSkillAcquired(FString InCategory, USkill* InSkill);
 
+	UFUNCTION(BlueprintCallable)
+	TArray<FString> GetCategories();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetSkillsArray(FString InCategory, FSkills& OutSkills);
+
+	void AddPoint();
 };
