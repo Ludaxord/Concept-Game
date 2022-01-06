@@ -38,6 +38,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="HUD", meta= (AllowPrivateAccess = "true"))
 	bool bBaseHUDVisible;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="HUD", meta= (AllowPrivateAccess = "true"))
+	class UTexture2D* CurrentMiniMapTexture;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void CreateBasePlayerHUD(UBasePlayerHUDWidget* InPlayerHUDWidget);
