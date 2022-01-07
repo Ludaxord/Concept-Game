@@ -8,6 +8,7 @@
 #include "CyberWeapon.h"
 #include "FireWeapon.h"
 #include "InventoryComponent.h"
+#include "ItemComponent.h"
 #include "SkillComponent.h"
 #include "MainCharacterInterface.h"
 #include "MeleeWeapon.h"
@@ -79,8 +80,9 @@ protected:
 public:
 	void SetLookUpRates(float DeltaTime);
 	void CalculateCrosshairSpread(float DeltaTime);
-	void TraceForItems();
-	void TraceForLadder();
+	// void TraceForItems();
+	// void TraceForLadder();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -271,10 +273,9 @@ private:
 
 	float InitialRightHandYaw;
 
-	TArray<FGuid> OverlappedItemIDs;
-
 	bool bPauseMenuButtonPressed;
 
+	//TODO: Move to CoverComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cover", meta = (AllowPrivateAccess = "true"))
 	FVector CoverLocation;
 
@@ -607,10 +608,6 @@ private:
 
 	bool bShouldTraceForItems;
 
-	bool bJumpFromClimb;
-
-	bool bTouchingFloor;
-
 	float PoseAxisValueCounter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -638,14 +635,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AMeleeWeapon> DefaultMeleeWeaponClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
-	class AItem* TraceHitItem;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
-	class AItem* CurrentInteractItem;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
-	AItem* TraceHitItemLastFrame;
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	// class AItem* TraceHitItem;
+	//
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	// class AItem* CurrentInteractItem;
+	//
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	// AItem* TraceHitItemLastFrame;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
 	EPoseType PoseType;
@@ -737,12 +734,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
 	float LookUpVal;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Items", meta = (AllowPrivateAccess = "true"))
-	TArray<AItem*> Inventory;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Items", meta= (AllowPrivateAccess = "true"))
-	int32 InventoryCapacity;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	float Health;
@@ -862,6 +853,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMapComponent* CharacterMapComponent;
 public:
+	TArray<FGuid> OverlappedItemIDs;
+
+	bool bJumpFromClimb;
+
+	bool bTouchingFloor;
+
 	UCoverComponent* GetCharacterCoverComponent() {
 		return CharacterCoverComponent;
 	};
@@ -1094,7 +1091,7 @@ public:
 	}
 
 	FORCEINLINE AItem* GetCurrentInteractItem() const {
-		return CurrentInteractItem;
+		return CharacterItemComponent->GetCurrentInteractItem();
 	}
 
 	void SetEquippedWeapon(AWeapon* InNewWeapon) {
@@ -1110,7 +1107,7 @@ public:
 	}
 
 	void SetCurrentInteractItem(AItem* InCurrentInteractItem) {
-		CurrentInteractItem = InCurrentInteractItem;
+		CharacterItemComponent->SetCurrentInteractItem(InCurrentInteractItem);
 	}
 
 	void SetPoseType(EPoseType InPoseType) {

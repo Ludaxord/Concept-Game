@@ -374,6 +374,10 @@ public:
 		return ItemMesh;
 	}
 
+	FORCEINLINE void SetItemMesh(USkeletalMeshComponent* InMesh) {
+		ItemMesh = InMesh;
+	}
+
 	FORCEINLINE USoundCue* GetPickupSound() const {
 		return PickupSound;
 	}

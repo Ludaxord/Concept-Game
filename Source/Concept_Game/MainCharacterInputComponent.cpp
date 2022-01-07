@@ -6,6 +6,7 @@
 #include "Cover.h"
 #include "DebugWidgetComponent.h"
 #include "InventoryComponent.h"
+#include "ItemComponent.h"
 #include "MainCharacter.h"
 #include "MainHUD.h"
 #include "MainPlayerController.h"
@@ -431,9 +432,9 @@ void UMainCharacterInputComponent::TriggerFPSCounter() {
 
 void UMainCharacterInputComponent::InteractButtonPressed() {
 	if (OwningCharacter->CombatState != ECombatState::ECS_Unoccupied) return;
-	if (OwningCharacter->TraceHitItem) {
-		OwningCharacter->TraceHitItem->InteractWithItem(OwningCharacter);
-		OwningCharacter->TraceHitItem = nullptr;
+	if (OwningCharacter->CharacterItemComponent->GetTraceHitItem()) {
+		OwningCharacter->CharacterItemComponent->GetTraceHitItem()->InteractWithItem(OwningCharacter);
+		OwningCharacter->CharacterItemComponent->SetTraceHitItem( nullptr);
 	}
 }
 

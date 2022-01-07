@@ -229,57 +229,67 @@ void AMainCharacter::CalculateCrosshairSpread(float DeltaTime) {
 		CrosshairShootingFactor;
 }
 
-//ITEMS
-void AMainCharacter::TraceForItems() {
-	// if (bShouldTraceForItems) {
-	if (OverlappedItemIDs.Num() > 0) {
-		FHitResult ItemTraceHitResult;
-		FVector HitLocation;
-		TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
-		if (ItemTraceHitResult.bBlockingHit) {
-			TraceHitItem = Cast<AItem>(ItemTraceHitResult.Actor);
+// //ITEMS
+// void AMainCharacter::TraceForItems() {
+// 	// if (bShouldTraceForItems) {
+// 	if (OverlappedItemIDs.Num() > 0) {
+// 		FHitResult ItemTraceHitResult;
+// 		FVector HitLocation;
+// 		TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
+// 		if (ItemTraceHitResult.bBlockingHit) {
+// 			TraceHitItem = Cast<AItem>(ItemTraceHitResult.Actor);
+//
+// 			//TODO: If Trace hit item exists, switch between item types...
+// 			if (TraceHitItem) {
+// 				// UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
+// 			}
+//
+// 			if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterp) {
+// 				TraceHitItem = nullptr;
+// 			}
+//
+// 			if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
+// 				TraceHitItem->PerformTrace(this, OverlappedItemIDs);
+// 			}
+//
+// 			if (TraceHitItemLastFrame) {
+// 				if (TraceHitItem != TraceHitItemLastFrame) {
+// 					TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
+// 				}
+// 			}
+//
+// 			TraceHitItemLastFrame = TraceHitItem;
+// 		}
+// 		else if (TraceHitItemLastFrame) {
+// 			TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
+// 		}
+// 	}
+// 	else if (TraceHitItemLastFrame) {
+// 		TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
+// 	}
+//
+// }
 
-			//TODO: If Trace hit item exists, switch between item types...
-			if (TraceHitItem) {
-				// UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
-			}
-
-			if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterp) {
-				TraceHitItem = nullptr;
-			}
-
-			if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
-				TraceHitItem->PerformTrace(this, OverlappedItemIDs);
-			}
-
-			if (TraceHitItemLastFrame) {
-				if (TraceHitItem != TraceHitItemLastFrame) {
-					TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
-				}
-			}
-
-			TraceHitItemLastFrame = TraceHitItem;
-		}
-		else if (TraceHitItemLastFrame) {
-			TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
-		}
-	}
-	else if (TraceHitItemLastFrame) {
-		TraceHitItemLastFrame->LeaveTrace(this, OverlappedItemIDs);
-	}
-
-}
+//TODO: Remove function when APhysicsInteractionItem will extend from AItem
+// void AMainCharacter::TraceForPhysicsItems() {
+//
+// 	if (OverlappedItemIDs.Num() > 0) {
+// 		FHitResult ItemTraceHitResult;
+// 		FVector HitLocation;
+// 		TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
+// 	}
+// }
 
 //LADDER
-void AMainCharacter::TraceForLadder() {
-	FHitResult LadderTraceHitResult;
-	FVector HitLocation;
-	bool Trace = TraceForLevelChange(LadderTraceHitResult, HitLocation);
-	if (PoseType == EPoseType::EPT_Climb) {
-		bJumpFromClimb = !Trace;
-		bTouchingFloor = Trace;
-	}
-}
+// void AMainCharacter::TraceForLadder() {
+// 	FHitResult LadderTraceHitResult;
+// 	FVector HitLocation;
+// 	bool Trace = TraceForLevelChange(LadderTraceHitResult, HitLocation);
+// 	if (PoseType == EPoseType::EPT_Climb) {
+// 		bJumpFromClimb = !Trace;
+// 		bTouchingFloor = Trace;
+// 	}
+// }
 
 bool AMainCharacter::TraceForLevelChange(FHitResult& OutHitResult, FVector& OutHitLocation) {
 	const FVector Start = GetActorLocation();
@@ -340,8 +350,11 @@ void AMainCharacter::Tick(float DeltaTime) {
 	AimingFieldOfView(DeltaTime);
 	SetLookUpRates(DeltaTime);
 	CalculateCrosshairSpread(DeltaTime);
-	TraceForItems();
-	TraceForLadder();
+
+	// TraceForItems();
+	// TraceForPhysicsItems();
+	// TraceForLadder();
+
 	InterpCapsuleHalfHeight(DeltaTime);
 
 	CoverSystem();
