@@ -4,11 +4,6 @@
 #include "PhysicsBasedItemTestObject.h"
 
 APhysicsBasedItemTestObject::APhysicsBasedItemTestObject() {
-	TestMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TestMesh"));
-	SetRootComponent(TestMesh);
-
-	TestMesh->SetSimulatePhysics(true);
-	TestMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 }
 
 bool APhysicsBasedItemTestObject::InteractWith_Implementation(AActor* InActor, UPrimitiveComponent* InHitComponent) {

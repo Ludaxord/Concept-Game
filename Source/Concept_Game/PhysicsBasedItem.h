@@ -21,4 +21,8 @@ public:
 	virtual AActor* LookAt_Implementation(AActor* InActor, UPrimitiveComponent* InHitComponent,
 	                                      APlayerController* InController, FText& OutMessage,
 	                                      UPrimitiveComponent* OutLookAtComponent) override;
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* PhysicsBasedMesh;
 };

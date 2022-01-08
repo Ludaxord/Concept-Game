@@ -217,15 +217,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Context Menu", meta= (AllowPrivateAccess = "true"))
 	TArray<EContextMenuType> ContextMenus;
-private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* ItemMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
-	class UWidgetComponent* PickupWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* AreaSphere;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* PickupWidget;
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* ItemMesh;
 
 	FGuid ID;
 
