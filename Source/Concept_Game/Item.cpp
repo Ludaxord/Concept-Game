@@ -15,6 +15,7 @@
 AItem::AItem(): ItemName(FString("Default")),
                 ItemCount(0),
                 ThrowItemTime(1.0f),
+                bItemCurrentlyOverlapped(false),
                 ItemRarity(EItemRarity::EIR_Common),
                 ItemState(EItemState::EIS_Pickup),
                 ItemInteractionName("Pickup") {
@@ -80,6 +81,7 @@ void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 			       *OverlappedComponent->GetName());
 			// SphereOverlapBegin();
 			OtherCharacter->SphereOverlapBegin(ID);
+			bItemCurrentlyOverlapped = true;
 		}
 	}
 }
@@ -92,6 +94,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 			UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s Overlapped Component %s"), * GetName(),
 			       *OverlappedComponent->GetName());
 			OtherCharacter->SphereOverlapEnd(ID);
+			bItemCurrentlyOverlapped = false;
 			// OtherCharacter->IncrementOverlappedItemCount(-1, ID);
 			// OtherCharacter->UnHighlightInventorySlot();
 		}

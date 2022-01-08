@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "ItemComponent.generated.h"
 
 
@@ -24,8 +25,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	void TraceForPhysicsItems();
 	void TraceForItems();
+	void HoldCurrentItem();
 	void TraceForLadder();
 
 private:
@@ -40,17 +41,18 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
 	AItem* TraceHitItemLastFrame;
 
-	//TODO: Remove it when implemented inside AItem
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	UPrimitiveComponent* TraceHitItemHitComponent;
+
+	friend class AMainCharacter;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	UPhysicsHandleComponent* PhysicsHandleComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
-	class APhysicsInteractionItem* TraceHitPhysicsItem;
+	USceneComponent* GrabHandleComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
-	class APhysicsInteractionItem* CurrentPhysicsItem;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
-	APhysicsInteractionItem* TraceHitPhysicsItemLastFrame;
-
+	bool bIsHoldingItem;
 public:
 	FORCEINLINE AItem* GetTraceHitItem() const {
 		return TraceHitItem;
@@ -75,4 +77,18 @@ public:
 	FORCEINLINE void SetTraceHitItemLastFrame(AItem* InItem) {
 		TraceHitItemLastFrame = InItem;
 	}
+
+	FORCEINLINE UPrimitiveComponent* GetTraceHitItemHitComponent() const {
+		return TraceHitItemHitComponent;
+	}
+
+	FORCEINLINE UPhysicsHandleComponent* GetPhysicsHandleComponent() const {
+		return PhysicsHandleComponent;
+	}
+
+	FORCEINLINE USceneComponent* GetGrabHandleComponent() const {
+		return GrabHandleComponent;
+	}
+
+	bool IsHoldingItem();
 };

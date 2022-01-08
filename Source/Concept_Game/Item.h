@@ -194,6 +194,8 @@ protected:
 
 	bool bFalling;
 
+	bool bItemCurrentlyOverlapped;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	bool bRotated;
 

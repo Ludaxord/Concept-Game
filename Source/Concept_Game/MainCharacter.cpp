@@ -110,6 +110,9 @@ AMainCharacter::AMainCharacter():
 	bPlayClimbTurnAnimation(false) {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
+
 	ConstructCameraBoom();
 	ConstructFollowCamera();
 	ConstructEyesCamera();
@@ -129,7 +132,6 @@ AMainCharacter::AMainCharacter():
 	CharacterSkillComponent = CreateDefaultSubobject<USkillComponent>(TEXT("CharacterSkillComponent"));
 
 	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
-	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
 	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
 	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
@@ -651,6 +653,10 @@ void AMainCharacter::ConstructEyesCamera() {
 	EyesCamera->bUsePawnControlRotation = true;
 	EyesCamera->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
 	ConstructEyesCameraHeadComponent();
+
+	if (CharacterItemComponent) {
+		CharacterItemComponent->GrabHandleComponent->SetupAttachment(EyesCamera);
+	}
 }
 
 void AMainCharacter::ConstructRefFollowCamera() {

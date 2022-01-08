@@ -16,11 +16,21 @@ class CONCEPT_GAME_API APhysicsBasedItem : public AItem, public IPhysicsBasedInt
 public:
 	APhysicsBasedItem();
 
+	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
+
 	virtual bool InteractWith_Implementation(AActor* InActor, UPrimitiveComponent* InHitComponent) override;
 
 	virtual AActor* LookAt_Implementation(AActor* InActor, UPrimitiveComponent* InHitComponent,
 	                                      APlayerController* InController, FText& OutMessage,
 	                                      UPrimitiveComponent* OutLookAtComponent) override;
+
+	virtual void OnPhysicsInteraction();
+
+	virtual void OnLiftItem();
+
+	virtual void OnDropItem();
+
+	virtual void OnThrowItem();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
