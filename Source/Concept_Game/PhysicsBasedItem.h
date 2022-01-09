@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InteractiveItem.h"
 #include "Item.h"
 #include "PhysicsBasedInteractionInterface.h"
 #include "PhysicsBasedItem.generated.h"
@@ -11,7 +12,7 @@
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API APhysicsBasedItem : public AItem, public IPhysicsBasedInteractionInterface {
+class CONCEPT_GAME_API APhysicsBasedItem : public AInteractiveItem, public IPhysicsBasedInteractionInterface {
 	GENERATED_BODY()
 public:
 	APhysicsBasedItem();
@@ -32,7 +33,7 @@ public:
 
 	virtual void OnThrowItem();
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* PhysicsBasedMesh;
 };

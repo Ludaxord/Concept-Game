@@ -4,6 +4,8 @@
 #include "PhysicsBasedItemTestObject.h"
 
 APhysicsBasedItemTestObject::APhysicsBasedItemTestObject() {
+	ItemInteractionName = "Grab";
+	ItemName = "Cube";
 }
 
 bool APhysicsBasedItemTestObject::InteractWith_Implementation(AActor* InActor, UPrimitiveComponent* InHitComponent) {
@@ -11,8 +13,7 @@ bool APhysicsBasedItemTestObject::InteractWith_Implementation(AActor* InActor, U
 }
 
 AActor* APhysicsBasedItemTestObject::LookAt_Implementation(AActor* InActor, UPrimitiveComponent* InHitComponent,
-                                                       APlayerController* InController, FText& OutMessage,
-                                                       UPrimitiveComponent* OutLookAtComponent) {
+                                                           APlayerController* InController, FText& OutMessage,
+                                                           UPrimitiveComponent* OutLookAtComponent) {
 	return Super::LookAt_Implementation(InActor, InHitComponent, InController, OutMessage, OutLookAtComponent);
 }
-

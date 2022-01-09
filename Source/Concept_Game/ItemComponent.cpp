@@ -5,7 +5,6 @@
 
 #include "MainCharacter.h"
 #include "PhysicsBasedItem.h"
-#include "PhysicsInteractionItem.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
