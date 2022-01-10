@@ -16,6 +16,8 @@ class CONCEPT_GAME_API ACabinet : public APhysicsBasedItem {
 public:
 	ACabinet();
 
+	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* LeftDoorMesh;

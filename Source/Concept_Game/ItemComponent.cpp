@@ -51,6 +51,7 @@ void UItemComponent::TraceForItems() {
 				// TODO: add custom depth...
 				if (Cast<APhysicsBasedItem>(TraceHitItem)) {
 					TraceHitItemHitComponent = ItemTraceHitResult.GetComponent();
+					// UE_LOG(LogTemp, Warning, TEXT("TraceHitItemHitComponent: %s"), *TraceHitItemHitComponent->GetName())
 				}
 			}
 
@@ -73,11 +74,13 @@ void UItemComponent::TraceForItems() {
 		else if (TraceHitItemLastFrame) {
 			TraceHitItemLastFrame->LeaveTrace(OwningCharacter, OwningCharacter->OverlappedItemIDs);
 			TraceHitItemHitComponent = nullptr;
+			UE_LOG(LogTemp, Warning, TEXT("TraceHitItemLastFrame: %s"), *TraceHitItemLastFrame->GetName())
 		}
 	}
 	else if (TraceHitItemLastFrame) {
 		TraceHitItemLastFrame->LeaveTrace(OwningCharacter, OwningCharacter->OverlappedItemIDs);
 		TraceHitItemHitComponent = nullptr;
+		UE_LOG(LogTemp, Warning, TEXT("TraceHitItemLastFrame: %s"), *TraceHitItemLastFrame->GetName())
 	}
 }
 

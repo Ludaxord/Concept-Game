@@ -13,8 +13,8 @@ ACabinet::ACabinet() {
 	LeftDoorMesh->SetupAttachment(PhysicsBasedMesh);
 	RightDoorMesh->SetupAttachment(PhysicsBasedMesh);
 
-	PhysicsBasedMesh->SetSimulatePhysics(false);
-	PhysicsBasedMesh->SetCollisionProfileName(FName("NoCollision"));
+	PhysicsBasedMesh->SetSimulatePhysics(true);
+	PhysicsBasedMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
 	LeftDoorMesh->SetSimulatePhysics(true);
 	RightDoorMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
@@ -27,4 +27,14 @@ ACabinet::ACabinet() {
 
 	LeftDoorPhysicsConstraint->SetupAttachment(LeftDoorMesh);
 	RightDoorPhysicsConstraint->SetupAttachment(RightDoorMesh);
+
+	LeftDoorPhysicsConstraint->ComponentName1 = {"LeftDoorMesh"};
+	LeftDoorPhysicsConstraint->ComponentName2 = {"PhysicsBasedMesh"};
+
+	RightDoorPhysicsConstraint->ComponentName1 = {"RightDoorMesh"};
+	RightDoorPhysicsConstraint->ComponentName2 = {"PhysicsBasedMesh"};
+}
+
+void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
+	Super::InteractWithItem(InCharacter);
 }
