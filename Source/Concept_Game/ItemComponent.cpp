@@ -74,13 +74,11 @@ void UItemComponent::TraceForItems() {
 		else if (TraceHitItemLastFrame) {
 			TraceHitItemLastFrame->LeaveTrace(OwningCharacter, OwningCharacter->OverlappedItemIDs);
 			TraceHitItemHitComponent = nullptr;
-			UE_LOG(LogTemp, Warning, TEXT("TraceHitItemLastFrame: %s"), *TraceHitItemLastFrame->GetName())
 		}
 	}
 	else if (TraceHitItemLastFrame) {
 		TraceHitItemLastFrame->LeaveTrace(OwningCharacter, OwningCharacter->OverlappedItemIDs);
 		TraceHitItemHitComponent = nullptr;
-		UE_LOG(LogTemp, Warning, TEXT("TraceHitItemLastFrame: %s"), *TraceHitItemLastFrame->GetName())
 	}
 }
 

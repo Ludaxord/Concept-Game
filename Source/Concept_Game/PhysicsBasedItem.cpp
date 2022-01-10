@@ -58,11 +58,7 @@ void APhysicsBasedItem::OnPhysicsInteraction() {
 void APhysicsBasedItem::OnLiftItem() {
 	FHitResult HitResult;
 	FVector HitLocation;
-	bool bIsHit = Character->TraceUnderCrosshairs(HitResult, HitLocation);
-	if (bIsHit) {
-		UE_LOG(LogTemp, Warning, TEXT("OnLiftItem -----> Hit Item Component Exists: %s Name: %s"),
-		       Character->GetCharacterItemComponent()->GetTraceHitItemHitComponent() != nullptr ? TEXT("true") : TEXT(
-			       "false"), *Character->GetCharacterItemComponent()->GetTraceHitItemHitComponent()->GetName())
+	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
 		Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GrabComponentAtLocationWithRotation(
 			Character->GetCharacterItemComponent()->GetTraceHitItemHitComponent(),
 			FName("None"),
@@ -72,7 +68,6 @@ void APhysicsBasedItem::OnLiftItem() {
 		Character->GetCharacterItemComponent()->GetGrabHandleComponent()->SetWorldLocationAndRotation(
 			HitResult.Location,
 			UKismetMathLibrary::MakeRotFromX(HitResult.Normal));
-
 	}
 }
 
