@@ -16,7 +16,7 @@ ACabinet::ACabinet(): bIsOpened(false) {
 	LeftDoorMesh->SetupAttachment(PhysicsBasedMesh);
 	RightDoorMesh->SetupAttachment(PhysicsBasedMesh);
 
-	PhysicsBasedMesh->SetSimulatePhysics(true);
+	PhysicsBasedMesh->SetSimulatePhysics(false);
 	PhysicsBasedMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
 	LeftDoorMesh->SetSimulatePhysics(true);
