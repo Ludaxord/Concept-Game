@@ -86,6 +86,10 @@ void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
 	// GetCharacterItemComponent()->GetTraceHitItemHitComponent() == RightDoorMesh) {
 
 	bIsOpenedRef = !bIsOpened;
+	for (AItem* IItem : InsideItems) {
+		IItem->InteractionEnabled(bIsOpenedRef);
+	}
+
 	DoorMovementTransitionTimeline->PlayFromStart();
 	// }
 	// else {
@@ -131,10 +135,6 @@ void ACabinet::Tick(float DeltaSeconds) {
 		if (CurrentDoorRotation == 1.f) {
 			bIsOpened = !bIsOpened;
 			CurrentDoorRotation = 0;
-
-			for (AItem* IItem : InsideItems) {
-				IItem->InteractionEnabled(bIsOpened);
-			}
 		}
 	}
 }
