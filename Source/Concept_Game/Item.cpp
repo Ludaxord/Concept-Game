@@ -14,6 +14,7 @@
 // Sets default values
 AItem::AItem(): ItemName(FString("Default")),
                 ItemCount(0),
+                bInteractionEnabled(true),
                 ThrowItemTime(1.0f),
                 bItemCurrentlyOverlapped(false),
                 ItemRarity(EItemRarity::EIR_Common),
@@ -63,6 +64,7 @@ void AItem::BeginPlay() {
 
 	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereBeginOverlap);
 	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
+	CurrentSphereRadius = AreaSphere->GetScaledSphereRadius();
 
 	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnBoxBeginOverlap);
 	CollisionBox->OnComponentEndOverlap.AddDynamic(this, &AItem::OnBoxEndOverlap);
@@ -74,29 +76,33 @@ void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                  const FHitResult& SweepResult) {
 	UE_LOG(LogTemp, Error, TEXT("Overlapping %s"), * OverlappedComponent->GetName());
-	if (OtherActor) {
-		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
-		if (OtherCharacter != nullptr) {
-			UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin item %s Overlapped Component %s"), *GetName(),
-			       *OverlappedComponent->GetName());
-			// SphereOverlapBegin();
-			OtherCharacter->SphereOverlapBegin(ID);
-			bItemCurrentlyOverlapped = true;
+	if (bInteractionEnabled) {
+		if (OtherActor) {
+			AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+			if (OtherCharacter != nullptr) {
+				UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin item %s Overlapped Component %s"), *GetName(),
+				       *OverlappedComponent->GetName());
+				// SphereOverlapBegin();
+				OtherCharacter->SphereOverlapBegin(ID);
+				bItemCurrentlyOverlapped = true;
+			}
 		}
 	}
 }
 
 void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	if (OtherActor) {
-		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
-		if (OtherCharacter != nullptr) {
-			UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s Overlapped Component %s"), * GetName(),
-			       *OverlappedComponent->GetName());
-			OtherCharacter->SphereOverlapEnd(ID);
-			bItemCurrentlyOverlapped = false;
-			// OtherCharacter->IncrementOverlappedItemCount(-1, ID);
-			// OtherCharacter->UnHighlightInventorySlot();
+	if (bInteractionEnabled) {
+		if (OtherActor) {
+			AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+			if (OtherCharacter != nullptr) {
+				UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s Overlapped Component %s"), * GetName(),
+				       *OverlappedComponent->GetName());
+				OtherCharacter->SphereOverlapEnd(ID);
+				bItemCurrentlyOverlapped = false;
+				// OtherCharacter->IncrementOverlappedItemCount(-1, ID);
+				// OtherCharacter->UnHighlightInventorySlot();
+			}
 		}
 	}
 }
@@ -138,6 +144,23 @@ void AItem::SetItemProperties(EItemState State) {
 	}
 	break;
 	case EItemState::EIS_PickedUp: {
+		PickupWidget->SetVisibility(false);
+		ItemMesh->SetSimulatePhysics(false);
+		ItemMesh->SetEnableGravity(false);
+		ItemMesh->SetVisibility(false);
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		ItemInteractionName = "";
+	}
+	break;
+	case EItemState::EIS_PickupDisabled: {
 		PickupWidget->SetVisibility(false);
 		ItemMesh->SetSimulatePhysics(false);
 		ItemMesh->SetEnableGravity(false);
@@ -218,6 +241,7 @@ void AItem::SetItemProperties(EItemState State) {
 }
 
 void AItem::InteractWithItem(AMainCharacter* InCharacter) {
+	if (!bInteractionEnabled && ItemState != EItemState::EIS_PickupDisabled) return;
 	Character = InCharacter;
 	Character->SetCurrentInteractItem(this);
 	//TODO: If item is not weapon, then check if it is a usable item or story item.
@@ -249,6 +273,18 @@ void AItem::LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
 	Character = InMainCharacter;
 	// UE_LOG(LogTemp, Warning, TEXT("Perform Traced Item => %s Contains Item => %s"), *ID.ToString(), Guids.Contains(ID) ? TEXT("Contains") : TEXT("Not Contains"))
 	PickupWidget->SetVisibility(false);
+}
+
+void AItem::InteractionEnabled(bool bEnabled) {
+	if (bInteractionEnabled) {
+		EnableItemState = ItemState;
+	}
+
+	bInteractionEnabled = bEnabled;
+	SetItemState(bInteractionEnabled ? EnableItemState : EItemState::EIS_PickupDisabled);
+
+	// GetAreaSphere()->SetSphereRadius(bInteractionEnabled ? CurrentSphereRadius : 0.0f);
+	// GetAreaSphere()->SetCollisionEnabled(bEnabled ? CurrentCollisionType : ECollisionEnabled::NoCollision);
 }
 
 void AItem::FinishInterp() {

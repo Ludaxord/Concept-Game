@@ -4,6 +4,7 @@
 #include "Cabinet.h"
 
 #include "MainCharacter.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ACabinet::ACabinet(): bIsOpened(false) {
@@ -31,6 +32,23 @@ ACabinet::ACabinet(): bIsOpened(false) {
 
 	DoorMovementTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DoorMovementTransitionTimeline"));
 
+	ShelfPosition1 = CreateDefaultSubobject<UBoxComponent>(TEXT("ShelfPosition1"));
+	ShelfPosition2 = CreateDefaultSubobject<UBoxComponent>(TEXT("ShelfPosition2"));
+
+	ShelfPosition1->SetupAttachment(PhysicsBasedMesh);
+	ShelfPosition2->SetupAttachment(PhysicsBasedMesh);
+
+	// Item1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item1"));
+	// Item1->SetupAttachment(PhysicsBasedMesh);
+	// Item2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item2"));
+	// Item2->SetupAttachment(PhysicsBasedMesh);
+	// Item3 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item3"));
+	// Item3->SetupAttachment(PhysicsBasedMesh);
+	// Item4 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item4"));
+	// Item4->SetupAttachment(PhysicsBasedMesh);
+	// Item5 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Item5"));
+	// Item5->SetupAttachment(PhysicsBasedMesh);
+
 	// LeftDoorPhysicsConstraint->SetupAttachment(LeftDoorMesh);
 	// RightDoorPhysicsConstraint->SetupAttachment(RightDoorMesh);
 
@@ -50,6 +68,13 @@ void ACabinet::BeginPlay() {
 		CurrentLeftRotYaw = LeftDoorMesh->GetComponentRotation().Yaw;
 		CurrentRightRotYaw = RightDoorMesh->GetComponentRotation().Yaw;
 		UE_LOG(LogTemp, Warning, TEXT("Setting Door Movement Transition"));
+	}
+
+	for (AItem* IItem : InsideItems) {
+		IItem->GetItemMesh()->SetupAttachment(PhysicsBasedMesh);
+		IItem->GetItemMesh()->SetWorldLocationAndRotation(ShelfPosition1->GetComponentLocation(),
+		                                                  ShelfPosition1->GetComponentRotation());
+		IItem->InteractionEnabled(false);
 	}
 }
 
@@ -106,6 +131,10 @@ void ACabinet::Tick(float DeltaSeconds) {
 		if (CurrentDoorRotation == 1.f) {
 			bIsOpened = !bIsOpened;
 			CurrentDoorRotation = 0;
+
+			for (AItem* IItem : InsideItems) {
+				IItem->InteractionEnabled(bIsOpened);
+			}
 		}
 	}
 }

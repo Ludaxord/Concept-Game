@@ -29,6 +29,7 @@ enum class EItemState : uint8 {
 	EIS_Pickup UMETA(DisplayName = "Pickup"),
 	EIS_EquipInterp UMETA(DisplayName = "Equip Interp"),
 	EIS_PickedUp UMETA(DisplayName = "Picked Up"),
+	EIS_PickupDisabled UMETA(DisplayName = "Pickup Disabled"),
 	EIS_Equipped UMETA(DisplayName = "Equipped"),
 	EIS_Falling UMETA(DisplayName = "Falling"),
 	EIS_Interact UMETA(DisplayName = "Interacting"),
@@ -116,6 +117,8 @@ public:
 	virtual void PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids);
 
 	virtual void LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids);
+
+	virtual void InteractionEnabled(bool bEnabled);
 
 	template <typename T>
 	T* RegisterNewComponent(FName ComponentName, FTransform MeshTransform);
@@ -223,6 +226,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* AreaSphere;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float CurrentSphereRadius;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	bool bInteractionEnabled;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* PickupWidget;
 private:
@@ -242,6 +251,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	EItemState ItemState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	EItemState EnableItemState;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	class UCurveFloat* ItemZCurve;

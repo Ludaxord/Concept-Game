@@ -60,4 +60,25 @@ private:
 	float CurrentLeftRotYaw;
 
 	float CurrentRightRotYaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	TArray<AItem*> InsideItems;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* ShelfPosition1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* ShelfPosition2;
+	
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	// UStaticMeshComponent* Item2;
+	//
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	// UStaticMeshComponent* Item3;
+	//
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	// UStaticMeshComponent* Item4;
+	//
+	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	// UStaticMeshComponent* Item5;
 };
