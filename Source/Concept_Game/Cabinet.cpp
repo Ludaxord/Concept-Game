@@ -71,9 +71,14 @@ void ACabinet::BeginPlay() {
 	}
 
 	for (AItem* IItem : InsideItems) {
-		IItem->GetItemMesh()->SetupAttachment(PhysicsBasedMesh);
-		IItem->GetItemMesh()->SetWorldLocationAndRotation(ShelfPosition1->GetComponentLocation(),
-		                                                  ShelfPosition1->GetComponentRotation());
+		FVector Loc = ShelfPosition1->GetComponentLocation();
+		Loc = {Loc.X, Loc.Y, Loc.Z + 100};
+		FRotator Rot = ShelfPosition1->GetComponentRotation();
+		Rot = {Rot.Pitch, Rot.Yaw + 90, Rot.Roll};
+		IItem->GetItemMesh()->SetupAttachment(ShelfPosition1);
+		IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
+		IItem->SetItemState(EItemState::EIS_Falling);
+		// IItem->SetItemState(EItemState::EIS_Pickup);
 		IItem->InteractionEnabled(false);
 	}
 }
@@ -87,7 +92,20 @@ void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
 
 	bIsOpenedRef = !bIsOpened;
 	for (AItem* IItem : InsideItems) {
+		IItem->SetItemState(EItemState::EIS_Pickup);
 		IItem->InteractionEnabled(bIsOpenedRef);
+
+		FBoxSphereBounds MeshBounds = IItem->GetItemMesh()->Bounds;
+		FBoxSphereBounds Shelf1Bounds = ShelfPosition1->Bounds;
+		FBoxSphereBounds Shelf2Bounds = ShelfPosition2->Bounds;
+		UE_LOG(LogTemp, Warning,
+		       TEXT(
+			       "ItemBounds Name: %s, \nMeshBounds: %s, \nShelfPosition1: %s, \nShelfPosition2: %s, Shelf1 %s, Slelf2 %s"
+		       ),
+		       *IItem->GetName(),
+		       *MeshBounds.ToString(), *Shelf1Bounds.ToString(), *Shelf2Bounds.ToString(),
+		       *(Shelf1Bounds.BoxExtent - MeshBounds.BoxExtent).ToString(),
+		       *(Shelf2Bounds.BoxExtent - MeshBounds.BoxExtent).ToString())
 	}
 
 	DoorMovementTransitionTimeline->PlayFromStart();
@@ -101,7 +119,6 @@ void ACabinet::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
 
 	if (bIsOpenedRef != bIsOpened) {
-		UE_LOG(LogTemp, Warning, TEXT("Updating Door Rot: %f"), CurrentDoorRotation);
 		FRotator LRot = LeftDoorMesh->GetComponentRotation();
 		FRotator RRot = RightDoorMesh->GetComponentRotation();
 
@@ -120,13 +137,6 @@ void ACabinet::Tick(float DeltaSeconds) {
 			                                                 : CurrentLeftRotYaw,
 		                                                 CurrentDoorRotation);
 
-		// float LeftLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef ? 110 : 0,
-		//                                                 bIsOpenedRef ? 0 : 110,
-		//                                                 CurrentDoorRotation);
-		// float RightLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef ? -110 : 0,
-		//                                                  bIsOpenedRef ? 0 : -110,
-		//                                                  CurrentDoorRotation);
-
 		FRotator LNewRot = {LRot.Pitch, LeftLerpRotYaw, LRot.Roll};
 		FRotator RNewRot = {LRot.Pitch, RightLerpRotYaw, LRot.Roll};
 
@@ -140,6 +150,5 @@ void ACabinet::Tick(float DeltaSeconds) {
 }
 
 void ACabinet::UpdateDoorMovementTransitionTimeline(float Output) {
-	UE_LOG(LogTemp, Error, TEXT("Updating Door Rot: %f"), CurrentDoorRotation);
 	CurrentDoorRotation = Output;
 }

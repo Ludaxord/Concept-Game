@@ -11,6 +11,32 @@
 /**
  * 
  */
+
+USTRUCT(BlueprintType)
+struct FShelfItem {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* ShelfReference;
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	AItem* ShelfItem;
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	FTransform PositionInShelf;
+};
+
+USTRUCT(BlueprintType)
+struct FCabinetShelf {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* ShelfReference;
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	TArray<FShelfItem> ShelfItems;
+};
+
 UCLASS()
 class CONCEPT_GAME_API ACabinet : public APhysicsBasedItem {
 	GENERATED_BODY()
@@ -64,21 +90,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	TArray<AItem*> InsideItems;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	TArray<FCabinetShelf> Shelves;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* ShelfPosition1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* ShelfPosition2;
-	
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
-	// UStaticMeshComponent* Item2;
-	//
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
-	// UStaticMeshComponent* Item3;
-	//
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
-	// UStaticMeshComponent* Item4;
-	//
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
-	// UStaticMeshComponent* Item5;
+
+	FTimerHandle TimerHandle;
 };

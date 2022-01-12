@@ -75,13 +75,13 @@ void AItem::BeginPlay() {
 void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                  const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Error, TEXT("Overlapping %s"), * OverlappedComponent->GetName());
+	// UE_LOG(LogTemp, Error, TEXT("Overlapping %s"), * OverlappedComponent->GetName());
 	if (bInteractionEnabled) {
 		if (OtherActor) {
 			AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 			if (OtherCharacter != nullptr) {
-				UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin item %s Overlapped Component %s"), *GetName(),
-				       *OverlappedComponent->GetName());
+				// UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin item %s Overlapped Component %s"), *GetName(),
+				// *OverlappedComponent->GetName());
 				// SphereOverlapBegin();
 				OtherCharacter->SphereOverlapBegin(ID);
 				bItemCurrentlyOverlapped = true;
@@ -96,8 +96,8 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 		if (OtherActor) {
 			AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 			if (OtherCharacter != nullptr) {
-				UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s Overlapped Component %s"), * GetName(),
-				       *OverlappedComponent->GetName());
+				// UE_LOG(LogTemp, Warning, TEXT("Overlapping End item %s Overlapped Component %s"), * GetName(),
+				// *OverlappedComponent->GetName());
 				OtherCharacter->SphereOverlapEnd(ID);
 				bItemCurrentlyOverlapped = false;
 				// OtherCharacter->IncrementOverlappedItemCount(-1, ID);
@@ -110,13 +110,10 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 void AItem::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                               const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("Box Overlapping BEGIN!!!!!"));
 }
 
 void AItem::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                             UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("Box Overlapping END!!!!!"));
-
 }
 
 void AItem::SetItemProperties(EItemState State) {
