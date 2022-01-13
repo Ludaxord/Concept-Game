@@ -118,7 +118,7 @@ public:
 
 	virtual void LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids);
 
-	virtual void InteractionEnabled(bool bEnabled);
+	virtual void InteractionEnabled(bool bEnabled, EItemState InItemState = EItemState::EIS_MAX);
 
 	template <typename T>
 	T* RegisterNewComponent(FName ComponentName, FTransform MeshTransform);

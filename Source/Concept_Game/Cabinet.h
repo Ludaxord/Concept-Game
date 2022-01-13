@@ -93,11 +93,20 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	TArray<FCabinetShelf> Shelves;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* ShelfPosition1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Item Properties", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* ShelfPosition2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* WallLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* WallRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* WallBack;
 
 	FTimerHandle TimerHandle;
 };

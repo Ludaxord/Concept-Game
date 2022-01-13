@@ -35,6 +35,10 @@ ACabinet::ACabinet(): bIsOpened(false) {
 	ShelfPosition1 = CreateDefaultSubobject<UBoxComponent>(TEXT("ShelfPosition1"));
 	ShelfPosition2 = CreateDefaultSubobject<UBoxComponent>(TEXT("ShelfPosition2"));
 
+	WallLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("WallLeft"));
+	WallRight = CreateDefaultSubobject<UBoxComponent>(TEXT("WallRight"));
+	WallBack = CreateDefaultSubobject<UBoxComponent>(TEXT("WallBack"));
+
 	ShelfPosition1->SetupAttachment(PhysicsBasedMesh);
 	ShelfPosition2->SetupAttachment(PhysicsBasedMesh);
 
@@ -72,9 +76,10 @@ void ACabinet::BeginPlay() {
 
 	for (AItem* IItem : InsideItems) {
 		FVector Loc = ShelfPosition1->GetComponentLocation();
-		Loc = {Loc.X, Loc.Y, Loc.Z + 100};
+		FBoxSphereBounds MeshBounds = IItem->GetItemMesh()->Bounds;
+		Loc = {Loc.X, Loc.Y, Loc.Z + (MeshBounds.BoxExtent.Z) + 10};
 		FRotator Rot = ShelfPosition1->GetComponentRotation();
-		Rot = {Rot.Pitch, Rot.Yaw + 90, Rot.Roll};
+		Rot = {Rot.Pitch + 90, Rot.Yaw, Rot.Roll + 90};
 		IItem->GetItemMesh()->SetupAttachment(ShelfPosition1);
 		IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
 		IItem->SetItemState(EItemState::EIS_Falling);
@@ -92,7 +97,7 @@ void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
 
 	bIsOpenedRef = !bIsOpened;
 	for (AItem* IItem : InsideItems) {
-		IItem->SetItemState(EItemState::EIS_Pickup);
+		IItem->SetItemState(bIsOpenedRef ? EItemState::EIS_Pickup : EItemState::EIS_Falling);
 		IItem->InteractionEnabled(bIsOpenedRef);
 
 		FBoxSphereBounds MeshBounds = IItem->GetItemMesh()->Bounds;

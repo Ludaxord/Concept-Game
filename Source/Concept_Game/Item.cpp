@@ -272,9 +272,13 @@ void AItem::LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) {
 	PickupWidget->SetVisibility(false);
 }
 
-void AItem::InteractionEnabled(bool bEnabled) {
+void AItem::InteractionEnabled(bool bEnabled, EItemState InItemState) {
 	if (bInteractionEnabled) {
 		EnableItemState = ItemState;
+	}
+
+	if (InItemState != EItemState::EIS_MAX) {
+		EnableItemState = InItemState;
 	}
 
 	bInteractionEnabled = bEnabled;
