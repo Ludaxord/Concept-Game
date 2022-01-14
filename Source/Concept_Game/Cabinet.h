@@ -34,6 +34,9 @@ struct FCabinetShelf {
 	class UBoxComponent* ShelfReference;
 
 	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	FVector EmptyPlaceAtShelf;
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
 	TArray<FShelfItem> ShelfItems;
 };
 
@@ -48,6 +51,13 @@ public:
 	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                               const FHitResult& SweepResult) override;
+
+	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                             UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 private:
 	UFUNCTION()
 	void UpdateDoorMovementTransitionTimeline(float Output);
@@ -90,8 +100,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	TArray<AItem*> InsideItems;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
-	TArray<FCabinetShelf> Shelves;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	// TArray<FCabinetShelf> Shelves;
+	TMap<UBoxComponent*, FCabinetShelf> Shelves;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* ShelfPosition1;
@@ -107,6 +118,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* WallBack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Cabinet Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* WallFront;
 
 	FTimerHandle TimerHandle;
 };

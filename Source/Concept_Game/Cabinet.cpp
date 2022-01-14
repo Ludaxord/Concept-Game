@@ -38,6 +38,7 @@ ACabinet::ACabinet(): bIsOpened(false) {
 	WallLeft = CreateDefaultSubobject<UBoxComponent>(TEXT("WallLeft"));
 	WallRight = CreateDefaultSubobject<UBoxComponent>(TEXT("WallRight"));
 	WallBack = CreateDefaultSubobject<UBoxComponent>(TEXT("WallBack"));
+	WallFront = CreateDefaultSubobject<UBoxComponent>(TEXT("WallFront"));
 
 	ShelfPosition1->SetupAttachment(PhysicsBasedMesh);
 	ShelfPosition2->SetupAttachment(PhysicsBasedMesh);
@@ -66,6 +67,24 @@ ACabinet::ACabinet(): bIsOpened(false) {
 void ACabinet::BeginPlay() {
 	Super::BeginPlay();
 
+	ShelfPosition1->OnComponentBeginOverlap.AddDynamic(this, &ACabinet::OnBoxBeginOverlap);
+	ShelfPosition1->OnComponentEndOverlap.AddDynamic(this, &ACabinet::OnBoxEndOverlap);
+
+	ShelfPosition2->OnComponentBeginOverlap.AddDynamic(this, &ACabinet::OnBoxBeginOverlap);
+	ShelfPosition2->OnComponentEndOverlap.AddDynamic(this, &ACabinet::OnBoxEndOverlap);
+
+	WallLeft->OnComponentBeginOverlap.AddDynamic(this, &ACabinet::OnBoxBeginOverlap);
+	WallLeft->OnComponentEndOverlap.AddDynamic(this, &ACabinet::OnBoxEndOverlap);
+
+	WallRight->OnComponentBeginOverlap.AddDynamic(this, &ACabinet::OnBoxBeginOverlap);
+	WallRight->OnComponentEndOverlap.AddDynamic(this, &ACabinet::OnBoxEndOverlap);
+
+	WallBack->OnComponentBeginOverlap.AddDynamic(this, &ACabinet::OnBoxBeginOverlap);
+	WallBack->OnComponentEndOverlap.AddDynamic(this, &ACabinet::OnBoxEndOverlap);
+
+	WallFront->OnComponentBeginOverlap.AddDynamic(this, &ACabinet::OnBoxBeginOverlap);
+	WallFront->OnComponentEndOverlap.AddDynamic(this, &ACabinet::OnBoxEndOverlap);
+
 	DoorMovementFunctionFloat.BindDynamic(this, &ACabinet::UpdateDoorMovementTransitionTimeline);
 	if (DoorMovementTransitionFloatCurve) {
 		DoorMovementTransitionTimeline->AddInterpFloat(DoorMovementTransitionFloatCurve, DoorMovementFunctionFloat);
@@ -74,17 +93,72 @@ void ACabinet::BeginPlay() {
 		UE_LOG(LogTemp, Warning, TEXT("Setting Door Movement Transition"));
 	}
 
+
+	//TODO: Wrap into a function...
+	FCabinetShelf CabinetShelf1 = FCabinetShelf();
+	CabinetShelf1.EmptyPlaceAtShelf = ShelfPosition1->Bounds.BoxExtent;
+	Shelves.Add(ShelfPosition1, CabinetShelf1);
+	// Shelves[ShelfPosition1] = CabinetShelf1;
+
+	FCabinetShelf CabinetShelf2 = FCabinetShelf();
+	CabinetShelf2.EmptyPlaceAtShelf = ShelfPosition2->Bounds.BoxExtent;
+	Shelves.Add(ShelfPosition2, CabinetShelf2);
+	// Shelves[ShelfPosition2] = CabinetShelf2;
+
+	TArray<UBoxComponent*> Keys;
+	Shelves.GetKeys(Keys);
+
 	for (AItem* IItem : InsideItems) {
-		FVector Loc = ShelfPosition1->GetComponentLocation();
-		FBoxSphereBounds MeshBounds = IItem->GetItemMesh()->Bounds;
-		Loc = {Loc.X, Loc.Y, Loc.Z + (MeshBounds.BoxExtent.Z) + 10};
-		FRotator Rot = ShelfPosition1->GetComponentRotation();
-		Rot = {Rot.Pitch + 90, Rot.Yaw, Rot.Roll + 90};
-		IItem->GetItemMesh()->SetupAttachment(ShelfPosition1);
-		IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
-		IItem->SetItemState(EItemState::EIS_Falling);
-		// IItem->SetItemState(EItemState::EIS_Pickup);
-		IItem->InteractionEnabled(false);
+		bool bItemSetup = false;
+		for (UBoxComponent* Key : Keys) {
+			if (!bItemSetup) {
+				FVector Loc = Key->GetComponentLocation();
+				FVector MeshBounds = IItem->GetItemMesh()->Bounds.BoxExtent;
+				FRotator Rot = Key->GetComponentRotation();
+
+				if (Shelves[Key].ShelfItems.Num() == 0) {
+					FVector2D EmptyPlaceAtShelf = {Shelves[Key].EmptyPlaceAtShelf.X, Shelves[Key].EmptyPlaceAtShelf.Y};
+					FVector2D ItemBound = EmptyPlaceAtShelf - FVector2D(MeshBounds.X, MeshBounds.Y);
+					FVector2D RotatedItemBound = EmptyPlaceAtShelf - FVector2D(MeshBounds.Y, MeshBounds.X);
+
+					//TODO: Set Position And Rotation depend on ItemBox Bounds (if is rotated or base state)
+					if (RotatedItemBound > ItemBound && RotatedItemBound.X > 0 && RotatedItemBound.Y > 0) {
+						UE_LOG(LogTemp, Error, TEXT("EmptyPlaceAtShelf Set Rotated Item"))
+					}
+
+
+					UE_LOG(LogTemp, Warning,
+					       TEXT("EmptyPlaceAtShelf %s, MeshBounds %s, ItemBound %s, RotatedItemBound %s"),
+					       *Shelves[Key].EmptyPlaceAtShelf.ToString(),
+					       *MeshBounds.ToString(),
+					       *ItemBound.ToString(),
+					       *RotatedItemBound.ToString())
+
+					Loc = {Loc.X, Loc.Y, Loc.Z + (MeshBounds.Z) + 10};
+					Rot = {Rot.Pitch, Rot.Yaw, Rot.Roll};
+					IItem->GetItemMesh()->SetupAttachment(Key);
+					IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
+					IItem->SetItemState(EItemState::EIS_Falling);
+					// IItem->SetItemState(EItemState::EIS_Pickup);
+					// IItem->InteractionEnabled(false);
+
+					FShelfItem ShelfItem = FShelfItem();
+					ShelfItem.ShelfReference = Key;
+					ShelfItem.ShelfItem = IItem;
+					ShelfItem.PositionInShelf = FTransform(Rot.Quaternion(), Loc);
+					Shelves[Key].ShelfItems.Add(ShelfItem);
+					bItemSetup = true;
+				}
+				else if (Shelves[Key].ShelfItems.Num() > 0) {
+					// IItem->GetItemMesh()->SetupAttachment(Key);
+					// IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
+					// IItem->SetItemState(EItemState::EIS_Falling);
+					// IItem->SetItemState(EItemState::EIS_Pickup);
+					// IItem->InteractionEnabled(false);
+				}
+			}
+
+		}
 	}
 }
 
@@ -100,6 +174,10 @@ void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
 		IItem->SetItemState(bIsOpenedRef ? EItemState::EIS_Pickup : EItemState::EIS_Falling);
 		IItem->InteractionEnabled(bIsOpenedRef);
 
+		WallFront->SetSimulatePhysics(!bIsOpenedRef);
+		WallFront->SetCollisionProfileName(bIsOpenedRef ? FName("OverlapAllDynamic") : FName("BlockAll"));
+
+
 		FBoxSphereBounds MeshBounds = IItem->GetItemMesh()->Bounds;
 		FBoxSphereBounds Shelf1Bounds = ShelfPosition1->Bounds;
 		FBoxSphereBounds Shelf2Bounds = ShelfPosition2->Bounds;
@@ -114,6 +192,7 @@ void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
 	}
 
 	DoorMovementTransitionTimeline->PlayFromStart();
+
 	// }
 	// else {
 	// Super::InteractWithItem(InCharacter);
@@ -152,6 +231,26 @@ void ACabinet::Tick(float DeltaSeconds) {
 			CurrentDoorRotation = 0;
 		}
 	}
+}
+
+void ACabinet::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+                                 AActor* OtherActor,
+                                 UPrimitiveComponent* OtherComponent,
+                                 int32 OtherBodyIndex,
+                                 bool bFromSweep,
+                                 const FHitResult& SweepResult) {
+	Super::OnBoxBeginOverlap(OverlappedComponent, OtherActor, OtherComponent, OtherBodyIndex, bFromSweep, SweepResult);
+	UE_LOG(LogTemp, Error, TEXT("OnBoxOverlap Begin OtherActor: %s OverlappedComponent: %s"), *OtherActor->GetName(),
+	       *OverlappedComponent->GetName())
+}
+
+void ACabinet::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent,
+                               AActor* OtherActor,
+                               UPrimitiveComponent* OtherComponent,
+                               int32 OtherBodyIndex) {
+	Super::OnBoxEndOverlap(OverlappedComponent, OtherActor, OtherComponent, OtherBodyIndex);
+	UE_LOG(LogTemp, Warning, TEXT("OnBoxOverlap End OtherActor: %s OverlappedComponent: %s"), *OtherActor->GetName(),
+	       *OverlappedComponent->GetName())
 }
 
 void ACabinet::UpdateDoorMovementTransitionTimeline(float Output) {
