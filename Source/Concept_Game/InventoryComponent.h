@@ -43,7 +43,6 @@ struct FInventoryTile {
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRefreshGridWidget, TSubclassOf<class UInventoryItemWidget>, WidgetSubclass)
 ;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshSpatialGridWidget);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRefreshQuickSelectWidget);

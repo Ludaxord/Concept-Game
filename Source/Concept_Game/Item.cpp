@@ -75,7 +75,8 @@ void AItem::BeginPlay() {
 void AItem::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                  const FHitResult& SweepResult) {
-	// UE_LOG(LogTemp, Error, TEXT("Overlapping %s"), * OverlappedComponent->GetName());
+	// UE_LOG(LogTemp, Error, TEXT("Item %s Overlapping %s InteractionEnabled %s"), *GetItemName(),
+	//        *OverlappedComponent->GetName(), bInteractionEnabled ? TEXT("true") : TEXT("false"));
 	if (bInteractionEnabled) {
 		if (OtherActor) {
 			AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
@@ -125,6 +126,26 @@ void AItem::SetItemProperties(EItemState State) {
 		ItemMesh->SetEnableGravity(false);
 		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		ItemInteractionName = "Pickup";
+	}
+	break;
+	case EItemState::EIS_PickupWithPhysics: {
+		ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		ItemMesh->SetSimulatePhysics(true);
+		ItemMesh->SetEnableGravity(true);
+		ItemMesh->SetVisibility(true);
+		ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		ItemMesh->SetCollisionResponseToChannel(
+			ECollisionChannel::ECC_WorldStatic,
+			ECollisionResponse::ECR_Block);
 
 		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -241,6 +262,10 @@ void AItem::InteractWithItem(AMainCharacter* InCharacter) {
 	if (!bInteractionEnabled && ItemState != EItemState::EIS_PickupDisabled) return;
 	Character = InCharacter;
 	Character->SetCurrentInteractItem(this);
+
+	if (ParentItemReferenceInteractEvent.IsBound()) {
+		ParentItemReferenceInteractEvent.Broadcast(this);
+	}
 	//TODO: If item is not weapon, then check if it is a usable item or story item.
 	//TODO: If it is story Item, then store in story items backpack
 	//TODO: If it is usable item, check if there is a space in inventory
@@ -457,7 +482,8 @@ void AItem::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 	//TODO: Create falling rotation function
-	if (GetItemState() == EItemState::EIS_Falling && bFalling) {
+	if ((GetItemState() == EItemState::EIS_Falling || GetItemState() == EItemState::EIS_PickupWithPhysics) &&
+		bFalling) {
 		FRotator MeshRotation = {
 			GetItemMesh()->GetComponentRotation().Pitch,
 			GetItemMesh()->GetComponentRotation().Yaw,

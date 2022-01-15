@@ -62,6 +62,9 @@ private:
 	UFUNCTION()
 	void UpdateDoorMovementTransitionTimeline(float Output);
 
+	UFUNCTION(BlueprintCallable)
+	void ShelfItemsInteraction(AItem* InItem);
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* LeftDoorMesh;

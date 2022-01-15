@@ -138,16 +138,26 @@ void ACabinet::BeginPlay() {
 					Rot = {Rot.Pitch, Rot.Yaw, Rot.Roll};
 					IItem->GetItemMesh()->SetupAttachment(Key);
 					IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
-					IItem->SetItemState(EItemState::EIS_Falling);
+					IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
 					// IItem->SetItemState(EItemState::EIS_Pickup);
-					// IItem->InteractionEnabled(false);
+					IItem->InteractionEnabled(false);
+					IItem->ParentItemReferenceInteractEvent.AddDynamic(this, &ACabinet::ShelfItemsInteraction);
 
 					FShelfItem ShelfItem = FShelfItem();
 					ShelfItem.ShelfReference = Key;
 					ShelfItem.ShelfItem = IItem;
 					ShelfItem.PositionInShelf = FTransform(Rot.Quaternion(), Loc);
-					Shelves[Key].ShelfItems.Add(ShelfItem);
-					bItemSetup = true;
+
+					const bool bIsInArray = Shelves[Key].ShelfItems.ContainsByPredicate(
+						[&](FShelfItem InShelfItem) -> bool {
+							return ShelfItem.ShelfItem == InShelfItem.ShelfItem;
+						});
+
+					if (!bIsInArray) {
+						UE_LOG(LogTemp, Error, TEXT("Adding Item %s"), *ShelfItem.ShelfItem->GetName())
+						Shelves[Key].ShelfItems.Add(ShelfItem);
+						bItemSetup = true;
+					}
 				}
 				else if (Shelves[Key].ShelfItems.Num() > 0) {
 					// IItem->GetItemMesh()->SetupAttachment(Key);
@@ -170,25 +180,39 @@ void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
 	// GetCharacterItemComponent()->GetTraceHitItemHitComponent() == RightDoorMesh) {
 
 	bIsOpenedRef = !bIsOpened;
-	for (AItem* IItem : InsideItems) {
-		IItem->SetItemState(bIsOpenedRef ? EItemState::EIS_Pickup : EItemState::EIS_Falling);
-		IItem->InteractionEnabled(bIsOpenedRef);
 
-		WallFront->SetSimulatePhysics(!bIsOpenedRef);
-		WallFront->SetCollisionProfileName(bIsOpenedRef ? FName("OverlapAllDynamic") : FName("BlockAll"));
+	TArray<UBoxComponent*> Keys;
+	Shelves.GetKeys(Keys);
+	for (UBoxComponent* Key : Keys) {
+		for (FShelfItem ShelfItem : Shelves[Key].ShelfItems) {
+			AItem* IItem = ShelfItem.ShelfItem;
+			// for (AItem* IItem : InsideItems) {
+			// IItem->SetItemState(bIsOpenedRef ? EItemState::EIS_Pickup : EItemState::EIS_Falling);
+			IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
+			IItem->InteractionEnabled(bIsOpenedRef);
+
+			WallFront->SetSimulatePhysics(!bIsOpenedRef);
+			WallFront->SetCollisionProfileName(bIsOpenedRef ? FName("OverlapAllDynamic") : FName("BlockAll"));
+
+			const TEnumAsByte<EItemState> PoseEnum = IItem->GetItemState();
+			FString ItemEnumAsString = UEnum::GetValueAsString(PoseEnum.GetValue());
 
 
-		FBoxSphereBounds MeshBounds = IItem->GetItemMesh()->Bounds;
-		FBoxSphereBounds Shelf1Bounds = ShelfPosition1->Bounds;
-		FBoxSphereBounds Shelf2Bounds = ShelfPosition2->Bounds;
-		UE_LOG(LogTemp, Warning,
-		       TEXT(
-			       "ItemBounds Name: %s, \nMeshBounds: %s, \nShelfPosition1: %s, \nShelfPosition2: %s, Shelf1 %s, Slelf2 %s"
-		       ),
-		       *IItem->GetName(),
-		       *MeshBounds.ToString(), *Shelf1Bounds.ToString(), *Shelf2Bounds.ToString(),
-		       *(Shelf1Bounds.BoxExtent - MeshBounds.BoxExtent).ToString(),
-		       *(Shelf2Bounds.BoxExtent - MeshBounds.BoxExtent).ToString())
+			FBoxSphereBounds MeshBounds = IItem->GetItemMesh()->Bounds;
+			FBoxSphereBounds Shelf1Bounds = ShelfPosition1->Bounds;
+			FBoxSphereBounds Shelf2Bounds = ShelfPosition2->Bounds;
+			UE_LOG(LogTemp, Warning,
+			       TEXT(
+				       "ItemBounds Name: %s, \nMeshBounds: %s, \nShelfPosition1: %s, \nShelfPosition2: %s, Shelf1 %s, Slelf2 %s Item State: %s"
+			       ),
+			       *IItem->GetName(),
+			       *MeshBounds.ToString(), *Shelf1Bounds.ToString(), *Shelf2Bounds.ToString(),
+			       *(Shelf1Bounds.BoxExtent - MeshBounds.BoxExtent).ToString(),
+			       *(Shelf2Bounds.BoxExtent - MeshBounds.BoxExtent).ToString(),
+			       *ItemEnumAsString
+			)
+			// }
+		}
 	}
 
 	DoorMovementTransitionTimeline->PlayFromStart();
@@ -255,4 +279,37 @@ void ACabinet::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent,
 
 void ACabinet::UpdateDoorMovementTransitionTimeline(float Output) {
 	CurrentDoorRotation = Output;
+}
+
+void ACabinet::ShelfItemsInteraction(AItem* InItem) {
+	TArray<UBoxComponent*> Keys;
+	Shelves.GetKeys(Keys);
+	for (UBoxComponent* Key : Keys) {
+		UE_LOG(LogTemp, Display, TEXT("ShelfItemsInteraction Size Before Operation: %i"), Shelves[Key].ShelfItems.Num())
+
+		int32 ItemIndex = Shelves[Key].ShelfItems.IndexOfByPredicate(
+			[&](FShelfItem InShelfItem) -> bool {
+				return InItem == InShelfItem.ShelfItem;
+			});
+
+		if (ItemIndex != INDEX_NONE) {
+			Shelves[Key].ShelfItems.RemoveAt(ItemIndex);
+		}
+
+		// bool bRemovedFromShelf = Shelves[Key].ShelfItems.FindByPredicate(
+		// 	[&](FShelfItem InShelfItem) -> bool {
+		// 		bool bRemoved = InItem == InShelfItem.ShelfItem;
+		// 		if (bRemoved) {
+		// 			Shelves[Key].ShelfItems.Remove(InShelfItem);
+		// 		}
+		//
+		// 		return bRemoved;
+		// 	});
+		//
+		// if (bRemovedFromShelf) {
+		// 	InsideItems.Remove(InItem);
+		// }
+
+		UE_LOG(LogTemp, Error, TEXT("ShelfItemsInteraction Size After Operation: %i"), Shelves[Key].ShelfItems.Num())
+	}
 }

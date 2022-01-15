@@ -12,6 +12,8 @@
 class UItemProperties;
 class AMainCharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FParentItemReferenceInteract, AItem*, InItem);
+
 UENUM(BlueprintType)
 enum class EItemRarity : uint8 {
 	EIR_Unspecified UMETA(DisplayName = "Unspecified"),
@@ -32,6 +34,7 @@ enum class EItemState : uint8 {
 	EIS_PickupDisabled UMETA(DisplayName = "Pickup Disabled"),
 	EIS_Equipped UMETA(DisplayName = "Equipped"),
 	EIS_Falling UMETA(DisplayName = "Falling"),
+	EIS_PickupWithPhysics UMETA(DisplayName = "Pickup With Physics"),
 	EIS_Interact UMETA(DisplayName = "Interacting"),
 	EIS_Static UMETA(DisplayName = "Static"),
 	EIS_MAX UMETA(DisplayName = "DefaultMAX"),
@@ -146,9 +149,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
 	virtual void SetItemProperties(EItemState State);
-
 
 	void FinishInterp();
 
@@ -183,6 +184,9 @@ public:
 	FORCEINLINE bool IsRotated() const {
 		return bRotated;
 	};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item", meta = (AllowPrivateAccess = "true"))
+	FParentItemReferenceInteract ParentItemReferenceInteractEvent;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item", meta = (AllowPrivateAccess = "true"))
