@@ -134,7 +134,7 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-		ItemInteractionName = "Pickup";
+		// ItemInteractionName = "Pickup";
 	}
 	break;
 	case EItemState::EIS_PickupWithPhysics: {
@@ -154,7 +154,7 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-		ItemInteractionName = "Pickup";
+		// ItemInteractionName = "Pickup";
 	}
 	break;
 	case EItemState::EIS_EquipInterp: {
@@ -175,7 +175,7 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		ItemInteractionName = "";
+		// ItemInteractionName = "";
 	}
 	break;
 	case EItemState::EIS_PickupDisabled: {
@@ -192,7 +192,7 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		ItemInteractionName = "";
+		// ItemInteractionName = "";
 	}
 	break;
 	case EItemState::EIS_Equipped: {
@@ -209,7 +209,7 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		ItemInteractionName = "";
+		// ItemInteractionName = "";
 	}
 	break;
 	case EItemState::EIS_Falling: {
@@ -228,7 +228,7 @@ void AItem::SetItemProperties(EItemState State) {
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-		ItemInteractionName = "Pickup";
+		// ItemInteractionName = "Pickup";
 	}
 	break;
 	case EItemState::EIS_Interact: {
@@ -247,12 +247,12 @@ void AItem::SetItemProperties(EItemState State) {
 
 		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		ItemInteractionName = "Use";
+		// ItemInteractionName = "Use";
 	}
 	break;
 	case EItemState::EIS_Static: {
 
-		ItemInteractionName = "Use";
+		// ItemInteractionName = "Use";
 	}
 	break;
 	}

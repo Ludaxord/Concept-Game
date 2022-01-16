@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PhysicsBasedItem.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Drawer.generated.h"
 
 /**
@@ -16,4 +17,14 @@ class CONCEPT_GAME_API ADrawer : public APhysicsBasedItem
 
 public:
 	ADrawer();
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* TopDrawerMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* BottomDrawerMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* MiddleDrawerMesh;
 };

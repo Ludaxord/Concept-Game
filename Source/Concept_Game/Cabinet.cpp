@@ -21,9 +21,9 @@ ACabinet::ACabinet(): bIsOpened(false) {
 	PhysicsBasedMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
 	LeftDoorMesh->SetSimulatePhysics(true);
-	RightDoorMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
+	LeftDoorMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
-	LeftDoorMesh->SetSimulatePhysics(true);
+	RightDoorMesh->SetSimulatePhysics(true);
 	RightDoorMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
 	LeftDoorPhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("LeftDoorPhysicsConstraint"));
@@ -191,6 +191,8 @@ void ACabinet::InteractWithItem(AMainCharacter* InCharacter) {
 			IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
 			IItem->InteractionEnabled(bIsOpenedRef);
 
+			ItemInteractionName = bIsOpenedRef ? "Close" : "Open";
+
 			WallFront->SetSimulatePhysics(!bIsOpenedRef);
 			WallFront->SetCollisionProfileName(bIsOpenedRef ? FName("OverlapAllDynamic") : FName("BlockAll"));
 
@@ -252,6 +254,7 @@ void ACabinet::Tick(float DeltaSeconds) {
 		RightDoorMesh->SetWorldLocationAndRotation(RightDoorMesh->GetComponentLocation(), RNewRot);
 		if (CurrentDoorRotation == 1.f) {
 			bIsOpened = !bIsOpened;
+			ItemInteractionName = bIsOpened ? "Close" : "Open";
 			CurrentDoorRotation = 0;
 		}
 	}
@@ -285,8 +288,6 @@ void ACabinet::ShelfItemsInteraction(AItem* InItem) {
 	TArray<UBoxComponent*> Keys;
 	Shelves.GetKeys(Keys);
 	for (UBoxComponent* Key : Keys) {
-		UE_LOG(LogTemp, Display, TEXT("ShelfItemsInteraction Size Before Operation: %i"), Shelves[Key].ShelfItems.Num())
-
 		int32 ItemIndex = Shelves[Key].ShelfItems.IndexOfByPredicate(
 			[&](FShelfItem InShelfItem) -> bool {
 				return InItem == InShelfItem.ShelfItem;
@@ -295,21 +296,5 @@ void ACabinet::ShelfItemsInteraction(AItem* InItem) {
 		if (ItemIndex != INDEX_NONE) {
 			Shelves[Key].ShelfItems.RemoveAt(ItemIndex);
 		}
-
-		// bool bRemovedFromShelf = Shelves[Key].ShelfItems.FindByPredicate(
-		// 	[&](FShelfItem InShelfItem) -> bool {
-		// 		bool bRemoved = InItem == InShelfItem.ShelfItem;
-		// 		if (bRemoved) {
-		// 			Shelves[Key].ShelfItems.Remove(InShelfItem);
-		// 		}
-		//
-		// 		return bRemoved;
-		// 	});
-		//
-		// if (bRemovedFromShelf) {
-		// 	InsideItems.Remove(InItem);
-		// }
-
-		UE_LOG(LogTemp, Error, TEXT("ShelfItemsInteraction Size After Operation: %i"), Shelves[Key].ShelfItems.Num())
 	}
 }
