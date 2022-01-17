@@ -31,6 +31,8 @@ ADrawer::ADrawer(): bMoveDrawer(false), CurrentDrawerIndex(INDEX_NONE) {
 	MiddleDrawerMesh->SetSimulatePhysics(true);
 	MiddleDrawerMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
+	ArrowForwardComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowForwardComponent"));
+
 	DrawerMovementTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(
 		TEXT("DrawerMovementTransitionTimeline"));
 
@@ -50,7 +52,8 @@ void ADrawer::BeginPlay() {
 
 		DrawerElement.bIsOpened = false;
 		DrawerElement.DrawerMesh = DrawerMesh;
-		DrawerElement.DrawerLocY = DrawerMesh->GetComponentLocation().Y;
+		DrawerElement.DrawerLoc = DrawerMesh->GetComponentLocation();
+
 
 		//TODO: Place AItem* in Drawer....
 
@@ -109,14 +112,41 @@ void ADrawer::UpdateDrawerMovement() {
 		if (CurrentDrawerIndex != INDEX_NONE) {
 			if (CurrentTracingDrawerMesh != nullptr) {
 				FVector Loc = CurrentTracingDrawerMesh->GetComponentLocation();
-				float LocY = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
-					                                      ? Drawers[CurrentDrawerIndex].DrawerLocY
-					                                      : Drawers[CurrentDrawerIndex].DrawerLocY + 20,
-				                                      Drawers[CurrentDrawerIndex].bIsOpened
-					                                      ? Drawers[CurrentDrawerIndex].DrawerLocY + 20
-					                                      : Drawers[CurrentDrawerIndex].DrawerLocY,
-				                                      CurrentDrawerMovement);
-				FVector NLoc = {Loc.X, LocY, Loc.Z};
+
+				FVector Forward = Drawers[CurrentDrawerIndex].DrawerLoc.ForwardVector * Drawers[CurrentDrawerIndex].
+					DrawerLoc;
+
+				float ForwardFloat = 0;
+				if (Forward.X != 0) {
+					ForwardFloat = Forward.X;
+				}
+				else if (Forward.Y != 0) {
+					ForwardFloat = Forward.Y;
+				}
+				else if (Forward.Z != 0) {
+					ForwardFloat = Forward.Z;
+				}
+
+				float OpenForwardFloat = ForwardFloat >= 0 ? ForwardFloat + 20 : ForwardFloat - 20;
+
+				float NewLoc = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
+					                                        ? OpenForwardFloat
+					                                        : ForwardFloat,
+				                                        Drawers[CurrentDrawerIndex].bIsOpened
+					                                        ? OpenForwardFloat
+					                                        : ForwardFloat,
+				                                        CurrentDrawerMovement);
+
+				FVector NLoc = {
+					Forward.X != 0 ? NewLoc : Loc.X,
+					Forward.Y != 0 ? NewLoc : Loc.Y,
+					Forward.Z != 0 ? NewLoc : Loc.Z
+				};
+
+
+				UE_LOG(LogTemp, Warning, TEXT("Loc: %s Drawer: %s NLoc: %s"), *Loc.ToString(),
+				       *Forward.ToString(), *NLoc.ToString())
+
 				CurrentTracingDrawerMesh->SetWorldLocationAndRotation(NLoc,
 				                                                      CurrentTracingDrawerMesh->GetComponentRotation());
 			}

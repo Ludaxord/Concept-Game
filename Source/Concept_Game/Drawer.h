@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PhysicsBasedItem.h"
+#include "Components/ArrowComponent.h"
 #include "Components/TimelineComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Drawer.generated.h"
@@ -22,7 +23,7 @@ struct FDrawerElement {
 	bool bIsOpened;
 
 	UPROPERTY(EditAnywhere, Category="Drawer", meta = (AllowPrivateAccess = "true"))
-	float DrawerLocY;
+	FVector DrawerLoc;
 };
 
 /**
@@ -59,6 +60,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* CurrentTracingDrawerMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UArrowComponent* ArrowForwardComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
 	TArray<FDrawerElement> Drawers;
