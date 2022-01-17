@@ -107,18 +107,20 @@ void ADrawer::FindTracingComponent() {
 void ADrawer::UpdateDrawerMovement() {
 	if (bMoveDrawer) {
 		if (CurrentDrawerIndex != INDEX_NONE) {
+			if (CurrentTracingDrawerMesh != nullptr) {
+				FVector Loc = CurrentTracingDrawerMesh->GetComponentLocation();
+				float LocY = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
+					                                      ? Drawers[CurrentDrawerIndex].DrawerLocY
+					                                      : Drawers[CurrentDrawerIndex].DrawerLocY + 20,
+				                                      Drawers[CurrentDrawerIndex].bIsOpened
+					                                      ? Drawers[CurrentDrawerIndex].DrawerLocY + 20
+					                                      : Drawers[CurrentDrawerIndex].DrawerLocY,
+				                                      CurrentDrawerMovement);
+				FVector NLoc = {Loc.X, LocY, Loc.Z};
+				CurrentTracingDrawerMesh->SetWorldLocationAndRotation(NLoc,
+				                                                      CurrentTracingDrawerMesh->GetComponentRotation());
+			}
 
-			FVector Loc = CurrentTracingDrawerMesh->GetComponentLocation();
-			float LocY = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
-				                                      ? Drawers[CurrentDrawerIndex].DrawerLocY
-				                                      : Drawers[CurrentDrawerIndex].DrawerLocY + 20,
-			                                      Drawers[CurrentDrawerIndex].bIsOpened
-				                                      ? Drawers[CurrentDrawerIndex].DrawerLocY + 20
-				                                      : Drawers[CurrentDrawerIndex].DrawerLocY,
-			                                      CurrentDrawerMovement);
-			FVector NLoc = {Loc.X, LocY, Loc.Z};
-			CurrentTracingDrawerMesh->SetWorldLocationAndRotation(NLoc,
-			                                                      CurrentTracingDrawerMesh->GetComponentRotation());
 		}
 
 		if (CurrentDrawerMovement == 1.f) {
