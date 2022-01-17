@@ -32,6 +32,7 @@ ADrawer::ADrawer(): bMoveDrawer(false), CurrentDrawerIndex(INDEX_NONE) {
 	MiddleDrawerMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
 	ArrowForwardComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowForwardComponent"));
+	ArrowForwardComponent->SetupAttachment(PhysicsBasedMesh);
 
 	DrawerMovementTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(
 		TEXT("DrawerMovementTransitionTimeline"));
@@ -113,8 +114,11 @@ void ADrawer::UpdateDrawerMovement() {
 			if (CurrentTracingDrawerMesh != nullptr) {
 				FVector Loc = CurrentTracingDrawerMesh->GetComponentLocation();
 
-				FVector Forward = Drawers[CurrentDrawerIndex].DrawerLoc.ForwardVector * Drawers[CurrentDrawerIndex].
-					DrawerLoc;
+				//TODO: Change Values of Forward, RIght etc vectors based on Rotation.
+				ArrowForwardComponent->GetComponentRotation();
+
+				FVector Forward = ArrowForwardComponent->GetForwardVector() * Drawers[
+					CurrentDrawerIndex].DrawerLoc;
 
 				float ForwardFloat = 0;
 				if (Forward.X != 0) {
