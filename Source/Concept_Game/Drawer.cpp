@@ -115,9 +115,12 @@ void ADrawer::UpdateDrawerMovement() {
 				FVector Loc = CurrentTracingDrawerMesh->GetComponentLocation();
 
 				//TODO: Change Values of Forward, RIght etc vectors based on Rotation.
-				ArrowForwardComponent->GetComponentRotation();
+				FRotator NRot = ArrowForwardComponent->GetComponentRotation();
 
-				FVector Forward = ArrowForwardComponent->GetForwardVector() * Drawers[
+				FVector Forward = Drawers[CurrentDrawerIndex].DrawerLoc.ForwardVector * Drawers[
+					CurrentDrawerIndex].DrawerLoc;
+
+				FVector Right = Drawers[CurrentDrawerIndex].DrawerLoc.RightVector * Drawers[
 					CurrentDrawerIndex].DrawerLoc;
 
 				float ForwardFloat = 0;
@@ -131,7 +134,21 @@ void ADrawer::UpdateDrawerMovement() {
 					ForwardFloat = Forward.Z;
 				}
 
+				float RightFloat = 0;
+				if (Forward.X != 0) {
+					RightFloat = Right.X;
+				}
+				else if (Forward.Y != 0) {
+					RightFloat = Right.Y;
+				}
+				else if (Forward.Z != 0) {
+					RightFloat = Right.Z;
+				}
+
 				float OpenForwardFloat = ForwardFloat >= 0 ? ForwardFloat + 20 : ForwardFloat - 20;
+				float OpenRightFloat = RightFloat >= 0 ? RightFloat + 20 : RightFloat - 20;
+
+				FVector Move = {OpenForwardFloat, OpenRightFloat, Loc.Z};
 
 				float NewLoc = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
 					                                        ? OpenForwardFloat
@@ -148,8 +165,12 @@ void ADrawer::UpdateDrawerMovement() {
 				};
 
 
-				UE_LOG(LogTemp, Warning, TEXT("Loc: %s Drawer: %s NLoc: %s"), *Loc.ToString(),
-				       *Forward.ToString(), *NLoc.ToString())
+				UE_LOG(LogTemp, Warning, TEXT("Loc %s Forward: %s Right: %s NLoc: %s Rot: %s"),
+				       *Loc.ToString(),
+				       *Forward.ToString(),
+				       *Right.ToString(),
+				       *NLoc.ToString(),
+				       * NRot.ToString())
 
 				CurrentTracingDrawerMesh->SetWorldLocationAndRotation(NLoc,
 				                                                      CurrentTracingDrawerMesh->GetComponentRotation());
