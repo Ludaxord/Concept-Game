@@ -91,6 +91,8 @@ public:
 
 	void ConstructCharacterMovement() const;
 
+	void ConstructPostProcess();
+
 	void SetDefaultCameras();
 
 	//TODO: Move systems like covers, using weapons, using environment and jumping/parkour to different class to make it usable for AI Character and Player Character
@@ -793,6 +795,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UCoverComponent* CharacterCoverComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Fog", meta = (AllowPrivateAccess = "true"))
+	class UPostProcessComponent* FogComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UShootingComponent* CharacterShootingComponent;
 
@@ -852,6 +857,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMapComponent* CharacterMapComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class URenderingComponent* CharacterRenderingComponent;
 public:
 	TArray<FGuid> OverlappedItemIDs;
 

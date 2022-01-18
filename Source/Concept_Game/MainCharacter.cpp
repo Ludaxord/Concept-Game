@@ -31,9 +31,11 @@
 #include "QuestComponent.h"
 #include "ShootingComponent.h"
 #include "StealthComponent.h"
+#include "RenderingComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PostProcessComponent.h"
 #include "Components/TimelineComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -143,6 +145,11 @@ AMainCharacter::AMainCharacter():
 	CharacterDoorComponent = CreateDefaultSubobject<UDoorComponent>(TEXT("CharacterDoorComponent"));
 	CharacterFlashLightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("CharacterFlashLightComponent"));
 	CharacterMapComponent = CreateDefaultSubobject<UMapComponent>(TEXT("CharacterMapComponent"));
+	CharacterRenderingComponent = CreateDefaultSubobject<URenderingComponent>(
+		TEXT("CharacterPostProcessComponent"));
+
+	FogComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("FogComponent"));
+	FogComponent->SetupAttachment(RootComponent);
 
 	AimTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("AimTransitionTimeline"));
 
@@ -353,6 +360,8 @@ void AMainCharacter::Tick(float DeltaTime) {
 	SetLookUpRates(DeltaTime);
 	CalculateCrosshairSpread(DeltaTime);
 
+	ConstructPostProcess();
+
 	// TraceForItems();
 	// TraceForPhysicsItems();
 	// TraceForLadder();
@@ -373,6 +382,12 @@ void AMainCharacter::ConstructCharacterMovement() const {
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 	GetCharacterMovement()->AirControl = 0.2f;
+}
+
+void AMainCharacter::ConstructPostProcess() {
+	if (CharacterRenderingComponent) {
+		FogComponent->bEnabled = CharacterRenderingComponent->ApplyFog();
+	}
 }
 
 void AMainCharacter::SetDefaultCameras() {
