@@ -24,6 +24,9 @@ struct FDrawerElement {
 
 	UPROPERTY(EditAnywhere, Category="Drawer", meta = (AllowPrivateAccess = "true"))
 	FVector DrawerLoc;
+
+	UPROPERTY(EditAnywhere, Category="Drawer", meta = (AllowPrivateAccess = "true"))
+	FVector DrawerRelativeLoc;
 };
 
 /**

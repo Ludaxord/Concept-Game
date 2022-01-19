@@ -54,6 +54,7 @@ void ADrawer::BeginPlay() {
 		DrawerElement.bIsOpened = false;
 		DrawerElement.DrawerMesh = DrawerMesh;
 		DrawerElement.DrawerLoc = DrawerMesh->GetComponentLocation();
+		DrawerElement.DrawerRelativeLoc = DrawerMesh->GetRelativeLocation();
 
 
 		//TODO: Place AItem* in Drawer....
@@ -136,7 +137,7 @@ void ADrawer::UpdateDrawerMovement() {
 				}
 
 				// float OpenForwardFloat = ForwardFloat >= 0 ? ForwardFloat + 20 : ForwardFloat - 20;
-				float OpenForwardFloat = ForwardFloat + 20;
+				float OpenForwardFloat = YawRound >= 180 ? ForwardFloat - 20 : ForwardFloat + 20;
 				float OpenRightFloat = RightFloat == 0 ? Loc.Y : RightFloat - 20;
 
 				FVector Move = {OpenForwardFloat, OpenRightFloat, Loc.Z};
@@ -164,16 +165,44 @@ void ADrawer::UpdateDrawerMovement() {
 				};
 
 
-				UE_LOG(LogTemp, Warning, TEXT("Loc %s Forward: %s Right: %s NLoc: %s Rot: %s, YawRound: %f"),
-				       *Loc.ToString(),
-				       *Forward.ToString(),
-				       *Right.ToString(),
-				       *NLoc.ToString(),
-				       * NRot.ToString(),
-				       YawRound)
+				// UE_LOG(LogTemp, Warning,
+				//        TEXT("RelativeLoc %s Loc %s Forward: %s Right: %s NLoc: %s Rot: %s, YawRound: %f YawAbs: %f"),
+				//        *CurrentTracingDrawerMesh->GetRelativeLocation().ToString(),
+				//        *Loc.ToString(),
+				//        *Forward.ToString(),
+				//        *Right.ToString(),
+				//        *NLoc.ToString(),
+				//        * NRot.ToString(),
+				//        YawRound,
+				//        FMath::Abs(NRot.Yaw))
 
-				CurrentTracingDrawerMesh->SetWorldLocationAndRotation(NLoc,
-				                                                      CurrentTracingDrawerMesh->GetComponentRotation());
+				//TODO: Use Relative Location instead of World Location, Also It can give another opportunity to move full drawer
+
+				float NewRelativeLoc = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
+					                                                ? Drawers[CurrentDrawerIndex].DrawerRelativeLoc.Y
+					                                                : Drawers[CurrentDrawerIndex].DrawerRelativeLoc.Y +
+					                                                25.f,
+				                                                Drawers[CurrentDrawerIndex].bIsOpened
+					                                                ? Drawers[CurrentDrawerIndex].DrawerRelativeLoc.Y +
+					                                                25.f
+					                                                : Drawers[CurrentDrawerIndex].DrawerRelativeLoc.Y,
+				                                                CurrentDrawerMovement);
+
+				CurrentTracingDrawerMesh->SetRelativeLocationAndRotation(
+					{
+						CurrentTracingDrawerMesh->GetRelativeLocation().X,
+						NewRelativeLoc,
+						CurrentTracingDrawerMesh->GetRelativeLocation().Z
+					}
+					,
+					CurrentTracingDrawerMesh->GetRelativeRotation());
+
+				UE_LOG(LogTemp, Warning, TEXT("Initial RelativeLoc: %s New RelativeLoc: %s"),
+				       *Drawers[CurrentDrawerIndex].DrawerRelativeLoc.ToString(),
+				       * CurrentTracingDrawerMesh->GetRelativeLocation().ToString())
+
+				// CurrentTracingDrawerMesh->SetWorldLocationAndRotation(NLoc,
+				//                                                       CurrentTracingDrawerMesh->GetComponentRotation());
 			}
 
 		}
