@@ -97,7 +97,7 @@ void ADrawer::BeginPlay() {
 		DrawerElement.DrawerLoc = DrawerMeshes[DrawerBoxMesh]->GetComponentLocation();
 		DrawerElement.DrawerRelativeLoc = DrawerMeshes[DrawerBoxMesh]->GetRelativeLocation();
 
-		//TODO: Place AItem* in Drawer....
+		//TODO: Fix adding items, one weapon is added multiple times to Drawer Array....
 		for (AItem* IItem : InsideItems) {
 			bool bItemSetup = false;
 
@@ -127,12 +127,13 @@ void ADrawer::BeginPlay() {
 					       *RotatedItemBound.ToString())
 
 					//TODO: Change na relative location and rotation
-					Loc = {Loc.X, Loc.Y, Loc.Z + (MeshBounds.Z)};
-					Rot = {Rot.Pitch, Rot.Yaw, Rot.Roll};
+					Loc = {Loc.X, Loc.Y, Loc.Z + (MeshBounds.Y)};
+					Rot = {Rot.Pitch + 90, Rot.Yaw, Rot.Roll};
+					// IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
+
 					IItem->GetItemMesh()->SetupAttachment(DrawerElement.DrawerBoxMesh);
-					IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
-					IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
-					// IItem->SetItemState(EItemState::EIS_Pickup);
+					// IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
+					IItem->SetItemState(EItemState::EIS_Pickup);
 					IItem->InteractionEnabled(false);
 					IItem->ParentItemReferenceInteractEvent.AddDynamic(this, &ADrawer::DrawerItemInteraction);
 
@@ -222,7 +223,7 @@ void ADrawer::FindTracingComponent() {
 void ADrawer::UpdateDrawerMovement() {
 	if (bMoveDrawer) {
 		if (CurrentDrawerIndex != INDEX_NONE) {
-			if (CurrentTracingDrawerMesh != nullptr) {
+			if (CurrentInteractingDrawerMesh != nullptr) {
 
 				float NewRelativeLoc = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
 					                                                ? Drawers[CurrentDrawerIndex].DrawerRelativeLoc.Y
@@ -234,18 +235,19 @@ void ADrawer::UpdateDrawerMovement() {
 					                                                : Drawers[CurrentDrawerIndex].DrawerRelativeLoc.Y,
 				                                                CurrentDrawerMovement);
 
-				CurrentTracingDrawerMesh->SetRelativeLocationAndRotation(
+				CurrentInteractingDrawerMesh->SetRelativeLocationAndRotation(
 					{
-						CurrentTracingDrawerMesh->GetRelativeLocation().X,
+						CurrentInteractingDrawerMesh->GetRelativeLocation().X,
 						NewRelativeLoc,
-						CurrentTracingDrawerMesh->GetRelativeLocation().Z
+						CurrentInteractingDrawerMesh->GetRelativeLocation().Z
 					}
 					,
-					CurrentTracingDrawerMesh->GetRelativeRotation());
+					CurrentInteractingDrawerMesh->GetRelativeRotation());
 
-				UE_LOG(LogTemp, Warning, TEXT("Initial RelativeLoc: %s New RelativeLoc: %s"),
+				UE_LOG(LogTemp, Warning, TEXT("Initial RelativeLoc: %s New RelativeLoc: %s Is Opened: %s"),
 				       *Drawers[CurrentDrawerIndex].DrawerRelativeLoc.ToString(),
-				       * CurrentTracingDrawerMesh->GetRelativeLocation().ToString())
+				       * CurrentInteractingDrawerMesh->GetRelativeLocation().ToString(),
+				       Drawers[CurrentDrawerIndex].bIsOpened ? TEXT("true") : TEXT("false"))
 			}
 
 		}
@@ -254,6 +256,7 @@ void ADrawer::UpdateDrawerMovement() {
 			bMoveDrawer = false;
 			CurrentDrawerMovement = 0;
 			CurrentDrawerIndex = INDEX_NONE;
+			CurrentInteractingDrawerMesh = nullptr;
 		}
 	}
 }
@@ -268,12 +271,16 @@ void ADrawer::InteractWithItem(AMainCharacter* InCharacter) {
 			});
 
 		if (CurrentDrawerIndex != INDEX_NONE) {
+			CurrentInteractingDrawerMesh = CurrentTracingDrawerMesh;
 			Drawers[CurrentDrawerIndex].bIsOpened = !Drawers[CurrentDrawerIndex].bIsOpened;
 			ItemInteractionName = Drawers[CurrentDrawerIndex].bIsOpened ? "Close" : "Open";
 
 			for (const FDrawerItem ShelfItem : Drawers[CurrentDrawerIndex].DrawerItems) {
 				AItem* IItem = ShelfItem.Item;
-				IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
+				FVector Loc = Drawers[CurrentDrawerIndex].DrawerBoxMesh->GetRelativeLocation();
+				IItem->SetActorRelativeLocation({Loc.X, Loc.Y + 25.f, Loc.Z});
+				// IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
+				IItem->SetItemState(EItemState::EIS_Pickup);
 				IItem->InteractionEnabled(Drawers[CurrentDrawerIndex].bIsOpened);
 
 			}

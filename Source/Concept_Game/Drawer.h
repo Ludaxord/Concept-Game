@@ -132,6 +132,9 @@ private:
 	UStaticMeshComponent* CurrentTracingDrawerMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* CurrentInteractingDrawerMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
 	UArrowComponent* ArrowForwardComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
