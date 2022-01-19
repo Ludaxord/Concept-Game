@@ -6,8 +6,21 @@
 #include "PhysicsBasedItem.h"
 #include "Components/ArrowComponent.h"
 #include "Components/TimelineComponent.h"
-#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "Drawer.generated.h"
+
+USTRUCT(BlueprintType)
+struct FDrawerItem {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* DrawerReference;
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	AItem* Item;
+
+	UPROPERTY(EditAnywhere, Category="Shelf", meta = (AllowPrivateAccess = "true"))
+	FTransform PositionInDrawer;
+};
 
 USTRUCT(BlueprintType)
 struct FDrawerElement {
@@ -16,8 +29,14 @@ struct FDrawerElement {
 	UPROPERTY(EditAnywhere, Category= "Drawer", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* DrawerMesh;
 
+	UPROPERTY(EditAnywhere, Category= "Drawer", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* DrawerBoxMesh;
+
 	UPROPERTY(EditAnywhere, Category="Drawer", meta = (AllowPrivateAccess = "true"))
-	TArray<AItem*> DrawerItems;
+	TArray<FDrawerItem> DrawerItems;
+
+	UPROPERTY(EditAnywhere, Category="Drawer", meta = (AllowPrivateAccess = "true"))
+	FVector EmptyPlaceAtDrawer;
 
 	UPROPERTY(EditAnywhere, Category="Drawer", meta = (AllowPrivateAccess = "true"))
 	bool bIsOpened;
@@ -51,6 +70,9 @@ public:
 
 	UFUNCTION()
 	void UpdateDrawerMovementTransitionTimeline(float Output);
+
+	UFUNCTION()
+	void DrawerItemInteraction(AItem* InItem);
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* TopDrawerMesh;
@@ -60,6 +82,51 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* MiddleDrawerMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* TopDrawerPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* TopDrawerLeftPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* TopDrawerRightPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* TopDrawerBackPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* TopDrawerFrontPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* BottomDrawerPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* BottomDrawerLeftPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* BottomDrawerRightPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* BottomDrawerBackPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* BottomDrawerFrontPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* MiddleDrawerPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* MiddleDrawerLeftPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* MiddleDrawerRightPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* MiddleDrawerBackPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* MiddleDrawerFrontPosition;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Drawer Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* CurrentTracingDrawerMesh;
@@ -74,7 +141,7 @@ private:
 	TArray<AItem*> InsideItems;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Drawer Properties", meta = (AllowPrivateAccess = "true"))
-	TArray<UStaticMeshComponent*> DrawerMeshes;
+	TMap<UBoxComponent*, UStaticMeshComponent*> DrawerMeshes;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Drawer Properties", meta = (AllowPrivateAccess = "true"))
 	FOnTimelineFloat DrawerMovementFunctionFloat;

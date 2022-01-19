@@ -4,6 +4,7 @@
 #include "Drawer.h"
 
 #include "MainCharacter.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ADrawer::ADrawer(): bMoveDrawer(false), CurrentDrawerIndex(INDEX_NONE) {
@@ -13,7 +14,6 @@ ADrawer::ADrawer(): bMoveDrawer(false), CurrentDrawerIndex(INDEX_NONE) {
 	TopDrawerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TopDrawerMesh"));
 	BottomDrawerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BottomDrawerMesh"));
 	MiddleDrawerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MiddleDrawerMesh"));
-
 
 	TopDrawerMesh->SetupAttachment(PhysicsBasedMesh);
 	BottomDrawerMesh->SetupAttachment(PhysicsBasedMesh);
@@ -37,6 +37,42 @@ ADrawer::ADrawer(): bMoveDrawer(false), CurrentDrawerIndex(INDEX_NONE) {
 	DrawerMovementTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(
 		TEXT("DrawerMovementTransitionTimeline"));
 
+
+	TopDrawerPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("TopDrawerPosition"));
+	TopDrawerLeftPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("TopDrawerLeftPosition"));
+	TopDrawerRightPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("TopDrawerRightPosition"));
+	TopDrawerBackPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("TopDrawerBackPosition"));
+	TopDrawerFrontPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("TopDrawerFrontPosition"));
+
+	BottomDrawerPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("BottomDrawerPosition"));
+	BottomDrawerLeftPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("BottomDrawerLeftPosition"));
+	BottomDrawerRightPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("BottomDrawerRightPosition"));
+	BottomDrawerBackPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("BottomDrawerBackPosition"));
+	BottomDrawerFrontPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("BottomDrawerFrontPosition"));
+
+	MiddleDrawerPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("MiddleDrawerPosition"));
+	MiddleDrawerLeftPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("MiddleDrawerLeftPosition"));
+	MiddleDrawerRightPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("MiddleDrawerRightPosition"));
+	MiddleDrawerBackPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("MiddleDrawerBackPosition"));
+	MiddleDrawerFrontPosition = CreateDefaultSubobject<UBoxComponent>(TEXT("MiddleDrawerFrontPosition"));
+
+	TopDrawerPosition->SetupAttachment(TopDrawerMesh);
+	TopDrawerLeftPosition->SetupAttachment(TopDrawerMesh);
+	TopDrawerRightPosition->SetupAttachment(TopDrawerMesh);
+	TopDrawerBackPosition->SetupAttachment(TopDrawerMesh);
+	TopDrawerFrontPosition->SetupAttachment(TopDrawerMesh);
+
+	BottomDrawerPosition->SetupAttachment(BottomDrawerMesh);
+	BottomDrawerLeftPosition->SetupAttachment(BottomDrawerMesh);
+	BottomDrawerRightPosition->SetupAttachment(BottomDrawerMesh);
+	BottomDrawerBackPosition->SetupAttachment(BottomDrawerMesh);
+	BottomDrawerFrontPosition->SetupAttachment(BottomDrawerMesh);
+
+	MiddleDrawerPosition->SetupAttachment(MiddleDrawerMesh);
+	MiddleDrawerLeftPosition->SetupAttachment(MiddleDrawerMesh);
+	MiddleDrawerRightPosition->SetupAttachment(MiddleDrawerMesh);
+	MiddleDrawerBackPosition->SetupAttachment(MiddleDrawerMesh);
+	MiddleDrawerFrontPosition->SetupAttachment(MiddleDrawerMesh);
 }
 
 void ADrawer::BeginPlay() {
@@ -44,21 +80,92 @@ void ADrawer::BeginPlay() {
 
 	Character = Cast<AMainCharacter>(GetOwner());
 
-	DrawerMeshes.Add(BottomDrawerMesh);
-	DrawerMeshes.Add(MiddleDrawerMesh);
-	DrawerMeshes.Add(TopDrawerMesh);
+	DrawerMeshes.Add(BottomDrawerPosition, BottomDrawerMesh);
+	DrawerMeshes.Add(MiddleDrawerPosition, MiddleDrawerMesh);
+	DrawerMeshes.Add(TopDrawerPosition, TopDrawerMesh);
 
-	for (UStaticMeshComponent* DrawerMesh : DrawerMeshes) {
+	TArray<UBoxComponent*> Keys;
+	DrawerMeshes.GetKeys(Keys);
+
+	for (UBoxComponent* DrawerBoxMesh : Keys) {
+
 		FDrawerElement DrawerElement = FDrawerElement();
 
 		DrawerElement.bIsOpened = false;
-		DrawerElement.DrawerMesh = DrawerMesh;
-		DrawerElement.DrawerLoc = DrawerMesh->GetComponentLocation();
-		DrawerElement.DrawerRelativeLoc = DrawerMesh->GetRelativeLocation();
-
+		DrawerElement.DrawerMesh = DrawerMeshes[DrawerBoxMesh];
+		DrawerElement.DrawerBoxMesh = DrawerBoxMesh;
+		DrawerElement.DrawerLoc = DrawerMeshes[DrawerBoxMesh]->GetComponentLocation();
+		DrawerElement.DrawerRelativeLoc = DrawerMeshes[DrawerBoxMesh]->GetRelativeLocation();
 
 		//TODO: Place AItem* in Drawer....
+		for (AItem* IItem : InsideItems) {
+			bool bItemSetup = false;
 
+			if (!bItemSetup) {
+				FVector Loc = DrawerElement.DrawerBoxMesh->GetComponentLocation();
+				FVector MeshBounds = IItem->GetItemMesh()->Bounds.BoxExtent;
+				FRotator Rot = DrawerElement.DrawerBoxMesh->GetComponentRotation();
+
+				if (DrawerElement.DrawerItems.Num() == 0) {
+					FVector2D EmptyPlaceAtShelf = {
+						DrawerElement.EmptyPlaceAtDrawer.X, DrawerElement.EmptyPlaceAtDrawer.Y
+					};
+					FVector2D ItemBound = EmptyPlaceAtShelf - FVector2D(MeshBounds.X, MeshBounds.Y);
+					FVector2D RotatedItemBound = EmptyPlaceAtShelf - FVector2D(MeshBounds.Y, MeshBounds.X);
+
+					//TODO: Set Position And Rotation depend on ItemBox Bounds (if is rotated or base state)
+					if (RotatedItemBound > ItemBound && RotatedItemBound.X > 0 && RotatedItemBound.Y > 0) {
+						UE_LOG(LogTemp, Error, TEXT("EmptyPlaceAtShelf Set Rotated Item"))
+					}
+
+
+					UE_LOG(LogTemp, Warning,
+					       TEXT("EmptyPlaceAtShelf %s, MeshBounds %s, ItemBound %s, RotatedItemBound %s"),
+					       *DrawerElement.EmptyPlaceAtDrawer.ToString(),
+					       *MeshBounds.ToString(),
+					       *ItemBound.ToString(),
+					       *RotatedItemBound.ToString())
+
+					//TODO: Change na relative location and rotation
+					Loc = {Loc.X, Loc.Y, Loc.Z + (MeshBounds.Z)};
+					Rot = {Rot.Pitch, Rot.Yaw, Rot.Roll};
+					IItem->GetItemMesh()->SetupAttachment(DrawerElement.DrawerBoxMesh);
+					IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
+					IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
+					// IItem->SetItemState(EItemState::EIS_Pickup);
+					IItem->InteractionEnabled(false);
+					IItem->ParentItemReferenceInteractEvent.AddDynamic(this, &ADrawer::DrawerItemInteraction);
+
+					FDrawerItem DrawerItem = FDrawerItem();
+					DrawerItem.DrawerReference = DrawerBoxMesh;
+					DrawerItem.Item = IItem;
+					DrawerItem.PositionInDrawer = FTransform(Rot.Quaternion(), Loc);
+
+					for (FDrawerElement Element : Drawers) {
+						if (!bItemSetup) {
+							const bool bIsInArray = Element.DrawerItems.ContainsByPredicate(
+								[&](FDrawerItem InShelfItem) -> bool {
+									return DrawerItem.Item == InShelfItem.Item;
+								});
+
+							if (!bIsInArray) {
+								UE_LOG(LogTemp, Error, TEXT("Adding Drawer Item %s"), *DrawerItem.Item->GetName())
+								DrawerElement.DrawerItems.Add(DrawerItem);
+								bItemSetup = true;
+							}
+						}
+					}
+
+				}
+				else if (DrawerElement.DrawerItems.Num() > 0) {
+					// IItem->GetItemMesh()->SetupAttachment(Key);
+					// IItem->GetItemMesh()->SetWorldLocationAndRotation(Loc, Rot);
+					// IItem->SetItemState(EItemState::EIS_Falling);
+					// IItem->SetItemState(EItemState::EIS_Pickup);
+					// IItem->InteractionEnabled(false);
+				}
+			}
+		}
 
 		Drawers.Add(DrawerElement);
 	}
@@ -86,8 +193,11 @@ void ADrawer::FindTracingComponent() {
 			if (Character->TraceUnderCrosshairs(HitResult, Loc)) {
 				UPrimitiveComponent* HitComponent = HitResult.GetComponent();
 				if (UStaticMeshComponent* StaticMeshHitComponent = Cast<UStaticMeshComponent>(HitComponent)) {
-					for (UStaticMeshComponent* DrawerMesh : DrawerMeshes) {
-						if (DrawerMesh == StaticMeshHitComponent) {
+
+					TArray<UBoxComponent*> Keys;
+					DrawerMeshes.GetKeys(Keys);
+					for (UBoxComponent* BoxMesh : Keys) {
+						if (DrawerMeshes[BoxMesh] == StaticMeshHitComponent) {
 							CurrentTracingDrawerMesh = StaticMeshHitComponent;
 						}
 					}
@@ -113,70 +223,6 @@ void ADrawer::UpdateDrawerMovement() {
 	if (bMoveDrawer) {
 		if (CurrentDrawerIndex != INDEX_NONE) {
 			if (CurrentTracingDrawerMesh != nullptr) {
-				FVector Loc = CurrentTracingDrawerMesh->GetComponentLocation();
-
-				//TODO: Change Values of Forward, RIght etc vectors based on Rotation.
-				FRotator NRot = ArrowForwardComponent->GetComponentRotation();
-
-				FVector Forward = Drawers[CurrentDrawerIndex].DrawerLoc.ForwardVector * Drawers[
-					CurrentDrawerIndex].DrawerLoc;
-
-				FVector Right = Drawers[CurrentDrawerIndex].DrawerLoc.RightVector * Drawers[
-					CurrentDrawerIndex].DrawerLoc;
-
-				float RightFloat = 0;
-				float ForwardFloat = 0;
-				if (Forward.X != 0) {
-					ForwardFloat = Forward.X;
-				}
-
-				float YawRound = FMath::RoundFromZero(FMath::Abs(NRot.Yaw));
-
-				if (YawRound == 1 && YawRound == 90 && YawRound == 180 && YawRound == 360) {
-					RightFloat = Right.X;
-				}
-
-				// float OpenForwardFloat = ForwardFloat >= 0 ? ForwardFloat + 20 : ForwardFloat - 20;
-				float OpenForwardFloat = YawRound >= 180 ? ForwardFloat - 20 : ForwardFloat + 20;
-				float OpenRightFloat = RightFloat == 0 ? Loc.Y : RightFloat - 20;
-
-				FVector Move = {OpenForwardFloat, OpenRightFloat, Loc.Z};
-
-				float NewLoc = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
-					                                        ? ForwardFloat
-					                                        : OpenForwardFloat,
-				                                        Drawers[CurrentDrawerIndex].bIsOpened
-					                                        ? OpenForwardFloat
-					                                        : ForwardFloat,
-				                                        CurrentDrawerMovement);
-
-				FVector NewLocV = UKismetMathLibrary::VLerp(Drawers[CurrentDrawerIndex].bIsOpened
-					                                            ? Drawers[CurrentDrawerIndex].DrawerLoc
-					                                            : Move,
-				                                            Drawers[CurrentDrawerIndex].bIsOpened
-					                                            ? Move
-					                                            : Drawers[CurrentDrawerIndex].DrawerLoc,
-				                                            CurrentDrawerMovement);
-
-				FVector NLoc = {
-					Forward.X != 0 ? NewLoc : Loc.X,
-					Forward.Y != 0 ? NewLoc : Loc.Y,
-					Forward.Z != 0 ? NewLoc : Loc.Z
-				};
-
-
-				// UE_LOG(LogTemp, Warning,
-				//        TEXT("RelativeLoc %s Loc %s Forward: %s Right: %s NLoc: %s Rot: %s, YawRound: %f YawAbs: %f"),
-				//        *CurrentTracingDrawerMesh->GetRelativeLocation().ToString(),
-				//        *Loc.ToString(),
-				//        *Forward.ToString(),
-				//        *Right.ToString(),
-				//        *NLoc.ToString(),
-				//        * NRot.ToString(),
-				//        YawRound,
-				//        FMath::Abs(NRot.Yaw))
-
-				//TODO: Use Relative Location instead of World Location, Also It can give another opportunity to move full drawer
 
 				float NewRelativeLoc = UKismetMathLibrary::Lerp(Drawers[CurrentDrawerIndex].bIsOpened
 					                                                ? Drawers[CurrentDrawerIndex].DrawerRelativeLoc.Y
@@ -200,9 +246,6 @@ void ADrawer::UpdateDrawerMovement() {
 				UE_LOG(LogTemp, Warning, TEXT("Initial RelativeLoc: %s New RelativeLoc: %s"),
 				       *Drawers[CurrentDrawerIndex].DrawerRelativeLoc.ToString(),
 				       * CurrentTracingDrawerMesh->GetRelativeLocation().ToString())
-
-				// CurrentTracingDrawerMesh->SetWorldLocationAndRotation(NLoc,
-				//                                                       CurrentTracingDrawerMesh->GetComponentRotation());
 			}
 
 		}
@@ -216,8 +259,6 @@ void ADrawer::UpdateDrawerMovement() {
 }
 
 void ADrawer::InteractWithItem(AMainCharacter* InCharacter) {
-	// Super::InteractWithItem(InCharacter);
-
 	if (Character && CurrentTracingDrawerMesh) {
 		UE_LOG(LogTemp, Warning, TEXT("Interact Component: %s"),
 		       *CurrentTracingDrawerMesh->GetName())
@@ -228,6 +269,15 @@ void ADrawer::InteractWithItem(AMainCharacter* InCharacter) {
 
 		if (CurrentDrawerIndex != INDEX_NONE) {
 			Drawers[CurrentDrawerIndex].bIsOpened = !Drawers[CurrentDrawerIndex].bIsOpened;
+			ItemInteractionName = Drawers[CurrentDrawerIndex].bIsOpened ? "Close" : "Open";
+
+			for (const FDrawerItem ShelfItem : Drawers[CurrentDrawerIndex].DrawerItems) {
+				AItem* IItem = ShelfItem.Item;
+				IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
+				IItem->InteractionEnabled(Drawers[CurrentDrawerIndex].bIsOpened);
+
+			}
+
 			bMoveDrawer = true;
 			DrawerMovementTransitionTimeline->PlayFromStart();
 		}
@@ -236,4 +286,18 @@ void ADrawer::InteractWithItem(AMainCharacter* InCharacter) {
 
 void ADrawer::UpdateDrawerMovementTransitionTimeline(float Output) {
 	CurrentDrawerMovement = Output;
+}
+
+void ADrawer::DrawerItemInteraction(AItem* InItem) {
+	for (FDrawerElement Key : Drawers) {
+		int32 ItemIndex = Key.DrawerItems.IndexOfByPredicate(
+			[&](FDrawerItem InDrawerItem) -> bool {
+				return InItem == InDrawerItem.Item;
+			});
+
+		if (ItemIndex != INDEX_NONE) {
+			Key.DrawerItems.RemoveAt(ItemIndex);
+			// break;
+		}
+	}
 }
