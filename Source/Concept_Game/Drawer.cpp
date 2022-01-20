@@ -87,7 +87,21 @@ void ADrawer::BeginPlay() {
 	TArray<UBoxComponent*> Keys;
 	DrawerMeshes.GetKeys(Keys);
 
+	struct TempItem {
+		AItem* TItem;
+		bool bSetup = false;
+	};
+	TArray<TempItem> TempItems;
+
+	for (AItem* IItem : InsideItems) {
+		TempItems.Add(TempItem{IItem});
+	}
+
+
 	for (UBoxComponent* DrawerBoxMesh : Keys) {
+
+		int ItemSetIndex = -1;
+		bool bSetupInDrawer = false;
 
 		FDrawerElement DrawerElement = FDrawerElement();
 
@@ -97,14 +111,16 @@ void ADrawer::BeginPlay() {
 		DrawerElement.DrawerLoc = DrawerMeshes[DrawerBoxMesh]->GetComponentLocation();
 		DrawerElement.DrawerRelativeLoc = DrawerMeshes[DrawerBoxMesh]->GetRelativeLocation();
 
-		//TODO: Fix adding items, one weapon is added multiple times to Drawer Array....
-		for (AItem* IItem : InsideItems) {
-			bool bItemSetup = false;
 
-			if (!bItemSetup) {
-				FVector Loc = DrawerElement.DrawerBoxMesh->GetComponentLocation();
+		for (int i = 0; i < TempItems.Num(); i++) {
+			TempItem TItem = TempItems[i];
+			AItem* IItem = TItem.TItem;
+			// UE_LOG(LogTemp, Warning, TEXT("Drawer: Item %s Is Setup: %s bSetupInDrawer: %s"), *IItem->GetName(),
+			//        TItem.bSetup ? TEXT("True") : TEXT("false"), bSetupInDrawer ? TEXT("true") : TEXT("false"))
+			if (!TItem.bSetup && !bSetupInDrawer) {
+				FVector Loc = DrawerElement.DrawerBoxMesh->GetRelativeLocation();
 				FVector MeshBounds = IItem->GetItemMesh()->Bounds.BoxExtent;
-				FRotator Rot = DrawerElement.DrawerBoxMesh->GetComponentRotation();
+				FRotator Rot = DrawerElement.DrawerBoxMesh->GetRelativeRotation();
 
 				if (DrawerElement.DrawerItems.Num() == 0) {
 					FVector2D EmptyPlaceAtShelf = {
@@ -135,26 +151,28 @@ void ADrawer::BeginPlay() {
 					// IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
 					IItem->SetItemState(EItemState::EIS_Pickup);
 					IItem->InteractionEnabled(false);
-					IItem->ParentItemReferenceInteractEvent.AddDynamic(this, &ADrawer::DrawerItemInteraction);
+					if (!IItem->ParentItemReferenceInteractEvent.IsBound()) {
+						IItem->ParentItemReferenceInteractEvent.AddDynamic(this, &ADrawer::DrawerItemInteraction);
+					}
 
 					FDrawerItem DrawerItem = FDrawerItem();
 					DrawerItem.DrawerReference = DrawerBoxMesh;
 					DrawerItem.Item = IItem;
 					DrawerItem.PositionInDrawer = FTransform(Rot.Quaternion(), Loc);
 
-					for (FDrawerElement Element : Drawers) {
-						if (!bItemSetup) {
-							const bool bIsInArray = Element.DrawerItems.ContainsByPredicate(
-								[&](FDrawerItem InShelfItem) -> bool {
-									return DrawerItem.Item == InShelfItem.Item;
-								});
 
-							if (!bIsInArray) {
-								UE_LOG(LogTemp, Error, TEXT("Adding Drawer Item %s"), *DrawerItem.Item->GetName())
-								DrawerElement.DrawerItems.Add(DrawerItem);
-								bItemSetup = true;
-							}
-						}
+					const bool bIsInArray = DrawerElement.DrawerItems.ContainsByPredicate(
+						[&](FDrawerItem InShelfItem) -> bool {
+							return DrawerItem.Item == InShelfItem.Item;
+						});
+
+					if (!bIsInArray && !TItem.bSetup) {
+						DrawerElement.DrawerItems.Add(DrawerItem);
+						TItem.bSetup = true;
+						bSetupInDrawer = true;
+						ItemSetIndex = i;
+						UE_LOG(LogTemp, Error, TEXT("Adding Drawer Item %s To Drawer: %s"),
+						       *DrawerItem.Item->GetName(), *DrawerElement.DrawerMesh->GetName())
 					}
 
 				}
@@ -168,6 +186,9 @@ void ADrawer::BeginPlay() {
 			}
 		}
 
+		if (ItemSetIndex != -1) {
+			TempItems.RemoveAt(ItemSetIndex);
+		}
 		Drawers.Add(DrawerElement);
 	}
 
@@ -244,10 +265,10 @@ void ADrawer::UpdateDrawerMovement() {
 					,
 					CurrentInteractingDrawerMesh->GetRelativeRotation());
 
-				UE_LOG(LogTemp, Warning, TEXT("Initial RelativeLoc: %s New RelativeLoc: %s Is Opened: %s"),
-				       *Drawers[CurrentDrawerIndex].DrawerRelativeLoc.ToString(),
-				       * CurrentInteractingDrawerMesh->GetRelativeLocation().ToString(),
-				       Drawers[CurrentDrawerIndex].bIsOpened ? TEXT("true") : TEXT("false"))
+				// UE_LOG(LogTemp, Warning, TEXT("Initial RelativeLoc: %s New RelativeLoc: %s Is Opened: %s"),
+				//        *Drawers[CurrentDrawerIndex].DrawerRelativeLoc.ToString(),
+				//        * CurrentInteractingDrawerMesh->GetRelativeLocation().ToString(),
+				//        Drawers[CurrentDrawerIndex].bIsOpened ? TEXT("true") : TEXT("false"))
 			}
 
 		}
@@ -282,7 +303,8 @@ void ADrawer::InteractWithItem(AMainCharacter* InCharacter) {
 				// IItem->SetItemState(EItemState::EIS_PickupWithPhysics);
 				IItem->SetItemState(EItemState::EIS_Pickup);
 				IItem->InteractionEnabled(Drawers[CurrentDrawerIndex].bIsOpened);
-
+				UE_LOG(LogTemp, Error, TEXT("Drawer: %s Loc: %s FDrawerItem => %s"),
+				       *Drawers[CurrentDrawerIndex].DrawerMesh->GetName(), *Loc.ToString(), *IItem->GetName())
 			}
 
 			bMoveDrawer = true;
@@ -303,6 +325,9 @@ void ADrawer::DrawerItemInteraction(AItem* InItem) {
 			});
 
 		if (ItemIndex != INDEX_NONE) {
+			UE_LOG(LogTemp, Error, TEXT("Drawer: %s: Index at: %i Name: %s"), *Key.DrawerMesh->GetName(), ItemIndex,
+			       *Key.DrawerItems[ItemIndex].Item->GetName())
+
 			Key.DrawerItems.RemoveAt(ItemIndex);
 			// break;
 		}
