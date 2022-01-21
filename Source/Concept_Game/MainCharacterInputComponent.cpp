@@ -11,6 +11,7 @@
 #include "MainHUD.h"
 #include "MainPlayerController.h"
 #include "PauseMenuComponent.h"
+#include "RenderingComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -61,6 +62,8 @@ void UMainCharacterInputComponent::SetupPlayerInputComponent(UInputComponent* Pl
 	                                 &UMainCharacterInputComponent::ChangeDebugCamera);
 	PlayerInputComponent->BindAction("DebugAddSkillPoints", IE_Pressed, this,
 	                                 &UMainCharacterInputComponent::DebugAddSkillPoints);
+	PlayerInputComponent->BindAction("DebugInvisibility", IE_Pressed, this,
+	                                 &UMainCharacterInputComponent::DebugInvisibility);
 	PlayerInputComponent->BindAction("FPSCounterTrigger", IE_Pressed, this,
 	                                 &UMainCharacterInputComponent::TriggerFPSCounter);
 	PlayerInputComponent->BindAction("DebugTriggerRotationYaw", IE_Pressed, this,
@@ -417,6 +420,10 @@ void UMainCharacterInputComponent::ChangeDebugCamera() {
 
 void UMainCharacterInputComponent::DebugAddSkillPoints() {
 	OwningCharacter->CharacterSkillComponent->AddPoint();
+}
+
+void UMainCharacterInputComponent::DebugInvisibility() {
+	OwningCharacter->CharacterRenderingComponent->ToggleInvisibility();
 }
 
 void UMainCharacterInputComponent::ChangeDebugTriggerRotationYaw() {

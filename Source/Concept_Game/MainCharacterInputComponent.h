@@ -46,6 +46,7 @@ public:
 	void UseWeaponButtonReleased();
 	void ChangeDebugCamera();
 	void DebugAddSkillPoints();
+	void DebugInvisibility();
 	void ChangeDebugTriggerRotationYaw();
 	void TriggerFPSCounter();
 	void InteractButtonPressed();

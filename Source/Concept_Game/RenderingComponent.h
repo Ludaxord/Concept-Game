@@ -24,12 +24,22 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	void ToggleInvisibility();
+
 	FORCEINLINE bool ApplyFog() {
 		return bApplyFog;
 	}
 
 	FORCEINLINE void ApplyFog(bool bInApplyFog) {
 		bApplyFog = bInApplyFog;
+	}
+
+	FORCEINLINE bool ApplyInvisibility() {
+		return bApplyInvisibility;
+	}
+
+	FORCEINLINE void ApplyInvisibility(bool bInApplyInvisibility) {
+		bApplyInvisibility = bInApplyInvisibility;
 	}
 
 	FORCEINLINE bool ApplySnow() {
@@ -49,6 +59,7 @@ public:
 	}
 
 private:
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Fog Properties", meta = (AllowPrivateAccess = "true"))
 	bool bApplyFog;
 
@@ -57,4 +68,13 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Fog Properties", meta = (AllowPrivateAccess = "true"))
 	bool bApplyRain;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Invisibility Properties", meta = (AllowPrivateAccess = "true"))
+	bool bApplyInvisibility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Invisibility Properties", meta = (AllowPrivateAccess = "true"))
+	bool bInvisible;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Invisibility Properties", meta = (AllowPrivateAccess = "true"))
+	class AMainCharacter* OwningCharacter;
 };

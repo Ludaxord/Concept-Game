@@ -860,12 +860,20 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class URenderingComponent* CharacterRenderingComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
+		meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* InvisibleCharacterMesh;
 public:
 	TArray<FGuid> OverlappedItemIDs;
 
 	bool bJumpFromClimb;
 
 	bool bTouchingFloor;
+
+	USkeletalMeshComponent* GetInvisibleCharacterMesh() {
+		return InvisibleCharacterMesh;
+	}
 
 	UCoverComponent* GetCharacterCoverComponent() {
 		return CharacterCoverComponent;
@@ -905,6 +913,10 @@ public:
 
 	UMainCharacterInputComponent* GetCharacterInputComponent() {
 		return CharacterInputComponent;
+	};
+
+	URenderingComponent* GetCharacterRenderingComponent() {
+		return CharacterRenderingComponent;
 	};
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {

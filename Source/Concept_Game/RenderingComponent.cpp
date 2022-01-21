@@ -3,9 +3,10 @@
 
 #include "RenderingComponent.h"
 
+#include "MainCharacter.h"
+
 // Sets default values for this component's properties
-URenderingComponent::URenderingComponent(): bApplyFog(true)
-{
+URenderingComponent::URenderingComponent(): bApplyFog(true) {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -15,20 +16,29 @@ URenderingComponent::URenderingComponent(): bApplyFog(true)
 
 
 // Called when the game starts
-void URenderingComponent::BeginPlay()
-{
+void URenderingComponent::BeginPlay() {
 	Super::BeginPlay();
+	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 
+	if (OwningCharacter) {
+		OwningCharacter->GetInvisibleCharacterMesh()->SetVisibility(false);
+	}
 	// ...
-	
+
 }
 
 
 // Called every frame
-void URenderingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
+void URenderingComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                        FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
 
+//TODO: Finish....
+void URenderingComponent::ToggleInvisibility() {
+	if (bApplyInvisibility) {
+		
+	}
+}
