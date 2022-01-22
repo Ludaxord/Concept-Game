@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RenderingComponent.h"
+#include "RenderComponent.h"
 
 #include "MainCharacter.h"
 
+
 // Sets default values for this component's properties
-URenderingComponent::URenderingComponent(): bApplyFog(false) {
+URenderComponent::URenderComponent(): bApplyFog(false) {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -17,7 +18,7 @@ URenderingComponent::URenderingComponent(): bApplyFog(false) {
 
 
 // Called when the game starts
-void URenderingComponent::BeginPlay() {
+void URenderComponent::BeginPlay() {
 	Super::BeginPlay();
 	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 	PrepareInvisibility();
@@ -25,28 +26,48 @@ void URenderingComponent::BeginPlay() {
 
 
 // Called every frame
-void URenderingComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                        FActorComponentTickFunction* ThisTickFunction) {
+void URenderComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                     FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	CheckVisibility();
 	// ...
 }
 
 //TODO: Finish....
-void URenderingComponent::ToggleInvisibility() {
+void URenderComponent::ToggleInvisibility() {
 	if (bApplyInvisibility) {
 		bInvisible = !bInvisible;
+		if (bInvisible) {
+			OwningCharacter->GetInvisibleCharacterMesh()->SetVisibility(true);
+		}
 		bInvisible ? InvisibilityTransitionTimeline->PlayFromStart() : InvisibilityTransitionTimeline->ReverseFromEnd();
 	}
 }
 
-void URenderingComponent::UpdateInvisibilityTransitionTimeline(float Output) {
+void URenderComponent::CheckVisibility() {
+	if (OwningCharacter) {
+		if (InvisibleAmount <= 0.01f && !bInvisible) {
+			OwningCharacter->GetInvisibleCharacterMesh()->SetVisibility(false);
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("InvisibleAmount: %f OwningCharacter->GetInvisibleCharacterMesh(): %s"),
+		       InvisibleAmount,
+		       OwningCharacter->GetInvisibleCharacterMesh()->IsVisible() ? TEXT("true") : TEXT("false"))
+	}
+}
+
+void URenderComponent::UpdateInvisibilityTransitionTimeline(float Output) {
+	UE_LOG(LogTemp, Warning, TEXT("UpdateInvisibilityTransitionTimeline -> %f"), Output)
 	BodyMaterial->SetScalarParameterValue(FName("Amount"), Output);
 	SignMaterial->SetScalarParameterValue(FName("Amount"), Output);
 	HeadMaterial->SetScalarParameterValue(FName("Amount"), Output);
+	InvisibleAmount = Output;
+	if (Output == 0.0f) {
+		OwningCharacter->GetInvisibleCharacterMesh()->SetVisibility(false);
+	}
 }
 
-void URenderingComponent::PrepareInvisibility() {
+void URenderComponent::PrepareInvisibility() {
 	if (OwningCharacter) {
 		OwningCharacter->GetInvisibleCharacterMesh()->SetVisibility(false);
 		BodyMaterial = OwningCharacter->GetMesh()->CreateDynamicMaterialInstance(0);
@@ -54,8 +75,9 @@ void URenderingComponent::PrepareInvisibility() {
 		HeadMaterial = OwningCharacter->GetEyesCameraHeadComponent()->CreateDynamicMaterialInstance(0);
 	}
 
-	InvisibilityFunctionFloat.BindDynamic(this, &URenderingComponent::UpdateInvisibilityTransitionTimeline);
+	InvisibilityFunctionFloat.BindDynamic(this, &URenderComponent::UpdateInvisibilityTransitionTimeline);
 	if (InvisibilityTransitionFloatCurve) {
 		InvisibilityTransitionTimeline->AddInterpFloat(InvisibilityTransitionFloatCurve, InvisibilityFunctionFloat);
+		UE_LOG(LogTemp, Warning, TEXT("InvisibilityTransitionFloatCurve -> Added"))
 	}
 }

@@ -5,16 +5,17 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/TimelineComponent.h"
-#include "RenderingComponent.generated.h"
+#include "RenderComponent.generated.h"
 
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class CONCEPT_GAME_API URenderingComponent : public UActorComponent {
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class CONCEPT_GAME_API URenderComponent : public UActorComponent
+{
 	GENERATED_BODY()
 
-public:
+public:	
 	// Sets default values for this component's properties
-	URenderingComponent();
+	URenderComponent();
 
 protected:
 	// Called when the game starts
@@ -27,6 +28,9 @@ public:
 
 	void ToggleInvisibility();
 
+	void CheckVisibility();
+
+	UFUNCTION()
 	void UpdateInvisibilityTransitionTimeline(float Output);
 
 	void PrepareInvisibility();
@@ -79,11 +83,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Invisibility Properties", meta = (AllowPrivateAccess = "true"))
 	bool bInvisible;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Invisibility Properties", meta = (AllowPrivateAccess = "true"))
+	float InvisibleAmount;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
 		meta = (AllowPrivateAccess = "true"))
 	class UTimelineComponent* InvisibilityTransitionTimeline;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
 		meta = (AllowPrivateAccess = "true"))
 	FOnTimelineFloat InvisibilityFunctionFloat;
 
@@ -105,4 +112,5 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Global Properties", meta = (AllowPrivateAccess = "true"))
 	class AMainCharacter* OwningCharacter;
+		
 };

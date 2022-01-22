@@ -4,14 +4,18 @@
 #include "CamoSkill.h"
 
 #include "MainCharacter.h"
-#include "RenderingComponent.h"
+#include "RenderComponent.h"
 
 void UCamoSkill::ApplySkill(AActor* InOwner) {
 	Super::ApplySkill(InOwner);
-
 	AMainCharacter* Character = Cast<AMainCharacter>(InOwner);
 	if (Character) {
-		Character->GetCharacterRenderingComponent()->ApplyInvisibility(true);
+		if (Character->GetCharacterRenderingComponent()) {
+			Character->GetCharacterRenderingComponent()->ApplyInvisibility(true);
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("CharacterRenderingComponent is NULLPTR"))
+		}
 	}
 }
 

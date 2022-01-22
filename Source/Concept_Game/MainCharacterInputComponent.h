@@ -50,6 +50,7 @@ public:
 	void ChangeDebugTriggerRotationYaw();
 	void TriggerFPSCounter();
 	void InteractButtonPressed();
+	void DebugToggleFog();
 	void InventoryButtonPressed();
 	void DebugWidgetButtonPressed();
 	void PauseButtonPressed();

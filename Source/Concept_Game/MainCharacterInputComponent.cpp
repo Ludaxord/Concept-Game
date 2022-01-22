@@ -11,7 +11,7 @@
 #include "MainHUD.h"
 #include "MainPlayerController.h"
 #include "PauseMenuComponent.h"
-#include "RenderingComponent.h"
+#include "RenderComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -86,6 +86,8 @@ void UMainCharacterInputComponent::SetupPlayerInputComponent(UInputComponent* Pl
 	                                 &UMainCharacterInputComponent::UseWeaponButtonReleased);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this,
 	                                 &UMainCharacterInputComponent::InteractButtonPressed);
+	PlayerInputComponent->BindAction("DebugToggleFog", IE_Pressed, this,
+	                                 &UMainCharacterInputComponent::DebugToggleFog);
 	PlayerInputComponent->BindAction("DebugDropItem", IE_Pressed, this, &UMainCharacterInputComponent::DebugDropItem);
 
 	//TODO: Temporary moved to blueprint, if blueprint will work recreate system in cpp
@@ -423,7 +425,7 @@ void UMainCharacterInputComponent::DebugAddSkillPoints() {
 }
 
 void UMainCharacterInputComponent::DebugInvisibility() {
-	OwningCharacter->CharacterRenderingComponent->ToggleInvisibility();
+	OwningCharacter->CharacterRenderComponent->ToggleInvisibility();
 }
 
 void UMainCharacterInputComponent::ChangeDebugTriggerRotationYaw() {
@@ -441,7 +443,18 @@ void UMainCharacterInputComponent::InteractButtonPressed() {
 	if (OwningCharacter->CombatState != ECombatState::ECS_Unoccupied) return;
 	if (OwningCharacter->CharacterItemComponent->GetTraceHitItem()) {
 		OwningCharacter->CharacterItemComponent->GetTraceHitItem()->InteractWithItem(OwningCharacter);
-		OwningCharacter->CharacterItemComponent->SetTraceHitItem( nullptr);
+		OwningCharacter->CharacterItemComponent->SetTraceHitItem(nullptr);
+	}
+}
+
+void UMainCharacterInputComponent::DebugToggleFog() {
+	if (OwningCharacter->CharacterRenderComponent) {
+		OwningCharacter->CharacterRenderComponent->ApplyFog(
+			!OwningCharacter->CharacterRenderComponent->ApplyFog()
+		);
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Toggle ERROR FOG"))
 	}
 }
 

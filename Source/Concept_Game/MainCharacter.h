@@ -859,11 +859,15 @@ private:
 	class UMapComponent* CharacterMapComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
-	class URenderingComponent* CharacterRenderingComponent;
+	class URenderComponent* CharacterRenderComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
 		meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* InvisibleCharacterMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
+		meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* InvisibleCameraHeadComponent;
 public:
 	TArray<FGuid> OverlappedItemIDs;
 
@@ -871,52 +875,60 @@ public:
 
 	bool bTouchingFloor;
 
-	USkeletalMeshComponent* GetInvisibleCharacterMesh() {
+	USkeletalMeshComponent* GetInvisibleCharacterMesh() const {
 		return InvisibleCharacterMesh;
 	}
 
-	UCoverComponent* GetCharacterCoverComponent() {
+	UPostProcessComponent* GetFogComponent() const {
+		return FogComponent;
+	}
+
+	USkeletalMeshComponent* GetEyesCameraHeadComponent() const {
+		return EyesCameraHeadComponent;
+	}
+
+	UCoverComponent* GetCharacterCoverComponent() const {
 		return CharacterCoverComponent;
 	};
 
-	UShootingComponent* GetCharacterShootingComponent() {
+	UShootingComponent* GetCharacterShootingComponent() const {
 		return CharacterShootingComponent;
 	};
 
-	UBaseHUDComponent* GetCharacterBaseHUDComponent() {
+	UBaseHUDComponent* GetCharacterBaseHUDComponent() const {
 		return CharacterBaseHUDComponent;
 	};
 
-	UMeleeComponent* GetCharacterMeleeComponent() {
+	UMeleeComponent* GetCharacterMeleeComponent() const {
 		return CharacterMeleeComponent;
 	};
 
-	UParkourComponent* GetCharacterParkourComponent() {
+	UParkourComponent* GetCharacterParkourComponent() const {
 		return CharacterParkourComponent;
 	};
 
-	UEnhancementComponent* GetCharacterEnhancementComponent() {
+	UEnhancementComponent* GetCharacterEnhancementComponent() const {
 		return CharacterEnhancementComponent;
 	};
 
-	UInventoryComponent* GetCharacterInventoryComponent() {
+	UInventoryComponent* GetCharacterInventoryComponent() const {
 		return CharacterInventoryComponent;
 	};
 
-	UItemComponent* GetCharacterItemComponent() {
+	UItemComponent* GetCharacterItemComponent() const {
 		return CharacterItemComponent;
 	};
 
-	UMainCharacterCameraComponent* GetCharacterCameraComponent() {
+	UMainCharacterCameraComponent* GetCharacterCameraComponent() const {
 		return CharacterCameraComponent;
 	};
 
-	UMainCharacterInputComponent* GetCharacterInputComponent() {
+	UMainCharacterInputComponent* GetCharacterInputComponent() const {
 		return CharacterInputComponent;
 	};
 
-	URenderingComponent* GetCharacterRenderingComponent() {
-		return CharacterRenderingComponent;
+	URenderComponent* GetCharacterRenderingComponent() const {
+		return CharacterRenderComponent;
 	};
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const {

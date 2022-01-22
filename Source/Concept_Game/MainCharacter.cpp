@@ -29,6 +29,7 @@
 #include "ParkourComponent.h"
 #include "PauseMenuComponent.h"
 #include "QuestComponent.h"
+#include "RenderComponent.h"
 #include "ShootingComponent.h"
 #include "StealthComponent.h"
 #include "RenderingComponent.h"
@@ -114,6 +115,8 @@ AMainCharacter::AMainCharacter():
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
+	CharacterRenderComponent = CreateDefaultSubobject<URenderComponent>(
+		TEXT("CharacterPostProcessComponent"));
 
 	ConstructCameraBoom();
 	ConstructFollowCamera();
@@ -145,8 +148,6 @@ AMainCharacter::AMainCharacter():
 	CharacterDoorComponent = CreateDefaultSubobject<UDoorComponent>(TEXT("CharacterDoorComponent"));
 	CharacterFlashLightComponent = CreateDefaultSubobject<UFlashlightComponent>(TEXT("CharacterFlashLightComponent"));
 	CharacterMapComponent = CreateDefaultSubobject<UMapComponent>(TEXT("CharacterMapComponent"));
-	CharacterRenderingComponent = CreateDefaultSubobject<URenderingComponent>(
-		TEXT("CharacterPostProcessComponent"));
 
 	FogComponent = CreateDefaultSubobject<UPostProcessComponent>(TEXT("FogComponent"));
 	FogComponent->SetupAttachment(RootComponent);
@@ -159,7 +160,7 @@ AMainCharacter::AMainCharacter():
 
 	InvisibleCharacterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("InvisibleCharacterMesh"));
 	InvisibleCharacterMesh->SetupAttachment(RootComponent);
-	InvisibleCharacterMesh->SetMasterPoseComponent(GetMesh()); 
+	InvisibleCharacterMesh->SetMasterPoseComponent(GetMesh());
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
@@ -389,9 +390,11 @@ void AMainCharacter::ConstructCharacterMovement() const {
 }
 
 void AMainCharacter::ConstructPostProcess() {
-	if (CharacterRenderingComponent) {
-		FogComponent->bEnabled = CharacterRenderingComponent->ApplyFog();
+	if (CharacterRenderComponent) {
+		FogComponent->bEnabled = CharacterRenderComponent->ApplyFog();
 	}
+
+	// UE_LOG(LogTemp, Warning, TEXT("FogComponent Enabled? %s"), FogComponent->bEnabled ? TEXT("TRUE"): TEXT("FALSE"))
 }
 
 void AMainCharacter::SetDefaultCameras() {
@@ -708,6 +711,12 @@ void AMainCharacter::ConstructEyesCameraHeadComponent() {
 	EyesCameraHeadComponent->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
 	EyesCameraHeadComponent->SetOwnerNoSee(true);
 	EyesCameraHeadComponent->bCastHiddenShadow = true;
+
+	InvisibleCameraHeadComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("InvisibleCameraHeadComponent"));
+	InvisibleCameraHeadComponent->SetupAttachment(GetMesh(), "head");
+	InvisibleCameraHeadComponent->SetRelativeTransform(FTransform(FQuat(-90.0f, 0.0f, 90.0f, 0.0f)));
+	InvisibleCameraHeadComponent->SetOwnerNoSee(true);
+	InvisibleCameraHeadComponent->bCastHiddenShadow = true;
 	// EyesCameraHeadComponent->SetupAttachment(GetCapsuleComponent());
 }
 
@@ -2010,6 +2019,9 @@ void AMainCharacter::SetActiveCameras(bool FollowCameraActive) {
 	RefFollowCamera->SetActive(false);
 	EyesCameraHeadComponent->SetOwnerNoSee(!FollowCameraActive);
 	EyesCameraHeadComponent->bCastHiddenShadow = !FollowCameraActive;
+
+	InvisibleCameraHeadComponent->SetOwnerNoSee(!FollowCameraActive);
+	InvisibleCameraHeadComponent->bCastHiddenShadow = !FollowCameraActive;
 }
 
 void AMainCharacter::OnCameraTimelineFloatUpdate(float Output) {
