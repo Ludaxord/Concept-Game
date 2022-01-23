@@ -49,10 +49,6 @@ void URenderComponent::CheckVisibility() {
 		if (InvisibleAmount <= 0.01f && !bInvisible) {
 			OwningCharacter->GetInvisibleCharacterMesh()->SetVisibility(false);
 		}
-
-		UE_LOG(LogTemp, Warning, TEXT("InvisibleAmount: %f OwningCharacter->GetInvisibleCharacterMesh(): %s"),
-		       InvisibleAmount,
-		       OwningCharacter->GetInvisibleCharacterMesh()->IsVisible() ? TEXT("true") : TEXT("false"))
 	}
 }
 

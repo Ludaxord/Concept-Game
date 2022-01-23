@@ -117,6 +117,7 @@ AMainCharacter::AMainCharacter():
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterRenderComponent = CreateDefaultSubobject<URenderComponent>(
 		TEXT("CharacterPostProcessComponent"));
+	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
 
 	ConstructCameraBoom();
 	ConstructFollowCamera();
@@ -139,7 +140,6 @@ AMainCharacter::AMainCharacter():
 	CharacterCameraComponent = CreateDefaultSubobject<UMainCharacterCameraComponent>(TEXT("CharacterCameraComponent"));
 	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
 	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
-	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
 	DebugWidgetComponent = CreateDefaultSubobject<UDebugWidgetComponent>(TEXT("DebugWidgetComponent"));
 	CharacterDialogComponent = CreateDefaultSubobject<UDialogComponent>(TEXT("CharacterDialogComponent"));
 	CharacterStealthComponent = CreateDefaultSubobject<UStealthComponent>(TEXT("CharacterStealthComponent"));

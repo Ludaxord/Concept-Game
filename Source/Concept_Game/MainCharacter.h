@@ -899,6 +899,10 @@ public:
 		return CharacterBaseHUDComponent;
 	};
 
+	UQuestComponent* GetQuestComponent() const {
+		return CharacterQuestComponent;
+	};
+
 	UMeleeComponent* GetCharacterMeleeComponent() const {
 		return CharacterMeleeComponent;
 	};
