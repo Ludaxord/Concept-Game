@@ -12,7 +12,6 @@
 #include "DebugWidgetComponent.h"
 #include "DialogComponent.h"
 #include "DoorComponent.h"
-#include "DoubleJumpSkill.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancementComponent.h"
 #include "FlashlightComponent.h"
@@ -28,11 +27,10 @@
 #include "MeleeComponent.h"
 #include "ParkourComponent.h"
 #include "PauseMenuComponent.h"
-#include "QuestComponent.h"
+#include "QuestsComponent.h"
 #include "RenderComponent.h"
 #include "ShootingComponent.h"
 #include "StealthComponent.h"
-#include "RenderingComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -114,10 +112,10 @@ AMainCharacter::AMainCharacter():
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CharacterQuestComponent = CreateDefaultSubobject<UQuestsComponent>(TEXT("CharacterQuestComponent"));
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterRenderComponent = CreateDefaultSubobject<URenderComponent>(
 		TEXT("CharacterPostProcessComponent"));
-	CharacterQuestComponent = CreateDefaultSubobject<UQuestComponent>(TEXT("CharacterQuestComponent"));
 
 	ConstructCameraBoom();
 	ConstructFollowCamera();

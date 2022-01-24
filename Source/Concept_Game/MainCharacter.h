@@ -831,8 +831,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UMainCharacterInputComponent* CharacterInputComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
-	class UQuestComponent* CharacterQuestComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UQuestsComponent* CharacterQuestComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UDebugWidgetComponent* DebugWidgetComponent;
@@ -899,7 +899,7 @@ public:
 		return CharacterBaseHUDComponent;
 	};
 
-	UQuestComponent* GetQuestComponent() const {
+	UQuestsComponent* GetQuestComponent() const {
 		return CharacterQuestComponent;
 	};
 

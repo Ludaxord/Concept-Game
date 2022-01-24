@@ -1,14 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "QuestComponent.h"
+#include "QuestsComponent.h"
 
-void UQuestComponent::BeginPlay() {
-	Super::BeginPlay();
-	AddRemoveQuestDelegate.AddDynamic(this, &UQuestComponent::UpdateCache);
+
+UQuestsComponent::UQuestsComponent() {
 }
 
-void UQuestComponent::AddQuest(FNPCQuest InNPCQuest) {
+void UQuestsComponent::BeginPlay() {
+	Super::BeginPlay();
+	AddRemoveQuestDelegate.AddDynamic(this, &UQuestsComponent::UpdateCache);
+}
+
+void UQuestsComponent::AddQuest(FNPCQuest InNPCQuest) {
 	FQuest Quest = {InNPCQuest.Name, InNPCQuest.Description, InNPCQuest.QuestSteps, InNPCQuest.bPrimary};
 	Quests.Add(Quest);
 
@@ -21,7 +25,7 @@ void UQuestComponent::AddQuest(FNPCQuest InNPCQuest) {
 	}
 }
 
-void UQuestComponent::SelectQuest(FString InName) {
+void UQuestsComponent::SelectQuest(FString InName) {
 	if (Quests.Num() > 0) {
 		if (ActiveQuest.Name != InName) {
 			ResetQuest();
@@ -47,13 +51,13 @@ void UQuestComponent::SelectQuest(FString InName) {
 	}
 }
 
-void UQuestComponent::RemoveQuest() {
+void UQuestsComponent::RemoveQuest() {
 	Quests.RemoveAt(CurrentQuestID);
 	SelectQuest(FString());
 	bCanChangeQuest = true;
 }
 
-void UQuestComponent::CompleteQuestStep() {
+void UQuestsComponent::CompleteQuestStep() {
 	ActiveQuest.QuestSteps.RemoveAt(0);
 	if (ActiveQuest.QuestSteps.Num() == 0) {
 		RemoveQuest();
@@ -64,17 +68,17 @@ void UQuestComponent::CompleteQuestStep() {
 	}
 }
 
-void UQuestComponent::QuestListToggle() {
+void UQuestsComponent::QuestListToggle() {
 	bQuestListVisible = !bQuestListVisible;
 	UE_LOG(LogTemp, Warning, TEXT("bQuestList Visible: %s"), bQuestListVisible ? TEXT("true"): TEXT("false"))
 }
 
-void UQuestComponent::ResetQuest() {
+void UQuestsComponent::ResetQuest() {
 	CurrentQuestID = -1;
 	ActiveQuest = FQuest();
 }
 
-void UQuestComponent::UpdateCache() {
+void UQuestsComponent::UpdateCache() {
 	for (auto It = QuestCache.CreateConstIterator(); It; ++It) {
 		QuestCache.Remove(It.Key());
 	}

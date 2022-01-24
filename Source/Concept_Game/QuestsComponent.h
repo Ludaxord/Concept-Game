@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ActionComponent.h"
+#include "Components/ActorComponent.h"
+#include "QuestsComponent.generated.h"
 
-#include "QuestComponent.generated.h"
 
 USTRUCT(BlueprintType)
 struct FQuestStep {
@@ -65,11 +65,13 @@ struct FNPCQuestStore {
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddRemoveQuest);
 
-UCLASS()
-class CONCEPT_GAME_API UQuestComponent : public UActionComponent {
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class CONCEPT_GAME_API UQuestsComponent : public UActorComponent {
 	GENERATED_BODY()
 
 public:
+	UQuestsComponent();
+
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)

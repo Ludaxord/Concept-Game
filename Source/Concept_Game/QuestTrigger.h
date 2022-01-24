@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "QuestComponent.h"
+#include "QuestsComponent.h"
 #include "GameFramework/Actor.h"
 #include "QuestTrigger.generated.h"
 
@@ -27,7 +27,7 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
-	UQuestComponent* QuestComponentRef;
+	UQuestsComponent* QuestComponentRef;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
 	FString QuestName;
