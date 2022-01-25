@@ -96,6 +96,7 @@ private:
 
 private:
 	friend class AQuestTrigger;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Quest", meta = (AllowPrivateAccess = "true"))
 	TArray<FQuest> Quests;
 
@@ -120,4 +121,8 @@ private:
 public:
 	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAddRemoveQuest AddRemoveQuestDelegate;
+
+	FORCEINLINE bool GetQuestListVisibility() const {
+		return bQuestListVisible;
+	}
 };

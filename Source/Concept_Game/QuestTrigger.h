@@ -26,6 +26,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	friend class ANPCQuestCharacter;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
 	UQuestsComponent* QuestComponentRef;
 

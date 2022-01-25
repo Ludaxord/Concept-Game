@@ -11,6 +11,7 @@
 #include "MainHUD.h"
 #include "MainPlayerController.h"
 #include "PauseMenuComponent.h"
+#include "QuestsComponent.h"
 #include "RenderComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -499,6 +500,10 @@ bool UMainCharacterInputComponent::AimButtonPressedBlocked() {
 		return true;
 	}
 
+	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -512,6 +517,10 @@ bool UMainCharacterInputComponent::AimButtonReleasedBlocked() {
 	}
 
 	if (OwningCharacter->CharacterPauseMenuComponent->GetPauseMenuVisibility()) {
+		return true;
+	}
+
+	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
 		return true;
 	}
 
@@ -532,6 +541,10 @@ bool UMainCharacterInputComponent::UseWeaponPressedBlocked() {
 		return true;
 	}
 
+	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -545,6 +558,10 @@ bool UMainCharacterInputComponent::UseWeaponReleasedBlocked() {
 	}
 
 	if (OwningCharacter->CharacterPauseMenuComponent->GetPauseMenuVisibility()) {
+		return true;
+	}
+
+	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
 		return true;
 	}
 
