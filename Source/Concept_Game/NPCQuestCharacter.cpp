@@ -32,6 +32,9 @@ void ANPCQuestCharacter::LoadQuestsToNPC() {
 				QuestStep.Trigger->QuestName = NPCQuest.Name;
 				QuestStep.Trigger->QuestStep = QuestStep;
 			}
+			else {
+				UE_LOG(LogTemp, Error, TEXT("Trigger Is not Valid"))
+			}
 		}
 	}
 }

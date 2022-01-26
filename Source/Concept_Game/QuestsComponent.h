@@ -65,6 +65,8 @@ struct FNPCQuestStore {
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddRemoveQuest);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAcceptQuest);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UQuestsComponent : public UActorComponent {
 	GENERATED_BODY()
@@ -115,14 +117,27 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
 	class UUserWidget* QuestListWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
+	class UUserWidget* QuestInfoWidget;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widget", meta = (AllowPrivateAccess = "true"))
 	bool bQuestListVisible;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget", meta = (AllowPrivateAccess = "true"))
+	bool bQuestInfoVisible;
 
 public:
 	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAddRemoveQuest AddRemoveQuestDelegate;
 
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FAcceptQuest AcceptQuestDelegate;
+
 	FORCEINLINE bool GetQuestListVisibility() const {
 		return bQuestListVisible;
+	}
+
+	FORCEINLINE bool GetQuestInfoVisibility() const {
+		return bQuestInfoVisible;
 	}
 };
