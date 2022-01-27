@@ -91,6 +91,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void QuestListToggle();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void TraceForQuestsHolders();
+
 private:
 	void ResetQuest();
 
@@ -98,6 +101,8 @@ private:
 
 private:
 	friend class AQuestTrigger;
+
+	class AMainCharacter* OwningCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Quest", meta = (AllowPrivateAccess = "true"))
 	TArray<FQuest> Quests;
@@ -125,6 +130,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget", meta = (AllowPrivateAccess = "true"))
 	bool bQuestInfoVisible;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Quest", meta = (AllowPrivateAccess = "true"))
+	AActor* QuestActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Quest", meta = (AllowPrivateAccess = "true"))
+	AActor* QuestActorLastFrame;
 
 public:
 	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))

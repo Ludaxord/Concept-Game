@@ -3,6 +3,9 @@
 
 #include "QuestsComponent.h"
 
+#include "QuestHolderInterface.h"
+#include "MainCharacter.h"
+
 
 UQuestsComponent::UQuestsComponent() {
 }
@@ -72,6 +75,21 @@ void UQuestsComponent::QuestListToggle() {
 	bQuestListVisible = !bQuestListVisible;
 	UE_LOG(LogTemp, Warning, TEXT("bQuestList Visible: %s"), bQuestListVisible ? TEXT("true"): TEXT("false"))
 }
+
+void UQuestsComponent::TraceForQuestsHolders() {
+	if (OwningCharacter->OverlappedItemIDs.Num() > 0) {
+		FHitResult ItemTraceHitResult;
+		FVector HitLocation;
+		OwningCharacter->TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
+		if (ItemTraceHitResult.bBlockingHit) {
+			IQuestHolderInterface* Holder = Cast<IQuestHolderInterface>(ItemTraceHitResult.Actor);
+			if (Holder && Holder->QuestAvailable_Implementation()) {
+				QuestActor = Cast<AActor>(ItemTraceHitResult.Actor);
+			}
+		}
+	}
+}
+
 
 void UQuestsComponent::ResetQuest() {
 	CurrentQuestID = -1;
