@@ -11,6 +11,7 @@
 #include "MainHUD.h"
 #include "MainPlayerController.h"
 #include "PauseMenuComponent.h"
+#include "QuestHolderInterface.h"
 #include "QuestsComponent.h"
 #include "RenderComponent.h"
 #include "Camera/CameraComponent.h"
@@ -446,9 +447,12 @@ void UMainCharacterInputComponent::InteractButtonPressed() {
 		OwningCharacter->CharacterItemComponent->GetTraceHitItem()->InteractWithItem(OwningCharacter);
 		OwningCharacter->CharacterItemComponent->SetTraceHitItem(nullptr);
 	}
-	else if (OwningCharacter->CharacterQuestComponent->GetQuestHolderActor()) {
-		OwningCharacter->CharacterQuestComponent->GetQuestHolderActor()->QuestInteract_Implementation();
-		OwningCharacter->CharacterQuestComponent->SetQuestActor(nullptr);
+	else if (OwningCharacter->CharacterQuestComponent->GetQuestActor()) {
+		if (const auto QuestHolderActor = Cast<IQuestHolderInterface>(
+			OwningCharacter->CharacterQuestComponent->GetQuestActor())) {
+			QuestHolderActor->QuestInteract_Implementation();
+			OwningCharacter->CharacterQuestComponent->SetQuestActor(nullptr);
+		}
 	}
 }
 

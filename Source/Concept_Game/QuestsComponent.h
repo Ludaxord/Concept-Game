@@ -3,10 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NPCBase.h"
-#include "NPCQuestCharacter.h"
-#include "QuestHolderInterface.h"
-#include "QuestTrigger.h"
 #include "Components/ActorComponent.h"
 #include "QuestsComponent.generated.h"
 
@@ -160,23 +156,7 @@ public:
 		return QuestActor;
 	}
 
-	FORCEINLINE IQuestHolderInterface* GetQuestHolderActor() const {
-		return Cast<IQuestHolderInterface>(QuestActor);
-	}
-
-	FORCEINLINE AQuestTrigger* GetQuestTriggerActor() const {
-		return Cast<AQuestTrigger>(QuestActor);
-	}
-
-	FORCEINLINE ANPCBase* GetQuestNPCActor() const {
-		return Cast<ANPCBase>(QuestActor);
-	}
-
-	FORCEINLINE ANPCQuestCharacter* GetQuestNPCCharacter() const {
-		return Cast<ANPCQuestCharacter>(QuestActor);
-	}
-
-	FORCEINLINE void SetQuestActor(AActor* InQuestActor) const {
+	FORCEINLINE void SetQuestActor(AActor* InQuestActor) {
 		QuestActor = InQuestActor;
 	}
 };
