@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "QuestHolderInterface.h"
 #include "QuestsComponent.h"
 #include "GameFramework/Actor.h"
 #include "QuestTrigger.generated.h"
 
 UCLASS()
-class CONCEPT_GAME_API AQuestTrigger : public AActor {
+class CONCEPT_GAME_API AQuestTrigger : public AActor, public IQuestHolderInterface {
 	GENERATED_BODY()
 
 public:
@@ -24,6 +25,10 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void QuestInteract_Implementation() override;
+
+	virtual bool QuestAvailable_Implementation() override;
 
 private:
 	friend class ANPCQuestCharacter;

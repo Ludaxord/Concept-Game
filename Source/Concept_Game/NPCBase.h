@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "NPCInterface.h"
+#include "QuestHolderInterface.h"
 #include "NPCBase.generated.h"
 
 UCLASS()
-class CONCEPT_GAME_API ANPCBase : public APawn, public INPCInterface {
+class CONCEPT_GAME_API ANPCBase : public APawn, public INPCInterface, public IQuestHolderInterface {
 	GENERATED_BODY()
 
 public:
@@ -27,6 +28,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void Interact_Implementation() override;
+
+	virtual void QuestInteract_Implementation() override;
+
+	virtual bool QuestAvailable_Implementation() override;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* NPCCapsule;

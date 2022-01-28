@@ -39,3 +39,11 @@ void ANPCBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) 
 void ANPCBase::Interact_Implementation() {
 	INPCInterface::Interact_Implementation();
 }
+
+void ANPCBase::QuestInteract_Implementation() {
+	IQuestHolderInterface::QuestInteract_Implementation();
+}
+
+bool ANPCBase::QuestAvailable_Implementation() {
+	return IQuestHolderInterface::QuestAvailable_Implementation();
+}

@@ -42,3 +42,11 @@ void AQuestTrigger::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 }
+
+void AQuestTrigger::QuestInteract_Implementation() {
+	IQuestHolderInterface::QuestInteract_Implementation();
+}
+
+bool AQuestTrigger::QuestAvailable_Implementation() {
+	return IQuestHolderInterface::QuestAvailable_Implementation();
+}
