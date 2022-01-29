@@ -795,6 +795,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UCoverComponent* CharacterCoverComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UQuestSystemComponent* CharacterQuestSystemComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Fog", meta = (AllowPrivateAccess = "true"))
 	class UPostProcessComponent* FogComponent;
 

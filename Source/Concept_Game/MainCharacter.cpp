@@ -28,6 +28,7 @@
 #include "ParkourComponent.h"
 #include "PauseMenuComponent.h"
 #include "QuestsComponent.h"
+#include "QuestSystemComponent.h"
 #include "RenderComponent.h"
 #include "ShootingComponent.h"
 #include "StealthComponent.h"
@@ -116,6 +117,8 @@ AMainCharacter::AMainCharacter():
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
 	CharacterRenderComponent = CreateDefaultSubobject<URenderComponent>(
 		TEXT("CharacterPostProcessComponent"));
+	CharacterQuestSystemComponent = CreateDefaultSubobject<UQuestSystemComponent>(
+		TEXT("CharacterQuestSystemComponent"));
 
 	ConstructCameraBoom();
 	ConstructFollowCamera();
