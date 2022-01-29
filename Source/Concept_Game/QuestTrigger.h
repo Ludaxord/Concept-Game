@@ -26,9 +26,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void QuestInteract_Implementation() override;
+	virtual void QuestInteract_Implementation(AMainCharacter* InCharacter) override;
 
 	virtual bool QuestAvailable_Implementation() override;
+
+	UFUNCTION()
+	virtual void OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	                                                 bool bFromSweep, const FHitResult& SweepResult) override;
+
+	UFUNCTION()
+	virtual void OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 
 private:
 	friend class ANPCQuestCharacter;
@@ -41,4 +50,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
 	FQuestStep QuestStep;
+
+	FGuid ID;
 };

@@ -448,9 +448,10 @@ void UMainCharacterInputComponent::InteractButtonPressed() {
 		OwningCharacter->CharacterItemComponent->SetTraceHitItem(nullptr);
 	}
 	else if (OwningCharacter->CharacterQuestComponent->GetQuestActor()) {
+
 		if (const auto QuestHolderActor = Cast<IQuestHolderInterface>(
 			OwningCharacter->CharacterQuestComponent->GetQuestActor())) {
-			QuestHolderActor->QuestInteract_Implementation();
+			QuestHolderActor->QuestInteract_Implementation(OwningCharacter);
 			OwningCharacter->CharacterQuestComponent->SetQuestActor(nullptr);
 		}
 	}

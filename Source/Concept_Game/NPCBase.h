@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MainCharacter.h"
 #include "GameFramework/Pawn.h"
 #include "NPCInterface.h"
 #include "QuestHolderInterface.h"
@@ -27,17 +28,31 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void Interact_Implementation() override;
+	virtual void Interact_Implementation(AMainCharacter* InCharacter) override;
 
-	virtual void QuestInteract_Implementation() override;
+	virtual void QuestInteract_Implementation(AMainCharacter* InCharacter) override;
 
 	virtual bool QuestAvailable_Implementation() override;
-private:
+
+	UFUNCTION()
+	virtual void OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	                                                 bool bFromSweep, const FHitResult& SweepResult) override;
+
+	UFUNCTION()
+	virtual void OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
 	class UCapsuleComponent* NPCCapsule;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* NPCMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* NPCSphere;
+
+	FGuid ID;
 
 public:
 	FORCEINLINE USkeletalMeshComponent* GetNPCMesh() const {
@@ -46,5 +61,9 @@ public:
 
 	FORCEINLINE UCapsuleComponent* GetNPCCapsule() const {
 		return NPCCapsule;
+	}
+
+	FORCEINLINE USphereComponent* GetNPCSphere() const {
+		return NPCSphere;
 	}
 };

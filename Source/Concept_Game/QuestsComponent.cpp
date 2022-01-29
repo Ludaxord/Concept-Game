@@ -5,6 +5,7 @@
 
 #include "QuestHolderInterface.h"
 #include "MainCharacter.h"
+#include "NPCQuestCharacter.h"
 
 
 UQuestsComponent::UQuestsComponent() {
@@ -12,7 +13,17 @@ UQuestsComponent::UQuestsComponent() {
 
 void UQuestsComponent::BeginPlay() {
 	Super::BeginPlay();
+	OwningCharacter = Cast<AMainCharacter>(GetOwner());
+
 	AddRemoveQuestDelegate.AddDynamic(this, &UQuestsComponent::UpdateCache);
+	AskForQuestDelegate.AddDynamic(this, &UQuestsComponent::AskForQuest);
+	AcceptQuestDelegate.AddDynamic(this, &UQuestsComponent::AcceptQuest);
+}
+
+void UQuestsComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                     FActorComponentTickFunction* ThisTickFunction) {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	TraceForQuestsHolders();
 }
 
 void UQuestsComponent::AddQuest(FNPCQuest InNPCQuest) {
@@ -77,16 +88,32 @@ void UQuestsComponent::QuestListToggle() {
 }
 
 void UQuestsComponent::TraceForQuestsHolders() {
+	UE_LOG(LogTemp, Warning, TEXT("TraceForQuestsHolders TICK"))
 	if (OwningCharacter->OverlappedItemIDs.Num() > 0) {
 		FHitResult ItemTraceHitResult;
 		FVector HitLocation;
 		OwningCharacter->TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
 		if (ItemTraceHitResult.bBlockingHit) {
+			UE_LOG(LogTemp, Error, TEXT("TraceForQuestsHolders: %s"), *ItemTraceHitResult.Actor->GetName())
 			IQuestHolderInterface* Holder = Cast<IQuestHolderInterface>(ItemTraceHitResult.Actor);
 			if (Holder && Holder->QuestAvailable_Implementation()) {
 				QuestActor = Cast<AActor>(ItemTraceHitResult.Actor);
 			}
+
+			if (QuestActorLastFrame) {
+				if (QuestActorLastFrame != QuestActor) {
+					LeaveCachedQuestActorTrace();
+				}
+			}
+
+			QuestActorLastFrame = QuestActor;
 		}
+		else if (QuestActorLastFrame) {
+			LeaveCachedQuestActorTrace();
+		}
+	}
+	else if (QuestActorLastFrame) {
+		LeaveCachedQuestActorTrace();
 	}
 }
 
@@ -107,5 +134,29 @@ void UQuestsComponent::UpdateCache() {
 
 	for (FQuest Quest : Quests) {
 		QuestCache.Add(Quest.Name, Quest);
+	}
+}
+
+void UQuestsComponent::LeaveCachedQuestActorTrace() {
+	if (Cast<IQuestHolderInterface>(QuestActorLastFrame)) {
+		// Cast<IQuestHolderInterface>(QuestActorLastFrame)->LeaveTrace_Implementation(OwningCharacter,
+		// 	OwningCharacter->OverlappedItemIDs);
+	}
+}
+
+void UQuestsComponent::AskForQuest(AActor* InQuestHolderActor) {
+	if (auto NPCCharacter = Cast<ANPCQuestCharacter>(InQuestHolderActor)) {
+		QuestHolderActor = NPCCharacter;
+		QuestInfoWidgetStateDelegate.Broadcast(false, NPCCharacter->GetQuests().Quests[0].Name,
+		                                       NPCCharacter->GetQuests().Quests[0].Description);
+	}
+}
+
+void UQuestsComponent::AcceptQuest() {
+	if (QuestHolderActor) {
+		if (auto NPCCharacter = Cast<ANPCQuestCharacter>(QuestHolderActor)) {
+			AddQuest(NPCCharacter->GetQuests().Quests[0]);
+			NPCCharacter->GetQuests().Quests.RemoveAt(0);
+		}
 	}
 }

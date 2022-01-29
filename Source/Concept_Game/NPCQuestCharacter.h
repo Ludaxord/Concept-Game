@@ -21,7 +21,14 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	virtual void Interact_Implementation() override;
+	virtual void Interact_Implementation(AMainCharacter* InCharacter) override;
+
+	virtual void OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	                                                 bool bFromSweep, const FHitResult& SweepResult) override;
+
+	virtual void OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 
 private:
 	void LoadQuestsToNPC();
@@ -35,4 +42,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC", meta = (AllowPrivateAccess = "true"))
 	FString NPCName;
+
+public:
+	FORCEINLINE FNPCQuestStore GetQuests() {
+		return Quests;
+	}
 };

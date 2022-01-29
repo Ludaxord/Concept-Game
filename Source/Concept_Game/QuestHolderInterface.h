@@ -25,6 +25,15 @@ public:
 	bool QuestAvailable();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void QuestInteract();
+	void QuestInteract(class AMainCharacter* InCharacter);
+
+	UFUNCTION(BlueprintNativeEvent)
+	 void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                                  const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 	
 };

@@ -65,7 +65,13 @@ struct FNPCQuestStore {
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddRemoveQuest);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestListWidgetState);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FQuestInfoWidgetState, bool, bIsClosed, FString, InQuestName, FString, InQuestDescription);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAcceptQuest);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAskForQuest, AActor*, InQuestHolderActor);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UQuestsComponent : public UActorComponent {
@@ -75,6 +81,9 @@ public:
 	UQuestsComponent();
 
 	virtual void BeginPlay() override;
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
 	void AddQuest(FNPCQuest InQuest);
@@ -97,7 +106,16 @@ public:
 private:
 	void ResetQuest();
 
+	UFUNCTION()
 	void UpdateCache();
+
+	void LeaveCachedQuestActorTrace();
+
+	UFUNCTION()
+	void AskForQuest(AActor* InQuestHolder);
+
+	UFUNCTION()
+	void AcceptQuest();
 
 private:
 	friend class AQuestTrigger;
@@ -137,12 +155,24 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Quest", meta = (AllowPrivateAccess = "true"))
 	AActor* QuestActorLastFrame;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Quest", meta = (AllowPrivateAccess = "true"))
+	class AActor* QuestHolderActor;
+
 public:
 	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAddRemoveQuest AddRemoveQuestDelegate;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAcceptQuest AcceptQuestDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FAskForQuest AskForQuestDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FQuestListWidgetState QuestListWidgetStateDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FQuestInfoWidgetState QuestInfoWidgetStateDelegate;
 
 	FORCEINLINE bool GetQuestListVisibility() const {
 		return bQuestListVisible;

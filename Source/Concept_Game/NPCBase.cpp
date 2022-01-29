@@ -4,6 +4,7 @@
 #include "NPCBase.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ANPCBase::ANPCBase() {
@@ -12,16 +13,21 @@ ANPCBase::ANPCBase() {
 
 	NPCCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("NPCCapsule"));
 	NPCMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("NPCMesh"));
+	NPCSphere = CreateDefaultSubobject<USphereComponent>(TEXT("NPCSphere"));
 
 	SetRootComponent(NPCCapsule);
 
 	NPCMesh->SetupAttachment(NPCCapsule);
+	NPCSphere->SetupAttachment(NPCMesh);
+
+	// NPCSphere->OnComponentBeginOverlap.AddDynamic(this, )
 }
 
 // Called when the game starts or when spawned
 void ANPCBase::BeginPlay() {
 	Super::BeginPlay();
 
+	ID = FGuid::NewGuid();
 }
 
 // Called every frame
@@ -36,14 +42,25 @@ void ANPCBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) 
 
 }
 
-void ANPCBase::Interact_Implementation() {
-	INPCInterface::Interact_Implementation();
+void ANPCBase::Interact_Implementation(AMainCharacter* InCharacter) {
+	INPCInterface::Interact_Implementation(InCharacter);
 }
 
-void ANPCBase::QuestInteract_Implementation() {
-	IQuestHolderInterface::QuestInteract_Implementation();
+void ANPCBase::QuestInteract_Implementation(AMainCharacter* InCharacter) {
+	Interact_Implementation(InCharacter);
 }
 
 bool ANPCBase::QuestAvailable_Implementation() {
 	return IQuestHolderInterface::QuestAvailable_Implementation();
+}
+
+void ANPCBase::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                   UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+                                                   bool bFromSweep, const FHitResult& SweepResult) {
+
+}
+
+void ANPCBase::OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+
 }

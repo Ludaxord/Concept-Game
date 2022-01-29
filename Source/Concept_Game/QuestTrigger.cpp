@@ -31,6 +31,8 @@ bool AQuestTrigger::FinishStep() {
 void AQuestTrigger::BeginPlay() {
 	Super::BeginPlay();
 
+	ID = FGuid::NewGuid();
+
 	if (const AMainCharacter* OwningCharacter = Cast<AMainCharacter>(UGameplayStatics::GetPlayerController(this, 0))) {
 		QuestComponentRef = OwningCharacter->GetQuestComponent();
 	}
@@ -43,10 +45,36 @@ void AQuestTrigger::Tick(float DeltaTime) {
 
 }
 
-void AQuestTrigger::QuestInteract_Implementation() {
-	IQuestHolderInterface::QuestInteract_Implementation();
+void AQuestTrigger::QuestInteract_Implementation(AMainCharacter* InCharacter) {
+
 }
 
 bool AQuestTrigger::QuestAvailable_Implementation() {
-	return IQuestHolderInterface::QuestAvailable_Implementation();
+	//TODO: check if quest can step is available, for not set it to true
+	return true;
+}
+
+void AQuestTrigger::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+                                                        bool bFromSweep, const FHitResult& SweepResult) {
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin Quest %s Overlapped Component %s"), *GetName(),
+			       *OverlappedComponent->GetName());
+			OtherCharacter->SphereOverlapBegin(ID);
+		}
+	}
+}
+
+void AQuestTrigger::OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                                      UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
+	if (OtherActor) {
+		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
+		if (OtherCharacter != nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("Overlapping End Quest %s Overlapped Component %s"), * GetName(),
+			       *OverlappedComponent->GetName());
+			OtherCharacter->SphereOverlapEnd(ID);
+		}
+	}
 }
