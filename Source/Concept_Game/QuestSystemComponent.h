@@ -68,6 +68,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddRemoveQuest);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestListWidgetState);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeListQuest);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FQuestInfoWidgetState, bool, bIsClosed, FString, InQuestName, FString, InQuestDescription);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAcceptQuest);
@@ -165,8 +167,11 @@ private:
 	class AActor* QuestHolderActor;
 
 public:
-	UPROPERTY(BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAddRemoveQuest AddRemoveQuestDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FChangeListQuest ChangeListQuestDelegate;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAcceptQuest AcceptQuestDelegate;

@@ -8,7 +8,7 @@
 #include "QuestHolderInterface.h"
 
 // Sets default values for this component's properties
-UQuestSystemComponent::UQuestSystemComponent() {
+UQuestSystemComponent::UQuestSystemComponent(): bCanChangeQuest(true) {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -22,9 +22,11 @@ void UQuestSystemComponent::BeginPlay() {
 	Super::BeginPlay();
 	OwningCharacter = Cast<AMainCharacter>(GetOwner());
 
-	AddRemoveQuestDelegate.AddDynamic(this, &UQuestSystemComponent::UpdateCache);
+	// AddRemoveQuestDelegate.AddDynamic(this, &UQuestSystemComponent::UpdateCache);
 	AskForQuestDelegate.AddDynamic(this, &UQuestSystemComponent::AskForQuest);
 	AcceptQuestDelegate.AddDynamic(this, &UQuestSystemComponent::AcceptQuest);
+
+	ResetQuest();
 }
 
 
@@ -36,20 +38,28 @@ void UQuestSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 void UQuestSystemComponent::AddQuest(FNPCQuest InNPCQuest) {
+	UE_LOG(LogTemp, Warning, TEXT("Adding Quest...."))
 	FQuest Quest = {InNPCQuest.Name, InNPCQuest.Description, InNPCQuest.QuestSteps, InNPCQuest.bPrimary};
 	Quests.Add(Quest);
 
-	if (AddRemoveQuestDelegate.IsBound()) {
-		AddRemoveQuestDelegate.Broadcast();
+	// if (AddRemoveQuestDelegate.IsBound()) {
+	AddRemoveQuestDelegate.Broadcast();
+	// QuestListWidgetStateDelegate.Broadcast();
 
-		if (Quest.bPrimary && bCanChangeQuest) {
-			SelectQuest(Quest.Name);
-		}
+	if (Quest.bPrimary && bCanChangeQuest) {
+		SelectQuest(Quest.Name);
 	}
+	// }
+	// else {
+	// 	UE_LOG(LogTemp, Error, TEXT("AddRemoveQuestDelegate Is NOT Bound...."))
+	// }
 }
 
 void UQuestSystemComponent::SelectQuest(FString InName) {
+	UE_LOG(LogTemp, Warning, TEXT("Selecting Quest: %s"), *InName)
+	UE_LOG(LogTemp, Warning, TEXT("Quests Num: %i"), Quests.Num())
 	if (Quests.Num() > 0) {
+		UE_LOG(LogTemp, Warning, TEXT("Active Quest: %s"), *ActiveQuest.Name)
 		if (ActiveQuest.Name != InName) {
 			ResetQuest();
 			if (ActiveQuest.Name == "") {
@@ -133,6 +143,7 @@ void UQuestSystemComponent::ResetQuest() {
 }
 
 void UQuestSystemComponent::UpdateCache() {
+	UE_LOG(LogTemp, Warning, TEXT("Updating Cache...."))
 	for (auto It = QuestCache.CreateConstIterator(); It; ++It) {
 		QuestCache.Remove(It.Key());
 	}
@@ -142,6 +153,7 @@ void UQuestSystemComponent::UpdateCache() {
 	}
 
 	for (FQuest Quest : Quests) {
+		UE_LOG(LogTemp, Warning, TEXT("Adding Quest: %s"), *Quest.Name)
 		QuestCache.Add(Quest.Name, Quest);
 	}
 }
@@ -164,6 +176,14 @@ void UQuestSystemComponent::AskForQuest(AActor* InQuestHolderActor) {
 }
 
 void UQuestSystemComponent::AcceptQuest() {
+	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Emerald,
+	                                 FString::Printf(
+		                                 TEXT("AcceptQuest : Exists %s"),
+		                                 QuestHolderActor != nullptr ? TEXT("true") : TEXT("false")
+	                                 )
+	);
+	UE_LOG(LogTemp, Warning, TEXT("AcceptQuest : Exists %s"),
+	       QuestHolderActor != nullptr ? TEXT("true") : TEXT("false"))
 	if (QuestHolderActor) {
 		if (auto NPCCharacter = Cast<ANPCQuestCharacter>(QuestHolderActor)) {
 			AddQuest(NPCCharacter->GetQuests().Quests[0]);
