@@ -24,5 +24,5 @@ class CONCEPT_GAME_API INPCInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void Interact(AMainCharacter* InCharacter);
+	void Interact(class AMainCharacter* InCharacter);
 };

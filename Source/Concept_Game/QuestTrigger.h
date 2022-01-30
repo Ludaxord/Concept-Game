@@ -4,9 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "QuestHolderInterface.h"
-#include "QuestsComponent.h"
+#include "QuestSystemComponent.h"
 #include "GameFramework/Actor.h"
 #include "QuestTrigger.generated.h"
+
+// DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FOverlapOn,UPrimitiveComponent*, OverlappedComponent, AActor*, OtherActor, UPrimitiveComponent*, OtherComponent, int32, OtherBodyIndex, bool, bFromSweep, const FHitResult&, SweepResult)
+
+USTRUCT(BlueprintType)
+struct FQuestTriggerProperties {
+	GENERATED_BODY()
+
+	bool bSphereFinishStep;
+};
 
 UCLASS()
 class CONCEPT_GAME_API AQuestTrigger : public AActor, public IQuestHolderInterface {
@@ -43,13 +52,19 @@ private:
 	friend class ANPCQuestCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
-	UQuestsComponent* QuestComponentRef;
+	UQuestSystemComponent* QuestComponentRef;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* QuestTriggerSphere;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
 	FString QuestName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Quests", meta = (AllowPrivateAccess = "true"))
 	FQuestStep QuestStep;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Quests", meta = (AllowPrivateAccess = "true"))
+	FQuestTriggerProperties QuestTriggerProperties;
 
 	FGuid ID;
 };

@@ -47,6 +47,7 @@ void ANPCBase::Interact_Implementation(AMainCharacter* InCharacter) {
 }
 
 void ANPCBase::QuestInteract_Implementation(AMainCharacter* InCharacter) {
+	UE_LOG(LogTemp, Warning, TEXT("ANPCBase::QuestInteract_Implementation"))
 	Interact_Implementation(InCharacter);
 }
 

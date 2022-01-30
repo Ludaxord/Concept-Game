@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "NPCBase.h"
-#include "QuestsComponent.h"
+#include "QuestSystemComponent.h"
 #include "NPCQuestCharacter.generated.h"
 
 /**

@@ -29,6 +29,7 @@ void ANPCQuestCharacter::Tick(float DeltaSeconds) {
 void ANPCQuestCharacter::Interact_Implementation(AMainCharacter* InCharacter) {
 	Super::Interact_Implementation(InCharacter);
 
+	UE_LOG(LogTemp, Warning, TEXT("ANPCQuestCharacter::Interact_Implementation"))
 	if (Quests.Quests.Num() > 0) {
 		if (Quests.Quests[0].bCanBeAccepted) {
 			InCharacter->GetQuestComponent()->AskForQuestDelegate.Broadcast(this);

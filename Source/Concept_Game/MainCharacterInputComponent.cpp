@@ -10,9 +10,11 @@
 #include "MainCharacter.h"
 #include "MainHUD.h"
 #include "MainPlayerController.h"
+#include "NPCQuestCharacter.h"
 #include "PauseMenuComponent.h"
 #include "QuestHolderInterface.h"
-#include "QuestsComponent.h"
+#include "QuestSystemComponent.h"
+#include "QuestTrigger.h"
 #include "RenderComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -442,18 +444,31 @@ void UMainCharacterInputComponent::TriggerFPSCounter() {
 }
 
 void UMainCharacterInputComponent::InteractButtonPressed() {
+	UE_LOG(LogTemp, Warning, TEXT("Interact Button Pressed"))
 	if (OwningCharacter->CombatState != ECombatState::ECS_Unoccupied) return;
 	if (OwningCharacter->CharacterItemComponent->GetTraceHitItem()) {
 		OwningCharacter->CharacterItemComponent->GetTraceHitItem()->InteractWithItem(OwningCharacter);
 		OwningCharacter->CharacterItemComponent->SetTraceHitItem(nullptr);
 	}
-	else if (OwningCharacter->CharacterQuestComponent->GetQuestActor()) {
-
-		if (const auto QuestHolderActor = Cast<IQuestHolderInterface>(
-			OwningCharacter->CharacterQuestComponent->GetQuestActor())) {
-			QuestHolderActor->QuestInteract_Implementation(OwningCharacter);
-			OwningCharacter->CharacterQuestComponent->SetQuestActor(nullptr);
+	else if (auto QuestActor = OwningCharacter->CharacterQuestSystemComponent->GetQuestActor()) {
+		if (QuestActor->GetClass()->ImplementsInterface(UQuestHolderInterface::StaticClass())) {
+		UE_LOG(LogTemp, Warning, TEXT("Quest Actor: %s"), *QuestActor ->GetName())
+			IQuestHolderInterface* QuestHolderActor = Cast<IQuestHolderInterface>(QuestActor);
+			QuestHolderActor->Execute_QuestInteract(QuestActor, OwningCharacter);
 		}
+
+		// if (const auto ) {
+		// 	if (auto QuestNPCCharacter = Cast<ANPCQuestCharacter>(QuestActor)) {
+		// 		UE_LOG(LogTemp, Warning, TEXT("QuestNPCCharacter Interact"))
+		// 		QuestNPCCharacter->QuestInteract(OwningCharacter);
+		// 	}
+		// 	else if (auto QuestTrigger = Cast<AQuestTrigger>(QuestActor)) {
+		// 		UE_LOG(LogTemp, Warning, TEXT("QuestTrigger Interact"))
+		// 		QuestTrigger->QuestInteract(OwningCharacter);
+		// 	}
+		// }
+
+		OwningCharacter->CharacterQuestSystemComponent->SetQuestActor(nullptr);
 	}
 }
 
@@ -509,7 +524,7 @@ bool UMainCharacterInputComponent::AimButtonPressedBlocked() {
 		return true;
 	}
 
-	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
+	if (OwningCharacter->CharacterQuestSystemComponent->GetQuestListVisibility()) {
 		return true;
 	}
 
@@ -529,7 +544,7 @@ bool UMainCharacterInputComponent::AimButtonReleasedBlocked() {
 		return true;
 	}
 
-	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
+	if (OwningCharacter->CharacterQuestSystemComponent->GetQuestListVisibility()) {
 		return true;
 	}
 
@@ -550,7 +565,7 @@ bool UMainCharacterInputComponent::UseWeaponPressedBlocked() {
 		return true;
 	}
 
-	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
+	if (OwningCharacter->CharacterQuestSystemComponent->GetQuestListVisibility()) {
 		return true;
 	}
 
@@ -570,7 +585,7 @@ bool UMainCharacterInputComponent::UseWeaponReleasedBlocked() {
 		return true;
 	}
 
-	if (OwningCharacter->CharacterQuestComponent->GetQuestListVisibility()) {
+	if (OwningCharacter->CharacterQuestSystemComponent->GetQuestListVisibility()) {
 		return true;
 	}
 

@@ -5,12 +5,19 @@
 
 #include "MainCharacter.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AQuestTrigger::AQuestTrigger() {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	QuestTriggerSphere = CreateDefaultSubobject<USphereComponent>(TEXT("QuestTriggerSphere"));
+	QuestTriggerSphere->SetupAttachment(GetRootComponent());
+
+	QuestTriggerSphere->OnComponentBeginOverlap.AddDynamic(
+		this, &AQuestTrigger::OnSphereBeginOverlap_Implementation);
 }
 
 bool AQuestTrigger::FinishStep() {
@@ -46,7 +53,7 @@ void AQuestTrigger::Tick(float DeltaTime) {
 }
 
 void AQuestTrigger::QuestInteract_Implementation(AMainCharacter* InCharacter) {
-
+	UE_LOG(LogTemp, Warning, TEXT("AQuestTrigger::QuestInteract_Implementation"))
 }
 
 bool AQuestTrigger::QuestAvailable_Implementation() {
@@ -62,7 +69,12 @@ void AQuestTrigger::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* Ove
 		if (OtherCharacter != nullptr) {
 			UE_LOG(LogTemp, Warning, TEXT("Overlapping Begin Quest %s Overlapped Component %s"), *GetName(),
 			       *OverlappedComponent->GetName());
-			OtherCharacter->SphereOverlapBegin(ID);
+			// OtherCharacter->SphereOverlapBegin(ID);
+
+			//NOTE: JUST FOR TEST 
+			if (QuestTriggerProperties.bSphereFinishStep) {
+				FinishStep();
+			}
 		}
 	}
 }
@@ -74,7 +86,7 @@ void AQuestTrigger::OnSphereEndOverlap_Implementation(UPrimitiveComponent* Overl
 		if (OtherCharacter != nullptr) {
 			UE_LOG(LogTemp, Warning, TEXT("Overlapping End Quest %s Overlapped Component %s"), * GetName(),
 			       *OverlappedComponent->GetName());
-			OtherCharacter->SphereOverlapEnd(ID);
+			// OtherCharacter->SphereOverlapEnd(ID);
 		}
 	}
 }
