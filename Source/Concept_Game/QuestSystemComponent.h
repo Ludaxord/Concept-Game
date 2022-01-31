@@ -7,7 +7,6 @@
 #include "QuestSystemComponent.generated.h"
 
 
-
 USTRUCT(BlueprintType)
 struct FQuestStep {
 	GENERATED_BODY()
@@ -70,18 +69,22 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestListWidgetState);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeListQuest);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FQuestInfoWidgetState, bool, bIsClosed, FString, InQuestName, FString, InQuestDescription);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FQuestInfoWidgetState, bool, bIsClosed, FString, InQuestName, FString,
+                                               InQuestDescription);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAcceptQuest);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAskForQuest, AActor*, InQuestHolderActor);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CONCEPT_GAME_API UQuestSystemComponent : public UActorComponent
-{
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStepUpdate, bool, bShowAnimation);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FQuestNotification, bool, bQuestCompleted, FString, QuestName);
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class CONCEPT_GAME_API UQuestSystemComponent : public UActorComponent {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UQuestSystemComponent();
 
@@ -89,10 +92,13 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
+
 	UFUNCTION(BlueprintCallable)
 	void AddQuest(FNPCQuest InQuest);
 
@@ -100,7 +106,7 @@ public:
 	void SelectQuest(FString InName);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveQuest();
+	void RemoveQuest(FString InName);
 
 	UFUNCTION(BlueprintCallable)
 	void CompleteQuestStep();
@@ -151,6 +157,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
 	class UUserWidget* QuestInfoWidget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
+	class UUserWidget* QuestTrackerContainerWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
+	class UUserWidget* QuestUpdatePanelWidget;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widget", meta = (AllowPrivateAccess = "true"))
 	bool bQuestListVisible;
 
@@ -180,10 +192,20 @@ public:
 	FAskForQuest AskForQuestDelegate;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FStepUpdate StepUpdateDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FQuestNotification QuestNotificationDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FQuestListWidgetState QuestListWidgetStateDelegate;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FQuestInfoWidgetState QuestInfoWidgetStateDelegate;
+
+	FTimerDelegate TimerDelegate;
+
+	FTimerHandle TimerHandle;
 
 	FORCEINLINE bool GetQuestListVisibility() const {
 		return bQuestListVisible;
@@ -200,5 +222,5 @@ public:
 	FORCEINLINE void SetQuestActor(AActor* InQuestActor) {
 		QuestActor = InQuestActor;
 	}
-		
+
 };

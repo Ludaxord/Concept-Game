@@ -26,7 +26,16 @@ void UQuestSystemComponent::BeginPlay() {
 	AskForQuestDelegate.AddDynamic(this, &UQuestSystemComponent::AskForQuest);
 	AcceptQuestDelegate.AddDynamic(this, &UQuestSystemComponent::AcceptQuest);
 
+	TimerDelegate.BindLambda([&] {
+		StepUpdateDelegate.Broadcast(true);
+	});
+
 	ResetQuest();
+}
+
+void UQuestSystemComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	Super::EndPlay(EndPlayReason);
+	UpdateCache();
 }
 
 
@@ -42,17 +51,11 @@ void UQuestSystemComponent::AddQuest(FNPCQuest InNPCQuest) {
 	FQuest Quest = {InNPCQuest.Name, InNPCQuest.Description, InNPCQuest.QuestSteps, InNPCQuest.bPrimary};
 	Quests.Add(Quest);
 
-	// if (AddRemoveQuestDelegate.IsBound()) {
 	AddRemoveQuestDelegate.Broadcast();
-	// QuestListWidgetStateDelegate.Broadcast();
 
 	if (Quest.bPrimary && bCanChangeQuest) {
 		SelectQuest(Quest.Name);
 	}
-	// }
-	// else {
-	// 	UE_LOG(LogTemp, Error, TEXT("AddRemoveQuestDelegate Is NOT Bound...."))
-	// }
 }
 
 void UQuestSystemComponent::SelectQuest(FString InName) {
@@ -65,17 +68,21 @@ void UQuestSystemComponent::SelectQuest(FString InName) {
 			if (ActiveQuest.Name == "") {
 				CurrentQuestID = 0;
 				ActiveQuest = Quests[CurrentQuestID];
+
+				GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, .7f, false);
 			}
 			else {
 				for (int i = 0; i < Quests.Num(); i++) {
 					if (Quests.IsValidIndex(i)) {
-						if (InName == Quests[i].Name) {
+						if (Quests[i].Name == InName) {
 							CurrentQuestID = i;
 							ActiveQuest = Quests[i];
 							break;
 						}
 					}
 				}
+
+				GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, .6f, false);
 			}
 		}
 	}
@@ -84,20 +91,25 @@ void UQuestSystemComponent::SelectQuest(FString InName) {
 	}
 }
 
-void UQuestSystemComponent::RemoveQuest() {
+void UQuestSystemComponent::RemoveQuest(FString InName) {
+	UE_LOG(LogTemp, Warning, TEXT("Removing Quest: %i"), CurrentQuestID)
+	QuestNotificationDelegate.Broadcast(true, InName);
 	Quests.RemoveAt(CurrentQuestID);
 	SelectQuest(FString());
 	bCanChangeQuest = true;
+	AddRemoveQuestDelegate.Broadcast();
 }
 
 void UQuestSystemComponent::CompleteQuestStep() {
+			UE_LOG(LogTemp, Warning, TEXT("CompleteQuestStep..."))
 	ActiveQuest.QuestSteps.RemoveAt(0);
 	if (ActiveQuest.QuestSteps.Num() == 0) {
-		RemoveQuest();
+		RemoveQuest(ActiveQuest.Name);
 	}
 	else {
 		bCanChangeQuest = false;
 		UpdateCache();
+		StepUpdateDelegate.Broadcast(true);
 	}
 }
 
@@ -140,6 +152,7 @@ void UQuestSystemComponent::TraceForQuestsHolders() {
 void UQuestSystemComponent::ResetQuest() {
 	CurrentQuestID = -1;
 	ActiveQuest = FQuest();
+	StepUpdateDelegate.Broadcast(true);
 }
 
 void UQuestSystemComponent::UpdateCache() {

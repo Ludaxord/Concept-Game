@@ -18,9 +18,14 @@ AQuestTrigger::AQuestTrigger() {
 
 	QuestTriggerSphere->OnComponentBeginOverlap.AddDynamic(
 		this, &AQuestTrigger::OnSphereBeginOverlap_Implementation);
+
+	QuestTriggerSphere->OnComponentEndOverlap.AddDynamic(
+		this, &AQuestTrigger::OnSphereEndOverlap_Implementation);
 }
 
 bool AQuestTrigger::FinishStep() {
+	UE_LOG(LogTemp, Warning, TEXT("Finish Step... QuestComponentRef is nullptr : %s"),
+	       QuestComponentRef == nullptr ? TEXT("true") : TEXT("false"))
 	if (QuestComponentRef) {
 		if (QuestComponentRef->ActiveQuest.QuestSteps.Num() > 0) {
 			if (QuestComponentRef->ActiveQuest.Name == QuestName &&
@@ -40,7 +45,8 @@ void AQuestTrigger::BeginPlay() {
 
 	ID = FGuid::NewGuid();
 
-	if (const AMainCharacter* OwningCharacter = Cast<AMainCharacter>(UGameplayStatics::GetPlayerController(this, 0))) {
+	if (const AMainCharacter* OwningCharacter = Cast<AMainCharacter>(
+		UGameplayStatics::GetPlayerController(this, 0)->GetCharacter())) {
 		QuestComponentRef = OwningCharacter->GetQuestComponent();
 	}
 
@@ -72,9 +78,9 @@ void AQuestTrigger::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* Ove
 			// OtherCharacter->SphereOverlapBegin(ID);
 
 			//NOTE: JUST FOR TEST 
-			if (QuestTriggerProperties.bSphereFinishStep) {
-				FinishStep();
-			}
+			// if (QuestTriggerProperties.bSphereFinishStep) {
+			FinishStep();
+			// }
 		}
 	}
 }
@@ -86,6 +92,11 @@ void AQuestTrigger::OnSphereEndOverlap_Implementation(UPrimitiveComponent* Overl
 		if (OtherCharacter != nullptr) {
 			UE_LOG(LogTemp, Warning, TEXT("Overlapping End Quest %s Overlapped Component %s"), * GetName(),
 			       *OverlappedComponent->GetName());
+			if (OtherCharacter->GetQuestComponent()->ActiveQuest.Name == QuestName) {
+				OtherCharacter->GetQuestComponent()->ActiveQuest.QuestSteps.Insert(QuestStep, 0);
+				OtherCharacter->GetQuestComponent()->UpdateCache();
+				OtherCharacter->GetQuestComponent()->StepUpdateDelegate.Broadcast(false);
+			}
 			// OtherCharacter->SphereOverlapEnd(ID);
 		}
 	}
