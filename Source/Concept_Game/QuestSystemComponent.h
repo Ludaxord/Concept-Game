@@ -43,8 +43,6 @@ struct FNPCQuest {
 
 	};
 
-	// ~FNPCQuest() = delete;
-
 	bool operator==(const FNPCQuest& Other) const {
 
 		return (Other.Name == Name);
@@ -93,7 +91,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAcceptQuest);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAskForQuest, AActor*, InQuestHolderActor);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStepUpdate, bool, bShowAnimation);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStepUpdate, bool, bShowAnimation, bool, bQuestIsSet);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FQuestNotification, bool, bQuestCompleted, FString, QuestName);
 
@@ -230,6 +228,10 @@ public:
 
 	FORCEINLINE bool GetQuestInfoVisibility() const {
 		return bQuestInfoVisible;
+	}
+
+	FORCEINLINE int GetQuestID() const {
+		return CurrentQuestID;
 	}
 
 	FORCEINLINE AActor* GetQuestActor() const {

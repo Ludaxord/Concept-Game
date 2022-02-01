@@ -93,7 +93,10 @@ void AQuestTrigger::OnSphereEndOverlap_Implementation(UPrimitiveComponent* Overl
 			if (OtherCharacter->GetQuestComponent()->ActiveQuest.Name == QuestName) {
 				OtherCharacter->GetQuestComponent()->ActiveQuest.QuestSteps.Insert(QuestStep, 0);
 				OtherCharacter->GetQuestComponent()->UpdateCache();
-				OtherCharacter->GetQuestComponent()->StepUpdateDelegate.Broadcast(false);
+				UE_LOG(LogTemp, Error, TEXT("Quest trigger overlap CurrentQuestID: %i"),
+				       OtherCharacter->GetQuestComponent()->CurrentQuestID)
+				OtherCharacter->GetQuestComponent()->StepUpdateDelegate.Broadcast(
+					false, OtherCharacter->GetQuestComponent()->CurrentQuestID != -1);
 			}
 			// OtherCharacter->SphereOverlapEnd(ID);
 		}

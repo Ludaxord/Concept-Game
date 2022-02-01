@@ -28,7 +28,8 @@ void UQuestSystemComponent::BeginPlay() {
 	AcceptQuestDelegate.AddDynamic(this, &UQuestSystemComponent::AcceptQuest);
 
 	TimerDelegate.BindLambda([&] {
-		StepUpdateDelegate.Broadcast(true);
+		UE_LOG(LogTemp, Warning, TEXT("Delayed Step Update... CurrentQuestID: %i"), CurrentQuestID)
+		StepUpdateDelegate.Broadcast(true, CurrentQuestID != -1);
 	});
 
 	ResetQuest();
@@ -90,6 +91,8 @@ void UQuestSystemComponent::SelectQuest(FString InName) {
 	else {
 		ResetQuest();
 	}
+
+	UE_LOG(LogTemp, Error, TEXT("CurrentQuestID: %i"), CurrentQuestID)
 }
 
 void UQuestSystemComponent::RemoveQuest(FString InName) {
@@ -110,7 +113,8 @@ void UQuestSystemComponent::CompleteQuestStep() {
 	else {
 		bCanChangeQuest = false;
 		UpdateCache();
-		StepUpdateDelegate.Broadcast(true);
+		UE_LOG(LogTemp, Error, TEXT("Complete quest Step CurrentQuestID: %i"), CurrentQuestID)
+		StepUpdateDelegate.Broadcast(true, CurrentQuestID != -1);
 	}
 }
 
@@ -153,7 +157,8 @@ void UQuestSystemComponent::TraceForQuestsHolders() {
 void UQuestSystemComponent::ResetQuest() {
 	CurrentQuestID = -1;
 	ActiveQuest = FQuest();
-	StepUpdateDelegate.Broadcast(true);
+	UE_LOG(LogTemp, Warning, TEXT("RESET QUEST CurrentQuestID: %i"), CurrentQuestID)
+	StepUpdateDelegate.Broadcast(true, CurrentQuestID != -1);
 }
 
 void UQuestSystemComponent::UpdateCache() {
