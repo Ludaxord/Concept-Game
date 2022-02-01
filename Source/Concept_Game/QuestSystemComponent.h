@@ -39,6 +39,22 @@ USTRUCT(BlueprintType)
 struct FNPCQuest {
 	GENERATED_BODY()
 
+	FNPCQuest(): bPrimary(true), bCanBeAccepted(true) {
+
+	};
+
+	// ~FNPCQuest() = delete;
+
+	bool operator==(const FNPCQuest& Other) const {
+
+		return (Other.Name == Name);
+
+	}
+
+	bool operator==(const FNPCQuest&& Other) const {
+		return (Other.Name == Name);
+	}
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Quest", meta = (AllowPrivateAccess = "true"))
 	FString Name;
 
@@ -59,6 +75,7 @@ USTRUCT(BlueprintType)
 struct FNPCQuestStore {
 	GENERATED_BODY()
 
+	//TODO: Change TArray to TQueue, for easy removing items...
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Quest", meta = (AllowPrivateAccess = "true"))
 	TArray<FNPCQuest> Quests;
 };

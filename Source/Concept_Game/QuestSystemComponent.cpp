@@ -6,6 +6,7 @@
 #include "MainCharacter.h"
 #include "NPCQuestCharacter.h"
 #include "QuestHolderInterface.h"
+#include "Kismet/KismetArrayLibrary.h"
 
 // Sets default values for this component's properties
 UQuestSystemComponent::UQuestSystemComponent(): bCanChangeQuest(true) {
@@ -101,7 +102,7 @@ void UQuestSystemComponent::RemoveQuest(FString InName) {
 }
 
 void UQuestSystemComponent::CompleteQuestStep() {
-			UE_LOG(LogTemp, Warning, TEXT("CompleteQuestStep..."))
+	UE_LOG(LogTemp, Warning, TEXT("CompleteQuestStep..."))
 	ActiveQuest.QuestSteps.RemoveAt(0);
 	if (ActiveQuest.QuestSteps.Num() == 0) {
 		RemoveQuest(ActiveQuest.Name);
@@ -189,18 +190,27 @@ void UQuestSystemComponent::AskForQuest(AActor* InQuestHolderActor) {
 }
 
 void UQuestSystemComponent::AcceptQuest() {
-	GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Emerald,
-	                                 FString::Printf(
-		                                 TEXT("AcceptQuest : Exists %s"),
-		                                 QuestHolderActor != nullptr ? TEXT("true") : TEXT("false")
-	                                 )
-	);
 	UE_LOG(LogTemp, Warning, TEXT("AcceptQuest : Exists %s"),
 	       QuestHolderActor != nullptr ? TEXT("true") : TEXT("false"))
 	if (QuestHolderActor) {
-		if (auto NPCCharacter = Cast<ANPCQuestCharacter>(QuestHolderActor)) {
-			AddQuest(NPCCharacter->GetQuests().Quests[0]);
-			NPCCharacter->GetQuests().Quests.RemoveAt(0);
+		if (ANPCQuestCharacter* NPCCharacter = Cast<ANPCQuestCharacter>(QuestHolderActor)) {
+			if (NPCCharacter->GetQuests().Quests.IsValidIndex(0)) {
+
+				FNPCQuest Quest = NPCCharacter->GetQuests().Quests[0];
+				AddQuest(Quest);
+
+				//TODO: Fix problem with removing struct from array, now it works from blueprints...
+				// NPCCharacter->GetQuests().Quests.RemoveAt(0);
+				// UE_LOG(LogTemp, Warning, TEXT("Current NPC Quests: %i"), NPCCharacter->GetQuests().Quests.Num());
+				// NPCCharacter->GetQuests().Quests.RemoveAt(0);
+				// NPCCharacter->GetQuests().Quests.Empty();
+				//
+				// UE_LOG(LogTemp, Warning, TEXT("Current NPC Quests After Remove: %i"),
+				//        NPCCharacter->GetQuests().Quests.Num());
+				// for (FNPCQuest Q : NPCCharacter->GetQuests().Quests) {
+				// 	UE_LOG(LogTemp, Warning, TEXT("Quests: %s"), Q == Quest ? TEXT("true") : TEXT("false"))
+				// }
+			}
 		}
 	}
 }

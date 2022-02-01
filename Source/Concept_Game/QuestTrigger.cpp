@@ -24,8 +24,6 @@ AQuestTrigger::AQuestTrigger() {
 }
 
 bool AQuestTrigger::FinishStep() {
-	UE_LOG(LogTemp, Warning, TEXT("Finish Step... QuestComponentRef is nullptr : %s"),
-	       QuestComponentRef == nullptr ? TEXT("true") : TEXT("false"))
 	if (QuestComponentRef) {
 		if (QuestComponentRef->ActiveQuest.QuestSteps.Num() > 0) {
 			if (QuestComponentRef->ActiveQuest.Name == QuestName &&
