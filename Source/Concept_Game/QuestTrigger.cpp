@@ -98,7 +98,6 @@ void AQuestTrigger::OnSphereEndOverlap_Implementation(UPrimitiveComponent* Overl
 				OtherCharacter->GetQuestComponent()->StepUpdateDelegate.Broadcast(
 					false, OtherCharacter->GetQuestComponent()->CurrentQuestID != -1);
 			}
-			// OtherCharacter->SphereOverlapEnd(ID);
 		}
 	}
 }
