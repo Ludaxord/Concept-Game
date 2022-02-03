@@ -10,7 +10,7 @@
 #include "NPCBase.generated.h"
 
 UCLASS()
-class CONCEPT_GAME_API ANPCBase : public APawn, public INPCInterface, public IQuestHolderInterface {
+class CONCEPT_GAME_API ANPCBase : public ACharacter, public INPCInterface, public IQuestHolderInterface {
 	GENERATED_BODY()
 
 public:
