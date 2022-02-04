@@ -47,6 +47,9 @@ public:
 	class AItem* GetEquippedItem();
 
 	UFUNCTION(BlueprintNativeEvent)
+	void EquipItem(AItem* InItem);
+
+	UFUNCTION(BlueprintNativeEvent)
 	bool GetInCover();
 
 	UFUNCTION(BlueprintNativeEvent)

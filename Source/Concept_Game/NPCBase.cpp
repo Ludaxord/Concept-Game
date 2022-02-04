@@ -3,7 +3,7 @@
 
 #include "NPCBase.h"
 
-#include "Components/CapsuleComponent.h"
+#include "NPCInventoryComponent.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -11,16 +11,10 @@ ANPCBase::ANPCBase() {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	NPCCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("NPCCapsule"));
-	NPCMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("NPCMesh"));
+	InventoryComponent = CreateDefaultSubobject<UNPCInventoryComponent>(TEXT("InventoryComponent"));
+
 	NPCSphere = CreateDefaultSubobject<USphereComponent>(TEXT("NPCSphere"));
-
-	SetRootComponent(NPCCapsule);
-
-	NPCMesh->SetupAttachment(NPCCapsule);
-	NPCSphere->SetupAttachment(NPCMesh);
-
-	// NPCSphere->OnComponentBeginOverlap.AddDynamic(this, )
+	NPCSphere->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned

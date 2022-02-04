@@ -44,26 +44,19 @@ public:
 	                                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
-	class UCapsuleComponent* NPCCapsule;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
-	class USkeletalMeshComponent* NPCMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* NPCSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	class UNPCInventoryComponent* InventoryComponent;
 
 	FGuid ID;
 
 public:
-	FORCEINLINE USkeletalMeshComponent* GetNPCMesh() const {
-		return NPCMesh;
-	}
-
-	FORCEINLINE UCapsuleComponent* GetNPCCapsule() const {
-		return NPCCapsule;
-	}
-
 	FORCEINLINE USphereComponent* GetNPCSphere() const {
 		return NPCSphere;
+	}
+
+	FORCEINLINE UNPCInventoryComponent* GetInventoryComponent() const {
+		return InventoryComponent;
 	}
 };
