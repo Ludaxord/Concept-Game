@@ -27,11 +27,11 @@ void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
 	Planner = Cast<AGOAPPlanner>(UGameplayStatics::GetActorOfClass(GetWorld(), AGOAPPlanner::StaticClass()));
 
 	if (StateManager == nullptr) {
-		UE_LOG(LogTemp, Error, TEXT("failed to Get WorldStateManager..."));
+		UE_LOG(LogTemp, Error, TEXT("GOAP: failed to Get WorldStateManager..."));
 	}
 
 	if (Planner == nullptr) {
-		UE_LOG(LogTemp, Error, TEXT("failed to Get AGOAPPlanner..."));
+		UE_LOG(LogTemp, Error, TEXT("GOAP: failed to Get AGOAPPlanner..."));
 	}
 
 	Tasks.Append(AITasks);

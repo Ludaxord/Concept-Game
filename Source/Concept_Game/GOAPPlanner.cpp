@@ -43,7 +43,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 	bool bSuccess = BuildGraph(BeginNode, Nodes, InTasks, InGoals);
 
 	if (!bSuccess) {
-		UE_LOG(LogTemp, Error, TEXT("No Plans found..."))
+		UE_LOG(LogTemp, Error, TEXT("GOAP: No Plans found..."))
 		return {};
 	}
 
@@ -75,7 +75,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 		Plan.Add(Task);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Planning for %i nodes Completed"), Plan.Num());
+	UE_LOG(LogTemp, Warning, TEXT("GOAP: Planning for %i nodes Completed"), Plan.Num());
 
 	return Plan;
 }
