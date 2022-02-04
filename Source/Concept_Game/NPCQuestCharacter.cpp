@@ -3,12 +3,23 @@
 
 #include "NPCQuestCharacter.h"
 
+#include "GOAPDialogTaskComponent.h"
+#include "GOAPFreeRoamTaskComponent.h"
+#include "GOAPHideTaskComponent.h"
+#include "GOAPPanicTaskComponent.h"
+#include "GOAPRunAwayTaskComponent.h"
 #include "QuestTrigger.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 
 ANPCQuestCharacter::ANPCQuestCharacter() {
+	DialogTaskComponent = CreateDefaultSubobject<UGOAPDialogTaskComponent>(TEXT("DialogTaskComponent"));
+	PanicTaskComponent = CreateDefaultSubobject<UGOAPPanicTaskComponent>(TEXT("PanicTaskComponent"));
+	HideTaskComponent = CreateDefaultSubobject<UGOAPHideTaskComponent>(TEXT("HideTaskComponent"));
+	RunAwayTaskComponent = CreateDefaultSubobject<UGOAPRunAwayTaskComponent>(TEXT("RunAwayTaskComponent"));
+	FreeRoamTaskComponent = CreateDefaultSubobject<UGOAPFreeRoamTaskComponent>(TEXT("FreeRoamTaskComponent"));
+
 	QuestIndicatorWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("QuestIndicatorWidget"));
 	QuestIndicatorWidget->SetupAttachment(GetRootComponent());
 
