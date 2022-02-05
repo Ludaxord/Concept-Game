@@ -6,6 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "GOAPGoalComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EGOAPGoalType: uint8 {
+	EGGT_Regular UMETA(DisplayName= "Regular Goal"),
+	EGGT_Interrupt UMETA(DisplayName= "Interrupt Goal"),
+	EGGT_WorldEvent UMETA(DisplayName= "World Event Goal"),
+	EGGT_MAX UMETA(DisplayName = "MAX")
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UGOAPGoalComponent : public UActorComponent {
@@ -29,6 +36,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	TMap<FString, int32> Goals;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
+	EGOAPGoalType GoalType;
 
 	bool bRemove;
 };

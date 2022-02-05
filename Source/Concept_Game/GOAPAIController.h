@@ -24,6 +24,8 @@ class CONCEPT_GAME_API AGOAPAIController : public AAIController {
 	UFUNCTION(BlueprintCallable)
 	void Update();
 
+	virtual void OnPossess(APawn* InPawn) override;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	TArray<UGOAPTaskComponent*> Tasks;

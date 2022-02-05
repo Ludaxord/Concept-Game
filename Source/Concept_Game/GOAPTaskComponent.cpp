@@ -3,6 +3,8 @@
 
 #include "GOAPTaskComponent.h"
 
+#include "NPCBase.h"
+
 // Sets default values for this component's properties
 UGOAPTaskComponent::UGOAPTaskComponent() {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -17,8 +19,7 @@ UGOAPTaskComponent::UGOAPTaskComponent() {
 void UGOAPTaskComponent::BeginPlay() {
 	Super::BeginPlay();
 
-	// ...
-
+	TaskOwner = Cast<ANPCBase>(GetOwner());
 }
 
 
@@ -28,6 +29,28 @@ void UGOAPTaskComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+bool UGOAPTaskComponent::PrePerform() {
+	return false;
+}
+
+bool UGOAPTaskComponent::PostPerform() {
+	return false;
+}
+
+bool UGOAPTaskComponent::IsViable() {
+	return false;
+}
+
+bool UGOAPTaskComponent::GoalInterrupt(UGOAPTaskComponent* InCurrentGoal) {
+	if (TaskOwner) {
+		if (TaskOwner->GoalInterrupt_Implementation(InCurrentGoal)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool UGOAPTaskComponent::IsViableGiven(const TMap<FString, int32> InConditions) {

@@ -34,6 +34,10 @@ public:
 
 	virtual bool QuestAvailable_Implementation() override;
 
+	virtual bool GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) override;
+
+	virtual TArray<class UGOAPGoalComponent*> InitGoals_Implementation() override;
+
 	UFUNCTION()
 	virtual void OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                                 UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
@@ -48,6 +52,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
 	class UNPCInventoryComponent* InventoryComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	TArray<class UGOAPGoalComponent*> GOAPGoalComponents;
 
 	FGuid ID;
 

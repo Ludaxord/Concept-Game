@@ -33,6 +33,9 @@ public:
 	void RemoveState(FString Key);
 
 	UFUNCTION(BlueprintCallable)
+	void ClearStates();
+
+	UFUNCTION(BlueprintCallable)
 	void SetState(FString Key, int32 Val);
 
 	UFUNCTION(BlueprintCallable)

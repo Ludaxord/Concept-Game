@@ -35,6 +35,9 @@ public:
 	bool IsAbleToAttack();
 
 	UFUNCTION(BlueprintNativeEvent)
+	bool GoalInterrupt(class UGOAPTaskComponent* InCurrentGoal);
+
+	UFUNCTION(BlueprintNativeEvent)
 	EAttackType GetCurrentAttackType();
 
 	UFUNCTION(BlueprintNativeEvent)
@@ -60,4 +63,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	bool GetRunning();
+
+	UFUNCTION(BlueprintNativeEvent)
+	TArray<class UGOAPGoalComponent*> InitGoals();
 };

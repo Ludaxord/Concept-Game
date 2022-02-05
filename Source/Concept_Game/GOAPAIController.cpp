@@ -6,6 +6,7 @@
 #include "GOAPGoalComponent.h"
 #include "GOAPPlanner.h"
 #include "GOAPTaskComponent.h"
+#include "NPCBase.h"
 #include "WorldStateManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -48,6 +49,8 @@ void AGOAPAIController::Update() {
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
+
+
 		if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
 			StopMovement();
 			CompleteTask();
@@ -60,7 +63,7 @@ void AGOAPAIController::Update() {
 		for (TTuple<UGOAPGoalComponent*, int> Goal : Goals) {
 			if (Goal.Key != NULL) {
 				TasksQueue = Planner->GetPlan(Tasks, Goal.Key->Goals, States);
-				
+
 				if (TasksQueue.Num() > 0) {
 					CurrentGoal = Goal.Key;
 					break;
@@ -92,4 +95,12 @@ void AGOAPAIController::Update() {
 		}
 	}
 
+}
+
+void AGOAPAIController::OnPossess(APawn* InPawn) {
+	Super::OnPossess(InPawn);
+
+	if (ANPCBase* NPC = Cast<ANPCBase>(InPawn)) {
+		NPC->InitGoals();
+	}
 }

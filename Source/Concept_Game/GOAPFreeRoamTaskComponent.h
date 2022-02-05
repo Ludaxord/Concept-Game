@@ -10,8 +10,16 @@
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UGOAPFreeRoamTaskComponent : public UGOAPTaskComponent
-{
+class CONCEPT_GAME_API UGOAPFreeRoamTaskComponent : public UGOAPTaskComponent {
 	GENERATED_BODY()
-	
+public:
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool PrePerform() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool PostPerform() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsViable() override;
 };

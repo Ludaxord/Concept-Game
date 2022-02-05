@@ -36,6 +36,10 @@ void AWorldStateManager::RemoveState(FString Key) {
 	}
 }
 
+void AWorldStateManager::ClearStates() {
+	States.Empty();
+}
+
 void AWorldStateManager::SetState(FString Key, int32 Val) {
 	if (States.Contains(Key)) {
 		States[Key] = Val;

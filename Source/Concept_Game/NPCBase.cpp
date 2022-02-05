@@ -49,6 +49,14 @@ bool ANPCBase::QuestAvailable_Implementation() {
 	return IQuestHolderInterface::QuestAvailable_Implementation();
 }
 
+bool ANPCBase::GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) {
+	return false;
+}
+
+TArray<UGOAPGoalComponent*> ANPCBase::InitGoals_Implementation() {
+	return GOAPGoalComponents;
+}
+
 void ANPCBase::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
                                                    bool bFromSweep, const FHitResult& SweepResult) {

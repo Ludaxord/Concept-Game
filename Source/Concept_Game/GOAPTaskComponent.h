@@ -24,20 +24,25 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	bool PrePerform();
+	virtual bool PrePerform();
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	bool PostPerform();
+	virtual bool PostPerform();
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	bool IsViable();
+	virtual bool IsViable();
+
+	virtual bool GoalInterrupt(UGOAPTaskComponent* InCurrentGoal);
 
 	bool IsViableGiven(const TMap<FString, int32> InConditions);
 
 private:
 	friend class AGOAPAIController;
 	friend class AGOAPPlanner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
+	class ANPCBase* TaskOwner;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
+	AActor* TaskAttachedActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	FString TaskName = "Task";
