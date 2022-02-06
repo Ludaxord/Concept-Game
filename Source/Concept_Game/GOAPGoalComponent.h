@@ -31,7 +31,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-private:
+protected:
 	friend class AGOAPAIController;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
