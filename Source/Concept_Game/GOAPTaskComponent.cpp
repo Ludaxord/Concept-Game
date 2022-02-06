@@ -4,6 +4,9 @@
 #include "GOAPTaskComponent.h"
 
 #include "NPCBase.h"
+#include "FreeRoamPoint.h"
+#include "NavigationSystem.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UGOAPTaskComponent::UGOAPTaskComponent() {
@@ -22,6 +25,54 @@ void UGOAPTaskComponent::BeginPlay() {
 	TaskOwner = Cast<ANPCBase>(GetOwner());
 }
 
+void UGOAPTaskComponent::AttachActors(UClass* ActorClass) {
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ActorClass, TaskAttachedActors);
+	UE_LOG(LogTemp, Warning, TEXT("GOAP TaskAttachedActors: %i"), TaskAttachedActors.Num())
+}
+
+
+bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
+	int index = 0;
+	for (AActor* AttachedActor : TaskAttachedActors) {
+		if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(AttachedActor)) {
+			if (!GOAPActor->bEnabled) {
+				continue;
+			}
+		}
+		if (index == 0) {
+			NearestAttachedActor = AttachedActor;
+		}
+		else {
+			if (AttachedActor->GetActorLocation().X < NearestAttachedActor->GetActorLocation().X ||
+				AttachedActor->GetActorLocation().Y < NearestAttachedActor->GetActorLocation().Y ||
+				AttachedActor->GetActorLocation().Z < NearestAttachedActor->GetActorLocation().Z) {
+				NearestAttachedActor = AttachedActor;
+			}
+		}
+		UE_LOG(LogTemp, Warning, TEXT("GOAP FindNearestActorLocationFromOwner Task Location: %s Owner Location: %s"),
+		       *AttachedActor->GetActorLocation().ToString(), *TaskOwner->GetActorLocation().ToString())
+		index++;
+	}
+
+	if (NearestAttachedActor != nullptr) {
+		FNavLocation Loc;
+		if (UNavigationSystemV1::GetNavigationSystem(GetWorld())->
+			GetRandomPointInNavigableRadius(NearestAttachedActor->GetActorLocation(), Range, Loc)) {
+			Target = Loc.Location;
+			if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(NearestAttachedActor)) {
+				GOAPActor->bEnabled = false;
+				TaskAttachedActors.Remove(NearestAttachedActor);
+			}
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void UGOAPTaskComponent::CallActors() {
+}
 
 // Called every frame
 void UGOAPTaskComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -32,11 +83,11 @@ void UGOAPTaskComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 bool UGOAPTaskComponent::PrePerform() {
-	return false;
+	return FindNearestActorLocationFromOwner();
 }
 
 bool UGOAPTaskComponent::PostPerform() {
-	return false;
+	return FindNearestActorLocationFromOwner();
 }
 
 bool UGOAPTaskComponent::IsViable() {

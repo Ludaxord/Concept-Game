@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GOAPTaskComponent.h"
-#include "GOAPDialogTaskComponent.generated.h"
+#include "GOAPTaskAttachedActor.h"
+#include "FreeRoamPoint.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UGOAPDialogTaskComponent : public UGOAPTaskComponent {
+class CONCEPT_GAME_API AFreeRoamPoint : public AGOAPTaskAttachedActor
+{
 	GENERATED_BODY()
-
+	
 };

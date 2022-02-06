@@ -36,6 +36,10 @@ public:
 
 	virtual bool GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) override;
 
+	virtual void SetGoals();
+
+	virtual void AttachActorsToGOAP();
+
 	virtual TArray<class UGOAPGoalComponent*> InitGoals_Implementation() override;
 
 	UFUNCTION()
@@ -56,7 +60,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	TArray<class UGOAPGoalComponent*> GOAPGoalComponents;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
+	class UGOAPFreeRoamGoalComponent* GoalFreeRoam;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
+	class UGOAPEscapeGoalComponent* GoalEscape;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
+	class UGOAPDefeatEnemyGoalComponent* GoalDefeatEnemy;
+
 	FGuid ID;
+
+	bool bGoalSet;
 
 public:
 	FORCEINLINE USphereComponent* GetNPCSphere() const {

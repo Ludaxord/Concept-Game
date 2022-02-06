@@ -19,6 +19,11 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void AttachActors(UClass* ActorClass);
+
+	bool FindNearestActorLocationFromOwner();
+
+
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
@@ -32,9 +37,11 @@ public:
 
 	virtual bool GoalInterrupt(UGOAPTaskComponent* InCurrentGoal);
 
+	virtual void CallActors();
+
 	bool IsViableGiven(const TMap<FString, int32> InConditions);
 
-private:
+protected:
 	friend class AGOAPAIController;
 	friend class AGOAPPlanner;
 
@@ -42,7 +49,10 @@ private:
 	class ANPCBase* TaskOwner;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
-	AActor* TaskAttachedActor;
+	TArray<AActor*> TaskAttachedActors;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
+	AActor* NearestAttachedActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	FString TaskName = "Task";

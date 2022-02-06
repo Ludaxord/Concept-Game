@@ -44,17 +44,17 @@ private:
 	FString NPCName;
 
 	//TODO: For now create task components just as properties, later move it to NPCBase and create Array...
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
-	class UGOAPDialogTaskComponent* DialogTaskComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
-	class UGOAPPanicTaskComponent* PanicTaskComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
-	class UGOAPHideTaskComponent* HideTaskComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
-	class UGOAPRunAwayTaskComponent* RunAwayTaskComponent;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
+	// class UGOAPDialogTaskComponent* DialogTaskComponent;
+	//
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
+	// class UGOAPPanicTaskComponent* PanicTaskComponent;
+	//
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
+	// class UGOAPHideTaskComponent* HideTaskComponent;
+	//
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
+	// class UGOAPRunAwayTaskComponent* RunAwayTaskComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
 	class UGOAPFreeRoamTaskComponent* FreeRoamTaskComponent;

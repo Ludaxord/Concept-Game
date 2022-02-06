@@ -3,15 +3,23 @@
 
 #include "NPCBase.h"
 
+#include "GOAPDefeatEnemyGoalComponent.h"
+#include "GOAPEscapeGoalComponent.h"
+#include "GOAPFreeRoamGoalComponent.h"
+#include "GOAPTaskComponent.h"
 #include "NPCInventoryComponent.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
-ANPCBase::ANPCBase() {
+ANPCBase::ANPCBase(): bGoalSet(false) {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	InventoryComponent = CreateDefaultSubobject<UNPCInventoryComponent>(TEXT("InventoryComponent"));
+
+	GoalFreeRoam = CreateDefaultSubobject<UGOAPFreeRoamGoalComponent>(TEXT("GoalFreeRoam"));
+	GoalDefeatEnemy = CreateDefaultSubobject<UGOAPDefeatEnemyGoalComponent>(TEXT("GoalDefeatEnemy"));
+	GoalEscape = CreateDefaultSubobject<UGOAPEscapeGoalComponent>(TEXT("GoalEscape"));
 
 	NPCSphere = CreateDefaultSubobject<USphereComponent>(TEXT("NPCSphere"));
 	NPCSphere->SetupAttachment(GetRootComponent());
@@ -22,6 +30,8 @@ void ANPCBase::BeginPlay() {
 	Super::BeginPlay();
 
 	ID = FGuid::NewGuid();
+
+	SetGoals();
 }
 
 // Called every frame
@@ -51,6 +61,36 @@ bool ANPCBase::QuestAvailable_Implementation() {
 
 bool ANPCBase::GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) {
 	return false;
+}
+
+void ANPCBase::SetGoals() {
+	if (!bGoalSet) {
+		UE_LOG(LogTemp, Warning, TEXT("GOAP: SetGoals"))
+		TArray<UActorComponent*> Elements;
+		GetComponents(UGOAPGoalComponent::StaticClass(), Elements);
+		UE_LOG(LogTemp, Warning, TEXT("GOAP: Goals Elements %i"), Elements.Num())
+
+		for (UActorComponent* Element : Elements) {
+			if (UGOAPGoalComponent* Goal = Cast<UGOAPGoalComponent>(Element)) {
+				if (Goal->bSetAsCurrentGoal) {
+					UE_LOG(LogTemp, Warning, TEXT("GOAP: SetGoal : %s"), *Element->GetName())
+					GOAPGoalComponents.Add(Goal);
+				}
+			}
+		}
+
+		bGoalSet = true;
+	}
+}
+
+void ANPCBase::AttachActorsToGOAP() {
+	TArray<UGOAPTaskComponent*> NPCTasks;
+	GetComponents(NPCTasks);
+
+	for (UGOAPTaskComponent* Task : NPCTasks) {
+		Task->CallActors();
+	}
+
 }
 
 TArray<UGOAPGoalComponent*> ANPCBase::InitGoals_Implementation() {

@@ -23,6 +23,12 @@ void UNPCAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 		else {
 			bIsAccelerating = false;
 		}
+		if (NPCCharacter->GetVelocity().Size() > 0) {
+			bIsAccelerating = true;
+		}
+		else {
+			bIsAccelerating = false;
+		}
 
 
 		FRotator AimRotation = NPCCharacter->GetBaseAimRotation();

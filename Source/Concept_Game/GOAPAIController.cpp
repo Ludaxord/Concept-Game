@@ -14,6 +14,10 @@ AGOAPAIController::AGOAPAIController() {
 }
 
 void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
+
+	// UE_LOG(LogTemp, Warning, TEXT("GOAP CREATE...."))
+	// UE_LOG(LogTemp, Warning, TEXT("GOAP AITasks Num: %i"), AITasks.Num())
+
 	TArray<UActorComponent*> Elements;
 	GetPawn()->GetComponents(UGOAPTaskComponent::StaticClass(), Elements);
 
@@ -44,29 +48,34 @@ void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
 }
 
 void AGOAPAIController::CompleteTask() {
+	UE_LOG(LogTemp, Warning, TEXT("GOAP Complete Task: %s"), *CurrentTask->GetName())
 	CurrentTask->bRunning = false;
 	CurrentTask->PostPerform();
 	bInvoked = false;
 }
 
 void AGOAPAIController::Update() {
-	UE_LOG(LogTemp, Warning, TEXT("Update GOAP..."))
+	UE_LOG(LogTemp, Warning, TEXT("Update GOAP... TasksQueue Num: %i"), TasksQueue.Num())
+
+	if (CurrentTask != nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("GOAP CurrentTask Name: %s Is Running: %s"), *CurrentTask->GetName(),
+		       CurrentTask->bRunning ? TEXT("true"): TEXT("false"))
+	}
 
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
-
-
 		if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
 			StopMovement();
 			CompleteTask();
 		}
-
 		return;
 	}
 
 	if (TasksQueue.Num() <= 0) {
+		// UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i"), TasksQueue.Num(), Goals.Num())
 		for (TTuple<UGOAPGoalComponent*, int> Goal : Goals) {
+			// UE_LOG(LogTemp, Error, TEXT("GOAP GOAL: %s Indx: %i"), *Goal.Key->GetName(), Goal.Value);
 			if (Goal.Key != NULL) {
 				TasksQueue = Planner->GetPlan(Tasks, Goal.Key->Goals, States);
 
@@ -88,6 +97,7 @@ void AGOAPAIController::Update() {
 	else if (TasksQueue.Num() > 0) {
 		CurrentTask = TasksQueue[0];
 		if (CurrentTask != nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("GOAP CurrentTask %s"), *CurrentTask->GetName())
 			if (CurrentTask->PrePerform()) {
 				TasksQueue.Remove(CurrentTask);
 				CurrentTask->bRunning = true;
@@ -104,8 +114,10 @@ void AGOAPAIController::Update() {
 }
 
 void AGOAPAIController::InitGoals(ANPCBase* NPC) {
+	// UE_LOG(LogTemp, Warning, TEXT("GOAP AGOAPAIController::InitGoals : %i"), NPC->InitGoals_Implementation().Num())
 	int32 index = 0;
 	for (UGOAPGoalComponent* Goal : NPC->InitGoals_Implementation()) {
+		// UE_LOG(LogTemp, Warning, TEXT("GOAP InitGoal_Implementation: %s"), *Goal->GetName())
 		Goals.Add(Goal, index);
 		index++;
 	}
@@ -113,11 +125,13 @@ void AGOAPAIController::InitGoals(ANPCBase* NPC) {
 
 void AGOAPAIController::OnPossess(APawn* InPawn) {
 	Super::OnPossess(InPawn);
-
+	// UE_LOG(LogTemp, Warning, TEXT("GOAP ON POSSESS "))
 	if (ANPCBase* NPC = Cast<ANPCBase>(InPawn)) {
+		NPC->SetGoals();
 		InitGoals(NPC);
 		TArray<UGOAPTaskComponent*> NPCTasks;
 		NPC->GetComponents(NPCTasks);
+		NPC->AttachActorsToGOAP();
 		Create(NPCTasks);
 		GetWorldTimerManager().SetTimer(OnUpdateTimer, this, &AGOAPAIController::Update, 1.f, true, 0);
 	}

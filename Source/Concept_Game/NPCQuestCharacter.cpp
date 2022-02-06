@@ -14,10 +14,10 @@
 #include "Components/WidgetComponent.h"
 
 ANPCQuestCharacter::ANPCQuestCharacter() {
-	DialogTaskComponent = CreateDefaultSubobject<UGOAPDialogTaskComponent>(TEXT("DialogTaskComponent"));
-	PanicTaskComponent = CreateDefaultSubobject<UGOAPPanicTaskComponent>(TEXT("PanicTaskComponent"));
-	HideTaskComponent = CreateDefaultSubobject<UGOAPHideTaskComponent>(TEXT("HideTaskComponent"));
-	RunAwayTaskComponent = CreateDefaultSubobject<UGOAPRunAwayTaskComponent>(TEXT("RunAwayTaskComponent"));
+	// DialogTaskComponent = CreateDefaultSubobject<UGOAPDialogTaskComponent>(TEXT("DialogTaskComponent"));
+	// PanicTaskComponent = CreateDefaultSubobject<UGOAPPanicTaskComponent>(TEXT("PanicTaskComponent"));
+	// HideTaskComponent = CreateDefaultSubobject<UGOAPHideTaskComponent>(TEXT("HideTaskComponent"));
+	// RunAwayTaskComponent = CreateDefaultSubobject<UGOAPRunAwayTaskComponent>(TEXT("RunAwayTaskComponent"));
 	FreeRoamTaskComponent = CreateDefaultSubobject<UGOAPFreeRoamTaskComponent>(TEXT("FreeRoamTaskComponent"));
 
 	QuestIndicatorWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("QuestIndicatorWidget"));
@@ -52,7 +52,7 @@ void ANPCQuestCharacter::OnSphereBeginOverlap_Implementation(UPrimitiveComponent
                                                              AActor* OtherActor, UPrimitiveComponent* OtherComponent,
                                                              int32 OtherBodyIndex, bool bFromSweep,
                                                              const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("OnSphereBeginOverlap_Implementation"))
+	// UE_LOG(LogTemp, Warning, TEXT("OnSphereBeginOverlap_Implementation"))
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
@@ -66,7 +66,7 @@ void ANPCQuestCharacter::OnSphereBeginOverlap_Implementation(UPrimitiveComponent
 
 void ANPCQuestCharacter::OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                                            UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("OnSphereEndOverlap_Implementation"))
+	// UE_LOG(LogTemp, Warning, TEXT("OnSphereEndOverlap_Implementation"))
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {

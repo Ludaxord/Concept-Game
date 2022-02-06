@@ -33,7 +33,10 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 
 	TArray<UGOAPTaskComponent*> CurrentTasks;
 
+	// UE_LOG(LogTemp, Error, TEXT("GOAP Planning Tasks Num: %i"), InTasks.Num())
+
 	for (UGOAPTaskComponent* const& Task : InTasks) {
+		// UE_LOG(LogTemp, Error, TEXT("GOAP Planning Task: %s"), *Task->GetName())
 		if (Task->IsViable()) {
 			CurrentTasks.Add(Task);
 		}
@@ -75,7 +78,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 		Plan.Add(Task);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("GOAP: Planning for %i nodes Completed"), Plan.Num());
+	// UE_LOG(LogTemp, Warning, TEXT("GOAP: Planning for %i nodes Completed"), Plan.Num());
 
 	return Plan;
 }

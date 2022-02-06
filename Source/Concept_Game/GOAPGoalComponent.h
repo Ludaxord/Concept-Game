@@ -33,6 +33,7 @@ public:
 
 protected:
 	friend class AGOAPAIController;
+	friend class ANPCBase;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	TMap<FString, int32> Goals;
@@ -41,4 +42,7 @@ protected:
 	EGOAPGoalType GoalType;
 
 	bool bRemove;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
+	bool bSetAsCurrentGoal;
 };

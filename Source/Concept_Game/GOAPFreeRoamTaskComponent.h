@@ -13,6 +13,9 @@ UCLASS()
 class CONCEPT_GAME_API UGOAPFreeRoamTaskComponent : public UGOAPTaskComponent {
 	GENERATED_BODY()
 public:
+	virtual void BeginPlay() override;
+
+	virtual void CallActors() override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool PrePerform() override;
