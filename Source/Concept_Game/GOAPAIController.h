@@ -24,6 +24,9 @@ class CONCEPT_GAME_API AGOAPAIController : public AAIController {
 	UFUNCTION(BlueprintCallable)
 	void Update();
 
+	UFUNCTION(BlueprintCallable)
+	void InitGoals(class ANPCBase* InPawn);
+
 	virtual void OnPossess(APawn* InPawn) override;
 
 private:
@@ -52,4 +55,6 @@ private:
 	UGOAPGoalComponent* CurrentGoal;
 
 	bool bInvoked = false;
+
+	FTimerHandle OnUpdateTimer;
 };

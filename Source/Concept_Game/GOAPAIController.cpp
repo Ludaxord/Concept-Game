@@ -22,10 +22,14 @@ void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
 		WorldTasks.Add(Cast<UGOAPTaskComponent>(Element));
 	}
 
-	StateManager = Cast<AWorldStateManager>(
-		UGameplayStatics::GetActorOfClass(GetWorld(), AWorldStateManager::StaticClass()));
+	if (StateManager == nullptr) {
+		StateManager = Cast<AWorldStateManager>(
+			UGameplayStatics::GetActorOfClass(GetWorld(), AWorldStateManager::StaticClass()));
+	}
 
-	Planner = Cast<AGOAPPlanner>(UGameplayStatics::GetActorOfClass(GetWorld(), AGOAPPlanner::StaticClass()));
+	if (Planner == nullptr) {
+		Planner = Cast<AGOAPPlanner>(UGameplayStatics::GetActorOfClass(GetWorld(), AGOAPPlanner::StaticClass()));
+	}
 
 	if (StateManager == nullptr) {
 		UE_LOG(LogTemp, Error, TEXT("GOAP: failed to Get WorldStateManager..."));
@@ -46,6 +50,8 @@ void AGOAPAIController::CompleteTask() {
 }
 
 void AGOAPAIController::Update() {
+	UE_LOG(LogTemp, Warning, TEXT("Update GOAP..."))
+
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
@@ -97,10 +103,22 @@ void AGOAPAIController::Update() {
 
 }
 
+void AGOAPAIController::InitGoals(ANPCBase* NPC) {
+	int32 index = 0;
+	for (UGOAPGoalComponent* Goal : NPC->InitGoals_Implementation()) {
+		Goals.Add(Goal, index);
+		index++;
+	}
+}
+
 void AGOAPAIController::OnPossess(APawn* InPawn) {
 	Super::OnPossess(InPawn);
 
 	if (ANPCBase* NPC = Cast<ANPCBase>(InPawn)) {
-		NPC->InitGoals();
+		InitGoals(NPC);
+		TArray<UGOAPTaskComponent*> NPCTasks;
+		NPC->GetComponents(NPCTasks);
+		Create(NPCTasks);
+		GetWorldTimerManager().SetTimer(OnUpdateTimer, this, &AGOAPAIController::Update, 1.f, true, 0);
 	}
 }

@@ -3,3 +3,14 @@
 
 #include "GOAPFreeRoamTaskComponent.h"
 
+bool UGOAPFreeRoamTaskComponent::PrePerform() {
+	return Super::PrePerform();
+}
+
+bool UGOAPFreeRoamTaskComponent::PostPerform() {
+	return Super::PostPerform();
+}
+
+bool UGOAPFreeRoamTaskComponent::IsViable() {
+	return Super::IsViable();
+}
