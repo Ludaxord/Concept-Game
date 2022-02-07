@@ -63,6 +63,15 @@ void AGOAPAIController::Update() {
 		       CurrentTask->bRunning ? TEXT("true"): TEXT("false"))
 	}
 
+	//TODO: Add states based on this docs....
+	//http://alumni.media.mit.edu/~jorkin/GOAP_draft_AIWisdom2_2003.pdf
+	//http://alumni.media.mit.edu/~jorkin/gdc2006_orkin_jeff_fear.pdf
+	//https://www.aaai.org/ocs/index.php/AIIDE/AIIDE14/paper/view/8999
+	//http://alumni.media.mit.edu/~jorkin/goap.html
+	//https://www.youtube.com/watch?v=gm7K68663rA
+	//https://www.youtube.com/watch?v=jUSrVF8mve4
+	//https://medium.com/@t2thompson/the-ai-of-fear-76ba26dc1667
+	//https://www.youtube.com/watch?v=PaOLBOuyswI
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
