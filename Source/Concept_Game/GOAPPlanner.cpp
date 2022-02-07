@@ -33,10 +33,10 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 
 	TArray<UGOAPTaskComponent*> CurrentTasks;
 
-	// UE_LOG(LogTemp, Error, TEXT("GOAP Planning Tasks Num: %i"), InTasks.Num())
+	UE_LOG(LogTemp, Error, TEXT("GOAP Planning Tasks Num: %i"), InTasks.Num())
 
 	for (UGOAPTaskComponent* const& Task : InTasks) {
-		// UE_LOG(LogTemp, Error, TEXT("GOAP Planning Task: %s"), *Task->GetName())
+		UE_LOG(LogTemp, Warning, TEXT("GOAP Planning Task: %s"), *Task->GetName())
 		if (Task->IsViable()) {
 			CurrentTasks.Add(Task);
 		}
@@ -85,11 +85,17 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 
 bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArray<UGOAPTaskComponent*> PossibleTasks,
                               TMap<FString, int32> InGoals) {
+	UE_LOG(LogTemp, Error, TEXT("Build Graph"))
+
+	UE_LOG(LogTemp, Warning, TEXT("Parent Exists: %s"), Parent ? TEXT("true") : TEXT("false"))
+
 	bool bPathExists = false;
 
 	for (UGOAPTaskComponent* const& Task : PossibleTasks) {
+		UE_LOG(LogTemp, Error, TEXT("Build Graph PossibleTask : %s"), *Task->GetName())
 		if (Task->IsViableGiven(Parent->States)) {
 			TMap<FString, int32> CurrentState = {Parent->States};
+			UE_LOG(LogTemp, Error, TEXT("Build Graph CurrentState : %i"), CurrentState.Num())
 			for (TTuple<FString, int32> const& Effect : Task->Effects) {
 				if (!CurrentState.Contains(Effect.Key)) {
 					CurrentState.Add(Effect.Key, Effect.Value);
@@ -99,10 +105,12 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 			GOAPNode* Node = new GOAPNode(Parent, Parent->Cost + Task->Cost, CurrentState, Task);
 
 			if (GoalReached(InGoals, CurrentState)) {
+				UE_LOG(LogTemp, Warning, TEXT("Goal Reached.... "))
 				InNodes.Add(Node);
 				bPathExists = true;
 			}
 			else {
+				UE_LOG(LogTemp, Error, TEXT("Goal NOT Reached.... "))
 				TArray<UGOAPTaskComponent*> Subset = TaskSubset(PossibleTasks, Task);
 				bool bFound = BuildGraph(Node, InNodes, Subset, InGoals);
 				if (bFound) {
@@ -130,6 +138,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::TaskSubset(TArray<UGOAPTaskComponent*>
 
 bool AGOAPPlanner::GoalReached(TMap<FString, int32> Goal, TMap<FString, int32> State) {
 	for (TTuple<FString, int32> const& SubGoal : Goal) {
+		UE_LOG(LogTemp, Error, TEXT("SubGoal -> %s : %i"), *SubGoal.Key, SubGoal.Value)
 		if (!State.Contains(SubGoal.Key)) {
 			return false;
 		}

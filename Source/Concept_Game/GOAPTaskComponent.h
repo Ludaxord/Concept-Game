@@ -78,6 +78,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	bool bRunning = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	bool bLoopTaskTillBreak = false;
+
 public:
 	FORCEINLINE FVector GetTarget() const {
 		return Target;
