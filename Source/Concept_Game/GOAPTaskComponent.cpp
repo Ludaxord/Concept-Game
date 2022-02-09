@@ -33,12 +33,12 @@ void UGOAPTaskComponent::AttachActors(UClass* ActorClass) {
 
 bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 	int index = 0;
+
 	UE_LOG(LogTemp, Warning, TEXT("GOAP TaskAttachedActors => %i bLoopTaskTillBreak: %s"), TaskAttachedActors.Num(),
 	       bLoopTaskTillBreak ? TEXT("true") : TEXT("false"))
 	if (TaskAttachedActors.Num() <= 0) {
 		UE_LOG(LogTemp, Warning, TEXT("GOAP Scanning Actors"))
 		if (bLoopTaskTillBreak) {
-			AttachActors(AFreeRoamPoint::StaticClass());
 			for (AActor* AttachedActor : TaskAttachedActors) {
 				if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(AttachedActor)) {
 					if (GOAPActor != NearestAttachedActor) {

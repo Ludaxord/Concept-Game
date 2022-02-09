@@ -10,6 +10,8 @@ void UGOAPFreeRoamTaskComponent::BeginPlay() {
 }
 
 void UGOAPFreeRoamTaskComponent::CallActors() {
+	Super::CallActors();
+	AttachActors(AFreeRoamPoint::StaticClass());
 }
 
 bool UGOAPFreeRoamTaskComponent::PrePerform() {
