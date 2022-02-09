@@ -32,6 +32,7 @@
 #include "RenderComponent.h"
 #include "ShootingComponent.h"
 #include "StealthComponent.h"
+#include "WorldStateManager.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -162,6 +163,9 @@ AMainCharacter::AMainCharacter():
 	InvisibleCharacterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("InvisibleCharacterMesh"));
 	InvisibleCharacterMesh->SetupAttachment(RootComponent);
 	InvisibleCharacterMesh->SetMasterPoseComponent(GetMesh());
+
+	StateManager = Cast<AWorldStateManager>(
+		UGameplayStatics::GetActorOfClass(AActor::GetWorld(), AWorldStateManager::StaticClass()));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
@@ -640,6 +644,8 @@ void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
 		PerformAttack();
 		PlayMontage(ECharacterMontage::ECM_UseWeapon, EquippedWeapon->GetWeaponType());
 		StartCrosshairMovement();
+		StateManager->AddState(FString("Fire Weapon"), 10);
+		StateManager->SetInterruptCurrentState(true);
 		EquippedWeapon->DecreaseUsability();
 		StartAttackTimer(EquippedWeapon->GetWeaponType());
 		EquippedWeapon->StartWeaponAnimationTimer();

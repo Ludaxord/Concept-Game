@@ -6,12 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "GOAPTaskAttachedActor.generated.h"
 
+//TODO: Change to Interface, to implement into NPC Actors also...
 UCLASS()
-class CONCEPT_GAME_API AGOAPTaskAttachedActor : public AActor
-{
+class CONCEPT_GAME_API AGOAPTaskAttachedActor : public AActor {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AGOAPTaskAttachedActor();
 
@@ -19,7 +19,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

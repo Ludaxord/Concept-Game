@@ -47,4 +47,16 @@ public:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	TMap<FString, int32> States;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	bool bInterruptCurrentState;
+
+public:
+	FORCEINLINE bool GetInterruptCurrentState() const {
+		return bInterruptCurrentState;
+	}
+
+	FORCEINLINE void SetInterruptCurrentState(bool bInInterrupt) {
+		bInterruptCurrentState = bInInterrupt;
+	}
 };

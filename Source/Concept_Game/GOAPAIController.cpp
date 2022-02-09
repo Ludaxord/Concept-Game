@@ -10,7 +10,7 @@
 #include "WorldStateManager.h"
 #include "Kismet/GameplayStatics.h"
 
-AGOAPAIController::AGOAPAIController() {
+AGOAPAIController::AGOAPAIController(): bInterruptCurrentAction(false) {
 }
 
 void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
@@ -72,6 +72,26 @@ void AGOAPAIController::Update() {
 	//https://www.youtube.com/watch?v=jUSrVF8mve4
 	//https://medium.com/@t2thompson/the-ai-of-fear-76ba26dc1667
 	//https://www.youtube.com/watch?v=PaOLBOuyswI
+	//https://www.cs.rochester.edu/~brown/242/assts/termprojs/games.pdf
+
+	//TODO: FIX!!!!
+	if (StateManager->GetInterruptCurrentState()) {
+		if (States.Num() < StateManager->GetStates().Num()) {
+			UE_LOG(LogTemp, Warning, TEXT("State Changed... States Before %i ... States After %i"), States.Num(),
+			       StateManager->GetStates().Num())
+			if (CurrentTask != nullptr) {
+				CurrentTask->bRunning = false;
+				CurrentTask->bIsViableTask = false;
+				StateManager->SetInterruptCurrentState(false);
+			}
+			// for (auto State : StateManager->GetStates()) {
+			// 	if (!States.Contains(State.Key)) {
+			//
+			// 	}
+			// }
+		}
+	}
+
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {

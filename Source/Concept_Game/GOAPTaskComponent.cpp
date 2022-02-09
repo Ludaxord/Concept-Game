@@ -47,8 +47,8 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 					else {
 						GOAPActor->bEnabled = false;
 					}
-					UE_LOG(LogTemp, Warning, TEXT("GOAP Actor => %s Name -> %s"), *GOAPActor->GetName(),
-					       GOAPActor->bEnabled ? TEXT("true") : TEXT("false"))
+					// UE_LOG(LogTemp, Warning, TEXT("GOAP Actor => %s Name -> %s"), *GOAPActor->GetName(),
+					//        GOAPActor->bEnabled ? TEXT("true") : TEXT("false"))
 				}
 			}
 			TaskAttachedActors.Remove(NearestAttachedActor);
@@ -74,8 +74,8 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 				NearestAttachedActor = AttachedActor;
 			}
 		}
-		UE_LOG(LogTemp, Warning, TEXT("GOAP FindNearestActorLocationFromOwner Task Location: %s Owner Location: %s"),
-		       *AttachedActor->GetActorLocation().ToString(), *TaskOwner->GetActorLocation().ToString())
+		// UE_LOG(LogTemp, Warning, TEXT("GOAP FindNearestActorLocationFromOwner Task Location: %s Owner Location: %s"),
+		//        *AttachedActor->GetActorLocation().ToString(), *TaskOwner->GetActorLocation().ToString())
 		index++;
 	}
 
@@ -116,7 +116,7 @@ bool UGOAPTaskComponent::PostPerform() {
 }
 
 bool UGOAPTaskComponent::IsViable() {
-	return false;
+	return bIsViableTask;
 }
 
 bool UGOAPTaskComponent::GoalInterrupt(UGOAPTaskComponent* InCurrentGoal) {

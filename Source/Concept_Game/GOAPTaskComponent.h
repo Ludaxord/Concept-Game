@@ -81,6 +81,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	bool bLoopTaskTillBreak = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	bool bIsViableTask = false;
+
 public:
 	FORCEINLINE FVector GetTarget() const {
 		return Target;
@@ -100,5 +103,9 @@ public:
 
 	FORCEINLINE float GetRange() const {
 		return Range;
+	}
+
+	FORCEINLINE void SetViableTask(bool IsViableTask) {
+		bIsViableTask = IsViableTask;
 	}
 };

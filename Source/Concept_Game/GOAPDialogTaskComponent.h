@@ -13,4 +13,18 @@ UCLASS()
 class CONCEPT_GAME_API UGOAPDialogTaskComponent : public UGOAPTaskComponent {
 	GENERATED_BODY()
 
+public:
+	virtual void BeginPlay() override;
+
+	virtual void CallActors() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool PrePerform() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool PostPerform() override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsViable() override;
+
 };

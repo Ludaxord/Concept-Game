@@ -54,6 +54,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GOAP", meta = (AllowPrivateAccess = "true"))
 	UGOAPGoalComponent* CurrentGoal;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GOAP", meta = (AllowPrivateAccess = "true"))
+	bool bInterruptCurrentAction;
+
 	bool bInvoked = false;
 
 	FTimerHandle OnUpdateTimer;

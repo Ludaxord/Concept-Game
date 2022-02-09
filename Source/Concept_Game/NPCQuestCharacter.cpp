@@ -14,11 +14,13 @@
 #include "Components/WidgetComponent.h"
 
 ANPCQuestCharacter::ANPCQuestCharacter() {
-	// DialogTaskComponent = CreateDefaultSubobject<UGOAPDialogTaskComponent>(TEXT("DialogTaskComponent"));
-	// PanicTaskComponent = CreateDefaultSubobject<UGOAPPanicTaskComponent>(TEXT("PanicTaskComponent"));
 	// HideTaskComponent = CreateDefaultSubobject<UGOAPHideTaskComponent>(TEXT("HideTaskComponent"));
 	// RunAwayTaskComponent = CreateDefaultSubobject<UGOAPRunAwayTaskComponent>(TEXT("RunAwayTaskComponent"));
+	DialogTaskComponent = CreateDefaultSubobject<UGOAPDialogTaskComponent>(TEXT("DialogTaskComponent"));
+	PanicTaskComponent = CreateDefaultSubobject<UGOAPPanicTaskComponent>(TEXT("PanicTaskComponent"));
+
 	FreeRoamTaskComponent = CreateDefaultSubobject<UGOAPFreeRoamTaskComponent>(TEXT("FreeRoamTaskComponent"));
+	FreeRoamTaskComponent->SetViableTask(true);
 
 	QuestIndicatorWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("QuestIndicatorWidget"));
 	QuestIndicatorWidget->SetupAttachment(GetRootComponent());

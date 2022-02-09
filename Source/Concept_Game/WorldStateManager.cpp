@@ -4,7 +4,7 @@
 #include "WorldStateManager.h"
 
 // Sets default values
-AWorldStateManager::AWorldStateManager() {
+AWorldStateManager::AWorldStateManager(): bInterruptCurrentState(false) {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 

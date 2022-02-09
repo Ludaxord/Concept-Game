@@ -43,7 +43,8 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 	}
 
 	GOAPNode* BeginNode = new GOAPNode(nullptr, 0.f, StateManager->GetStates(), InStates, nullptr);
-	bool bSuccess = BuildGraph(BeginNode, Nodes, InTasks, InGoals);
+	// bool bSuccess = BuildGraph(BeginNode, Nodes, InTasks, InGoals);
+	bool bSuccess = BuildGraph(BeginNode, Nodes, CurrentTasks, InGoals);
 
 	if (!bSuccess) {
 		UE_LOG(LogTemp, Error, TEXT("GOAP: No Plans found..."))
@@ -105,7 +106,6 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 			GOAPNode* Node = new GOAPNode(Parent, Parent->Cost + Task->Cost, CurrentState, Task);
 
 			if (GoalReached(InGoals, CurrentState)) {
-				UE_LOG(LogTemp, Warning, TEXT("Goal Reached.... "))
 				InNodes.Add(Node);
 				bPathExists = true;
 			}
@@ -138,7 +138,11 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::TaskSubset(TArray<UGOAPTaskComponent*>
 
 bool AGOAPPlanner::GoalReached(TMap<FString, int32> Goal, TMap<FString, int32> State) {
 	for (TTuple<FString, int32> const& SubGoal : Goal) {
-		UE_LOG(LogTemp, Error, TEXT("SubGoal -> %s : %i"), *SubGoal.Key, SubGoal.Value)
+		UE_LOG(LogTemp, Error, TEXT("GOAP: SubGoal -> %s : %i"), *SubGoal.Key, SubGoal.Value)
+		for (auto S : State) {
+			UE_LOG(LogTemp, Error, TEXT("GOAP: State -> %s : %i"), *S.Key, S.Value)
+		}
+
 		if (!State.Contains(SubGoal.Key)) {
 			return false;
 		}

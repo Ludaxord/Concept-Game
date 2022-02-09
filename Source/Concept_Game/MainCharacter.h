@@ -855,6 +855,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class URenderComponent* CharacterRenderComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State Manager", meta = (AllowPrivateAccess = "true"))
+	class AWorldStateManager* StateManager;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
 		meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* InvisibleCharacterMesh;
@@ -871,6 +874,10 @@ public:
 
 	USkeletalMeshComponent* GetInvisibleCharacterMesh() const {
 		return InvisibleCharacterMesh;
+	}
+
+	AWorldStateManager* GetStateManager() const {
+		return StateManager;
 	}
 
 	UPostProcessComponent* GetFogComponent() const {
