@@ -82,7 +82,7 @@ protected:
 	bool bLoopTaskTillBreak = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
-	bool bIsViableTask = false;
+	bool bIsViableTask = true;
 
 public:
 	FORCEINLINE FVector GetTarget() const {

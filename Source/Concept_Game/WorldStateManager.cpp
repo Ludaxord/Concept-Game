@@ -27,10 +27,12 @@ bool AWorldStateManager::HasState(FString Key) {
 }
 
 void AWorldStateManager::AddState(FString Key, int32 Val) {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("AddState ") + Key);
 	States.Add(Key, Val);
 }
 
 void AWorldStateManager::RemoveState(FString Key) {
+	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("RemoveState ") + Key);
 	if (States.Contains(Key)) {
 		States.Remove(Key);
 	}

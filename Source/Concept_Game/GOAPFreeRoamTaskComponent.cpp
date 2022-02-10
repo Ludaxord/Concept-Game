@@ -21,10 +21,13 @@ bool UGOAPFreeRoamTaskComponent::PrePerform() {
 
 bool UGOAPFreeRoamTaskComponent::PostPerform() {
 	UE_LOG(LogTemp, Error, TEXT("GOAP Post Perform Free Roam"))
+	if (!bLoopTaskTillBreak) {
+		return true;
+	}
+
 	return Super::PostPerform();
 }
 
 bool UGOAPFreeRoamTaskComponent::IsViable() {
-	UE_LOG(LogTemp, Error, TEXT("GOAP Is Viable Free Roam"))
 	return Super::IsViable();
 }

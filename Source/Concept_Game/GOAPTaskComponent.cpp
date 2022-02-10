@@ -131,6 +131,8 @@ bool UGOAPTaskComponent::GoalInterrupt(UGOAPTaskComponent* InCurrentGoal) {
 
 bool UGOAPTaskComponent::IsViableGiven(const TMap<FString, int32> InConditions) {
 	for (const TTuple<FString, int32> PreCondition : PreConditions) {
+		UE_LOG(LogTemp, Warning, TEXT("Pre Condition: %s Is Viable Given: %s"), *PreCondition.Key,
+		       InConditions.Contains(PreCondition.Key)? TEXT("true") : TEXT("false"))
 		if (!InConditions.Contains(PreCondition.Key)) {
 			return false;
 		}

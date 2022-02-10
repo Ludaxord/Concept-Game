@@ -15,15 +15,17 @@ void UGOAPPanicTaskComponent::CallActors() {
 }
 
 bool UGOAPPanicTaskComponent::PrePerform() {
+	UE_LOG(LogTemp, Warning, TEXT("=================== UGOAPPanicTaskComponent::PrePerform"))
 	if (ANPCBase* NPCOwner = Cast<ANPCBase>(GetOwner())) { 
 		NPCOwner->GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
 	}
 
-	return Super::PrePerform();
+	return true;
 }
 
 bool UGOAPPanicTaskComponent::PostPerform() {
-	return Super::PostPerform();
+	UE_LOG(LogTemp, Warning, TEXT("=================== UGOAPPanicTaskComponent::PostPerform"))
+	return true;
 }
 
 bool UGOAPPanicTaskComponent::IsViable() {
