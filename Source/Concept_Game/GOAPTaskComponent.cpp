@@ -115,6 +115,10 @@ bool UGOAPTaskComponent::PostPerform() {
 	return FindNearestActorLocationFromOwner();
 }
 
+bool UGOAPTaskComponent::DuringPerform() {
+	return false;
+}
+
 bool UGOAPTaskComponent::IsViable() {
 	return bIsViableTask;
 }
