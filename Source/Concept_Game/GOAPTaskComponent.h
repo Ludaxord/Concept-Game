@@ -33,6 +33,8 @@ public:
 
 	virtual bool PostPerform();
 
+	virtual bool DuringPerform();
+
 	virtual bool IsViable();
 
 	virtual bool GoalInterrupt(UGOAPTaskComponent* InCurrentGoal);
