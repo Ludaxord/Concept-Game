@@ -95,8 +95,11 @@ void AGOAPAIController::Update() {
 	       States.Num())
 
 	if (CurrentTask != nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("GOAP CurrentTask: %s Is Running: %s"), *CurrentTask->GetName(),
-		       CurrentTask->bRunning ? TEXT("true") : TEXT("false"))
+		UE_LOG(LogTemp, Warning, TEXT("GOAP CurrentTask: %s Is Running: %s Distance: %f Range: %f"),
+		       *CurrentTask->GetName(),
+		       CurrentTask->bRunning ? TEXT("true") : TEXT("false"),
+		       FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()),
+		       CurrentTask->GetRange())
 	}
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
@@ -136,7 +139,6 @@ void AGOAPAIController::Update() {
 	else if (TasksQueue.Num() > 0) {
 		CurrentTask = TasksQueue[0];
 		if (CurrentTask != nullptr) {
-			// UE_LOG(LogTemp, Warning, TEXT("GOAP CurrentTask TasksQueue %s"), *CurrentTask->GetName())
 			if (CurrentTask->PrePerform()) {
 				TasksQueue.Remove(CurrentTask);
 				CurrentTask->bRunning = true;
@@ -153,10 +155,8 @@ void AGOAPAIController::Update() {
 }
 
 void AGOAPAIController::InitGoals(ANPCBase* NPC) {
-	// UE_LOG(LogTemp, Warning, TEXT("GOAP AGOAPAIController::InitGoals : %i"), NPC->InitGoals_Implementation().Num())
 	int32 index = 0;
 	for (UGOAPGoalComponent* Goal : NPC->InitGoals_Implementation()) {
-		// UE_LOG(LogTemp, Warning, TEXT("GOAP InitGoal_Implementation: %s"), *Goal->GetName())
 		Goals.Add(Goal, index);
 		index++;
 	}
@@ -164,7 +164,6 @@ void AGOAPAIController::InitGoals(ANPCBase* NPC) {
 
 void AGOAPAIController::OnPossess(APawn* InPawn) {
 	Super::OnPossess(InPawn);
-	// UE_LOG(LogTemp, Warning, TEXT("GOAP ON POSSESS "))
 	if (ANPCBase* NPC = Cast<ANPCBase>(InPawn)) {
 		NPC->SetGoals();
 		InitGoals(NPC);

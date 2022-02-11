@@ -15,12 +15,10 @@ void UGOAPFreeRoamTaskComponent::CallActors() {
 }
 
 bool UGOAPFreeRoamTaskComponent::PrePerform() {
-	UE_LOG(LogTemp, Warning, TEXT("GOAP Pre Perform Free Roam"))
 	return Super::PrePerform();
 }
 
 bool UGOAPFreeRoamTaskComponent::PostPerform() {
-	UE_LOG(LogTemp, Error, TEXT("GOAP Post Perform Free Roam"))
 	if (!bLoopTaskTillBreak) {
 		return true;
 	}

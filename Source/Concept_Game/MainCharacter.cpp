@@ -2126,7 +2126,6 @@ void AMainCharacter::UpdateClimbingTransitionTimeline(float Output) {
 
 void AMainCharacter::UpdateAimTransitionTimeline(float Output) {
 	CurrentAimValue = Output;
-	UE_LOG(LogTemp, Warning, TEXT("Output: %f"), Output)
 }
 
 FVector AMainCharacter::MoveToLocation() const {

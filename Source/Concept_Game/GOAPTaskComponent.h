@@ -73,7 +73,7 @@ protected:
 	TMap<FString, int32> Effects;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
-	float Range = 5.f;
+	float Range = 100.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	bool bRunning = false;

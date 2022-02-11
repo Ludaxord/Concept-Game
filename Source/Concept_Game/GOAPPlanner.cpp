@@ -97,8 +97,6 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 		       Task->PreConditions.Num())
 		if (Task->IsViableGiven(Parent->States)) {
 			TMap<FString, int32> CurrentState = {Parent->States};
-			UE_LOG(LogTemp, Warning, TEXT("Build Graph CurrentState NUM: %i Is Viable: %s"), CurrentState.Num(),
-			       *Task->GetName())
 			for (TTuple<FString, int32> const& Effect : Task->Effects) {
 				if (!CurrentState.Contains(Effect.Key)) {
 					CurrentState.Add(Effect.Key, Effect.Value);
@@ -108,12 +106,10 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 			GOAPNode* Node = new GOAPNode(Parent, Parent->Cost + Task->Cost, CurrentState, Task);
 
 			if (GoalReached(InGoals, CurrentState)) {
-				UE_LOG(LogTemp, Error, TEXT("All Goals Reached.... "))
 				InNodes.Add(Node);
 				bPathExists = true;
 			}
 			else {
-				UE_LOG(LogTemp, Error, TEXT("Goal NOT Reached.... "))
 				TArray<UGOAPTaskComponent*> Subset = TaskSubset(PossibleTasks, Task);
 				bool bFound = BuildGraph(Node, InNodes, Subset, InGoals);
 				if (bFound) {
