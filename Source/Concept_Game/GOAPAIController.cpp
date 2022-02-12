@@ -48,7 +48,7 @@ void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
 }
 
 void AGOAPAIController::CompleteTask() {
-	UE_LOG(LogTemp, Error, TEXT("GOAP Complete Task: %s"), *CurrentTask->GetName())
+	// UE_LOG(LogTemp, Error, TEXT("GOAP Complete Task: %s"), *CurrentTask->GetName())
 	CurrentTask->bRunning = false;
 	bool bPostPerformed = CurrentTask->PostPerform();
 	// UE_LOG(LogTemp, Error, TEXT("GOAP Task PostPerformed: %s"), bPostPerformed ? TEXT("true") : TEXT("false"))
@@ -57,7 +57,8 @@ void AGOAPAIController::CompleteTask() {
 
 void AGOAPAIController::Update() {
 	UE_LOG(LogTemp, Warning,
-	       TEXT("========================= Update GOAP... TasksQueue Num: %i ========================="),
+	       TEXT("========================= Update GOAP Actor: %s... TasksQueue Num: %i ========================="),
+	       *GetPawn()->GetName(),
 	       TasksQueue.Num())
 
 	//TODO: Add states based on this docs....
@@ -70,24 +71,6 @@ void AGOAPAIController::Update() {
 	//https://medium.com/@t2thompson/the-ai-of-fear-76ba26dc1667
 	//https://www.youtube.com/watch?v=PaOLBOuyswI
 	//https://www.cs.rochester.edu/~brown/242/assts/termprojs/games.pdf
-
-	//TODO: FIX!!!!
-	// if (StateManager->GetInterruptCurrentState()) {
-	// 	if (States.Num() < StateManager->GetStates().Num()) {
-	// 		UE_LOG(LogTemp, Warning, TEXT("GOAP State Changed... States Before %i ... States After %i"), States.Num(),
-	// 		       StateManager->GetStates().Num())
-	// 		if (CurrentTask != nullptr) {
-	// 			CompleteTask();
-	// 			CurrentTask->bIsViableTask = false;
-	// 			StateManager->SetInterruptCurrentState(false);
-	// 		}
-	// 		for (auto State : StateManager->GetStates()) {
-	// 			UE_LOG(LogTemp, Warning, TEXT("GOAP State: %s"), *State.Key)
-	// 			if (!States.Contains(State.Key)) {
-	// 			}
-	// 		}
-	// 	}
-	// }
 
 	States = StateManager->GetStates();
 
@@ -113,7 +96,7 @@ void AGOAPAIController::Update() {
 	if (TasksQueue.Num() <= 0) {
 		for (TTuple<UGOAPGoalComponent*, int> Goal : Goals) {
 			for (auto gg : Goal.Key->Goals) {
-				UE_LOG(LogTemp, Error, TEXT("GOAP GOAL: %s SubGoal: %s"), *Goal.Key->GetName(), *gg.Key);
+				// UE_LOG(LogTemp, Error, TEXT("GOAP GOAL: %s SubGoal: %s"), *Goal.Key->GetName(), *gg.Key);
 			}
 			if (Goal.Key != NULL) {
 				//TODO: If set Goal.Key->Goals, Task stops working... need to check it...

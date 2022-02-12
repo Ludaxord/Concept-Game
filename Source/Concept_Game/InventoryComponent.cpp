@@ -22,7 +22,7 @@ UInventoryComponent::UInventoryComponent() : bInventoryVisible(false),
                                              bInventoryDirty(false),
                                              bQuickSelectDirty(false),
                                              SectorCount(6) {
-	UE_LOG(LogTemp, Warning, TEXT("Inventory Component => Constructed...."))
+	// UE_LOG(LogTemp, Warning, TEXT("Inventory Component => Constructed...."))
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -248,13 +248,13 @@ TMap<AItem*, FInventoryTile> UInventoryComponent::GetInventoryItems() {
 TMap<AItem*, int> UInventoryComponent::GetQuickSelectItems() {
 	TMap<AItem*, int> AllQuickSelectItems;
 	for (int i = 0; i <= QuickSelectItems.Num(); i++) {
-		UE_LOG(LogTemp, Warning, TEXT("Quick Select Index: %i"), i)
+		// UE_LOG(LogTemp, Warning, TEXT("Quick Select Index: %i"), i)
 		if (QuickSelectItems.IsValidIndex(i)) {
 			AItem* QuickSelectItem = QuickSelectItems[i];
 			if (QuickSelectItem != nullptr) {
 				if (QuickSelectItem->GetAllowQuickSelect()) {
 					if (!AllQuickSelectItems.Contains(QuickSelectItem)) {
-						UE_LOG(LogTemp, Warning, TEXT("GetQuickSelectItem: %s"), *QuickSelectItem->GetName())
+						// UE_LOG(LogTemp, Warning, TEXT("GetQuickSelectItem: %s"), *QuickSelectItem->GetName())
 						AllQuickSelectItems.Add(QuickSelectItem, i);
 					}
 				}

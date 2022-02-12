@@ -91,10 +91,10 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 	bool bPathExists = false;
 
 	for (UGOAPTaskComponent* const& Task : PossibleTasks) {
-		UE_LOG(LogTemp, Error, TEXT("Build Graph PossibleTask : %s Parent->States Num: %i PreConditions Num: %i"),
-		       *Task->GetName(),
-		       Parent->States.Num(),
-		       Task->PreConditions.Num())
+		// UE_LOG(LogTemp, Error, TEXT("Build Graph PossibleTask : %s Parent->States Num: %i PreConditions Num: %i"),
+		//        *Task->GetName(),
+		//        Parent->States.Num(),
+		//        Task->PreConditions.Num())
 		if (Task->IsViableGiven(Parent->States)) {
 			TMap<FString, int32> CurrentState = {Parent->States};
 			for (TTuple<FString, int32> const& Effect : Task->Effects) {
@@ -128,7 +128,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::TaskSubset(TArray<UGOAPTaskComponent*>
 
 	for (UGOAPTaskComponent* const& Task : InTasks) {
 		if (Task != TaskToRemove) {
-			UE_LOG(LogTemp, Warning, TEXT("ActionSubset: %s"), *Task->GetName())
+			// UE_LOG(LogTemp, Warning, TEXT("ActionSubset: %s"), *Task->GetName())
 			TasksSubset.Add(Task);
 		}
 	}
@@ -138,8 +138,8 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::TaskSubset(TArray<UGOAPTaskComponent*>
 
 bool AGOAPPlanner::GoalReached(TMap<FString, int32> Goal, TMap<FString, int32> State) {
 	for (TTuple<FString, int32> const& SubGoal : Goal) {
-		UE_LOG(LogTemp, Error, TEXT("GOAP Goal %s in state: %s"), *SubGoal.Key,
-		       State.Contains(SubGoal.Key) ? TEXT("true") : TEXT("false"))
+		// UE_LOG(LogTemp, Error, TEXT("GOAP Goal %s in state: %s"), *SubGoal.Key,
+		//        State.Contains(SubGoal.Key) ? TEXT("true") : TEXT("false"))
 		if (!State.Contains(SubGoal.Key)) {
 			return false;
 		}

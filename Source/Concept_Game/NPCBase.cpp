@@ -65,17 +65,18 @@ bool ANPCBase::GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) {
 
 void ANPCBase::SetGoals() {
 	if (!bGoalSet) {
-		UE_LOG(LogTemp, Warning, TEXT("GOAP: SetGoals"))
 		TArray<UActorComponent*> Elements;
 		GetComponents(UGOAPGoalComponent::StaticClass(), Elements);
-		UE_LOG(LogTemp, Warning, TEXT("GOAP: Goals Elements %i"), Elements.Num())
+		UE_LOG(LogTemp, Display, TEXT("GOAP NPC => %s Goals Elements %i"), *GetName(), Elements.Num())
 
 		for (UActorComponent* Element : Elements) {
 			if (UGOAPGoalComponent* Goal = Cast<UGOAPGoalComponent>(Element)) {
-				if (Goal->bSetAsCurrentGoal) {
-					UE_LOG(LogTemp, Warning, TEXT("GOAP: SetGoal : %s"), *Element->GetName())
-					GOAPGoalComponents.Add(Goal);
-				}
+				UE_LOG(LogTemp, Warning, TEXT("GOAP NPC => %s SetGoal : %s"), *GetName(), *Element->GetName())
+				GOAPGoalComponents.Add(Goal);
+				// if (Goal->bSetAsCurrentGoal) {
+				// 	UE_LOG(LogTemp, Warning, TEXT("GOAP: SetGoal : %s"), *Element->GetName())
+				// 	GOAPGoalComponents.Add(Goal);
+				// }
 			}
 		}
 
@@ -88,6 +89,7 @@ void ANPCBase::AttachActorsToGOAP() {
 	GetComponents(NPCTasks);
 
 	for (UGOAPTaskComponent* Task : NPCTasks) {
+		UE_LOG(LogTemp, Display, TEXT("AttachActorsToGOAP => %s"), *Task->GetName())
 		Task->CallActors();
 	}
 

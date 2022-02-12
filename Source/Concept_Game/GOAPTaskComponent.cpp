@@ -27,14 +27,20 @@ void UGOAPTaskComponent::BeginPlay() {
 
 void UGOAPTaskComponent::AttachActors(UClass* ActorClass) {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ActorClass, TaskAttachedActors);
-	UE_LOG(LogTemp, Warning, TEXT("GOAP TaskAttachedActors: %i"), TaskAttachedActors.Num())
+	UE_LOG(LogTemp, Warning, TEXT("GOAP NPC => %s TaskName -> %s TaskAttachedActors: %i"),
+	       *GetOwner()->GetName(),
+	       *GetName(),
+	       TaskAttachedActors.Num())
 }
 
 
 bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 	int index = 0;
 
-	UE_LOG(LogTemp, Warning, TEXT("GOAP TaskAttachedActors => %i bLoopTaskTillBreak: %s"), TaskAttachedActors.Num(),
+	UE_LOG(LogTemp, Warning, TEXT("GOAP NPC => %s TaskName -> %s TaskAttachedActors => %i bLoopTaskTillBreak: %s"),
+	       *GetOwner()->GetName(),
+	       *GetName(),
+	       TaskAttachedActors.Num(),
 	       bLoopTaskTillBreak ? TEXT("true") : TEXT("false"))
 	if (TaskAttachedActors.Num() <= 0) {
 		UE_LOG(LogTemp, Warning, TEXT("GOAP Scanning Actors"))
