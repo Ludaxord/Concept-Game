@@ -26,4 +26,7 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	bool bEnabled = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	TArray<AActor*> DisabledActors;
 };

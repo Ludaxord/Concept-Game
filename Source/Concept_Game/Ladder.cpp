@@ -206,7 +206,7 @@ void ALadder::OnBoxEndOverlap(UPrimitiveComponent* MovieSceneBlends, AActor* Oth
 void ALadder::OnSphereOverlapFromTopBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                           const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromTopBegin"));
+	// UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromTopBegin"));
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
@@ -219,7 +219,7 @@ void ALadder::OnSphereOverlapFromTopBegin(UPrimitiveComponent* OverlappedCompone
 
 void ALadder::OnSphereOverlapFromTopEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromTopEnd"));
+	// UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromTopEnd"));
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
@@ -233,7 +233,7 @@ void ALadder::OnSphereOverlapFromTopEnd(UPrimitiveComponent* OverlappedComponent
 void ALadder::OnSphereOverlapFromBottomBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                              UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
                                              const FHitResult& SweepResult) {
-	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromBottomBegin"));
+	// UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromBottomBegin"));
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {
@@ -246,7 +246,7 @@ void ALadder::OnSphereOverlapFromBottomBegin(UPrimitiveComponent* OverlappedComp
 
 void ALadder::OnSphereOverlapFromBottomEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                            UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) {
-	UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromBottomEnd"));
+	// UE_LOG(LogTemp, Warning, TEXT("OnSphereOverlapFromBottomEnd"));
 	if (OtherActor) {
 		AMainCharacter* OtherCharacter = Cast<AMainCharacter>(OtherActor);
 		if (OtherCharacter != nullptr) {

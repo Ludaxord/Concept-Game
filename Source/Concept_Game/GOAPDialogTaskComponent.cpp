@@ -5,6 +5,10 @@
 
 #include "GameFramework/Character.h"
 
+UGOAPDialogTaskComponent::UGOAPDialogTaskComponent() {
+	TaskName = "Dialog";
+}
+
 void UGOAPDialogTaskComponent::BeginPlay() {
 	Super::BeginPlay();
 	AttachActors(ACharacter::StaticClass());

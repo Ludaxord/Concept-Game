@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "GOAPAIController.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetCurrentNPCState, FString, State);
 /**
  * 
  */
@@ -56,6 +58,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GOAP", meta = (AllowPrivateAccess = "true"))
 	bool bInterruptCurrentAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = "GOAP",
+		meta = (AllowPrivateAccess = "true"))
+	FSetCurrentNPCState SetCurrentNPCStateDelegate;
 
 	bool bInvoked = false;
 

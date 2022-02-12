@@ -8,6 +8,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+UGOAPPanicTaskComponent::UGOAPPanicTaskComponent() {
+	TaskName = "Panic"; 
+}
+
 void UGOAPPanicTaskComponent::BeginPlay() {
 	Super::BeginPlay();
 }

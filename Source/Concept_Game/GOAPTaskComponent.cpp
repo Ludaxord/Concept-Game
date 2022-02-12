@@ -43,15 +43,17 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 	       TaskAttachedActors.Num(),
 	       bLoopTaskTillBreak ? TEXT("true") : TEXT("false"))
 	if (TaskAttachedActors.Num() <= 0) {
-		UE_LOG(LogTemp, Warning, TEXT("GOAP Scanning Actors"))
+		UE_LOG(LogTemp, Warning, TEXT("GOAP NPC => %s Scanning Actors"))
 		if (bLoopTaskTillBreak) {
 			for (AActor* AttachedActor : TaskAttachedActors) {
 				if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(AttachedActor)) {
 					if (GOAPActor != NearestAttachedActor) {
 						GOAPActor->bEnabled = true;
+						GOAPActor->DisabledActors.Remove(GetOwner());
 					}
 					else {
 						GOAPActor->bEnabled = false;
+						GOAPActor->DisabledActors.Add(GetOwner());
 					}
 					// UE_LOG(LogTemp, Warning, TEXT("GOAP Actor => %s Name -> %s"), *GOAPActor->GetName(),
 					//        GOAPActor->bEnabled ? TEXT("true") : TEXT("false"))
@@ -66,9 +68,13 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 
 	for (AActor* AttachedActor : TaskAttachedActors) {
 		if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(AttachedActor)) {
-			if (!GOAPActor->bEnabled) {
+			// if (!GOAPActor->bEnabled) {
+			// 	continue;
+			// }
+			if (GOAPActor->DisabledActors.Contains(GetOwner())) {
 				continue;
 			}
+
 		}
 		if (index == 0) {
 			NearestAttachedActor = AttachedActor;

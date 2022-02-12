@@ -5,6 +5,10 @@
 
 #include "FreeRoamPoint.h"
 
+UGOAPFreeRoamTaskComponent::UGOAPFreeRoamTaskComponent() {
+	TaskName = "Free Roam";
+}
+
 void UGOAPFreeRoamTaskComponent::BeginPlay() {
 	Super::BeginPlay();
 }

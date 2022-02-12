@@ -15,6 +15,8 @@ class CONCEPT_GAME_API UGOAPPanicTaskComponent : public UGOAPTaskComponent
 	GENERATED_BODY()
 
 public:
+	UGOAPPanicTaskComponent();
+
 	virtual void BeginPlay() override;
 
 	virtual void CallActors() override;

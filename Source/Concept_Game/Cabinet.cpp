@@ -267,8 +267,8 @@ void ACabinet::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent,
                                  bool bFromSweep,
                                  const FHitResult& SweepResult) {
 	Super::OnBoxBeginOverlap(OverlappedComponent, OtherActor, OtherComponent, OtherBodyIndex, bFromSweep, SweepResult);
-	UE_LOG(LogTemp, Error, TEXT("OnBoxOverlap Begin OtherActor: %s OverlappedComponent: %s"), *OtherActor->GetName(),
-	       *OverlappedComponent->GetName())
+	// UE_LOG(LogTemp, Error, TEXT("OnBoxOverlap Begin OtherActor: %s OverlappedComponent: %s"), *OtherActor->GetName(),
+	//        *OverlappedComponent->GetName())
 }
 
 void ACabinet::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -276,8 +276,8 @@ void ACabinet::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent,
                                UPrimitiveComponent* OtherComponent,
                                int32 OtherBodyIndex) {
 	Super::OnBoxEndOverlap(OverlappedComponent, OtherActor, OtherComponent, OtherBodyIndex);
-	UE_LOG(LogTemp, Warning, TEXT("OnBoxOverlap End OtherActor: %s OverlappedComponent: %s"), *OtherActor->GetName(),
-	       *OverlappedComponent->GetName())
+	// UE_LOG(LogTemp, Warning, TEXT("OnBoxOverlap End OtherActor: %s OverlappedComponent: %s"), *OtherActor->GetName(),
+	//        *OverlappedComponent->GetName())
 }
 
 void ACabinet::UpdateDoorMovementTransitionTimeline(float Output) {
