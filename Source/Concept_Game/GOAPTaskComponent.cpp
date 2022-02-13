@@ -43,7 +43,7 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 	       TaskAttachedActors.Num(),
 	       bLoopTaskTillBreak ? TEXT("true") : TEXT("false"))
 	if (TaskAttachedActors.Num() <= 0) {
-		UE_LOG(LogTemp, Warning, TEXT("GOAP NPC => %s Scanning Actors"))
+		UE_LOG(LogTemp, Warning, TEXT("GOAP NPC => %s Scanning Actors"), *GetOwner()->GetName())
 		if (bLoopTaskTillBreak) {
 			for (AActor* AttachedActor : TaskAttachedActors) {
 				if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(AttachedActor)) {
