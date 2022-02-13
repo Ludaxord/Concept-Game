@@ -43,14 +43,16 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 	bool bSuccess = BuildGraph(BeginNode, Nodes, InTasks, InGoals);
 	// bool bSuccess = BuildGraph(BeginNode, Nodes, CurrentTasks, InGoals);
 
-	
+
 	if (!bSuccess) {
 		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Planning failed, no plan found:"));
 		return {};
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("Plan build"));
-
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow,
+		                                 TEXT("Plan build Tasks: ") + FString::FromInt(InTasks.Num()) + TEXT(" Goals: ")
+		                                 + FString::FromInt(InGoals.Num()) + TEXT(" States: ") + FString::FromInt(
+			                                 InStates.Num()) + TEXT("  "));
 	}
 
 	GOAPNode* CheapestNode = new GOAPNode();
@@ -58,6 +60,8 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 
 	if (Nodes.Num() > 0) {
 		for (GOAPNode* Node : Nodes) {
+			// UE_LOG(LogTemp, Warning, TEXT("++++++++ Node Task : %s == Cost: %f ++++++++"), *Node->Task->GetName(),
+			//        Node->Cost)
 			if (Node->Cost < CheapestNode->Cost) {
 				CheapestNode = Node;
 			}
@@ -78,10 +82,12 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 	TArray<UGOAPTaskComponent*> Plan = {};
 
 	for (UGOAPTaskComponent* const& Task : TasksResults) {
+		UE_LOG(LogTemp, Warning, TEXT("UGOAPTaskComponent Added To Plan :> %s From Owner: %s"), *Task->GetName(),
+		       *Task->GetOwner()->GetName())
 		Plan.Add(Task);
 	}
 
-	// UE_LOG(LogTemp, Warning, TEXT("GOAP: Planning for %i nodes Completed"), Plan.Num());
+	UE_LOG(LogTemp, Warning, TEXT("GOAP: Planning for %i Nodes Completed"), Plan.Num());
 
 	return Plan;
 }
@@ -91,10 +97,6 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 	bool bPathExists = false;
 
 	for (UGOAPTaskComponent* const& Task : PossibleTasks) {
-		// UE_LOG(LogTemp, Error, TEXT("Build Graph PossibleTask : %s Parent->States Num: %i PreConditions Num: %i"),
-		//        *Task->GetName(),
-		//        Parent->States.Num(),
-		//        Task->PreConditions.Num())
 		if (Task->IsViableGiven(Parent->States)) {
 			TMap<FString, int32> CurrentState = {Parent->States};
 			for (TTuple<FString, int32> const& Effect : Task->Effects) {
@@ -107,6 +109,7 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 
 			if (GoalReached(InGoals, CurrentState)) {
 				InNodes.Add(Node);
+				UE_LOG(LogTemp, Warning, TEXT("%s -> GoalReached"), *Task->GetOwner()->GetName())
 				bPathExists = true;
 			}
 			else {
@@ -128,7 +131,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::TaskSubset(TArray<UGOAPTaskComponent*>
 
 	for (UGOAPTaskComponent* const& Task : InTasks) {
 		if (Task != TaskToRemove) {
-			// UE_LOG(LogTemp, Warning, TEXT("ActionSubset: %s"), *Task->GetName())
+			UE_LOG(LogTemp, Warning, TEXT("GOAP %s ActionSubset: %s"), *Task->GetOwner()->GetName(), *Task->GetName())
 			TasksSubset.Add(Task);
 		}
 	}
@@ -138,8 +141,8 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::TaskSubset(TArray<UGOAPTaskComponent*>
 
 bool AGOAPPlanner::GoalReached(TMap<FString, int32> Goal, TMap<FString, int32> State) {
 	for (TTuple<FString, int32> const& SubGoal : Goal) {
-		// UE_LOG(LogTemp, Error, TEXT("GOAP Goal %s in state: %s"), *SubGoal.Key,
-		//        State.Contains(SubGoal.Key) ? TEXT("true") : TEXT("false"))
+		UE_LOG(LogTemp, Error, TEXT("GOAP Goal %s in state: %s"), *SubGoal.Key,
+		       State.Contains(SubGoal.Key) ? TEXT("true") : TEXT("false"))
 		if (!State.Contains(SubGoal.Key)) {
 			return false;
 		}

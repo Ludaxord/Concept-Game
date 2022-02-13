@@ -48,11 +48,17 @@ void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
 }
 
 void AGOAPAIController::CompleteTask() {
-	// UE_LOG(LogTemp, Error, TEXT("GOAP Complete Task: %s"), *CurrentTask->GetName())
+	UE_LOG(LogTemp, Error, TEXT("GOAP Complete Task: %s"), *CurrentTask->GetName())
 	CurrentTask->bRunning = false;
 	bool bPostPerformed = CurrentTask->PostPerform();
-	// UE_LOG(LogTemp, Error, TEXT("GOAP Task PostPerformed: %s"), bPostPerformed ? TEXT("true") : TEXT("false"))
+	UE_LOG(LogTemp, Error, TEXT("GOAP Task PostPerformed: %s"), bPostPerformed ? TEXT("true") : TEXT("false"))
 	bInvoked = false;
+
+	if (CurrentGoal != nullptr) {
+		// for (CurrentTask->Effects) {
+		// CurrentGoal->Goals;
+		// }
+	}
 }
 
 void AGOAPAIController::Update() {
@@ -74,17 +80,16 @@ void AGOAPAIController::Update() {
 
 	States = StateManager->GetStates();
 
-	UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i States : %i"), TasksQueue.Num(), Goals.Num(),
-	       States.Num())
 
-	if (CurrentTask != nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("GOAP NPC -> %s CurrentTask: %s Is Running: %s Distance: %f Range: %f"),
-		       *GetPawn()->GetName(),
-		       *CurrentTask->GetName(),
-		       CurrentTask->bRunning ? TEXT("true") : TEXT("false"),
-		       FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()),
-		       CurrentTask->GetRange())
-	}
+	//
+	// if (CurrentTask != nullptr) {
+	// 	UE_LOG(LogTemp, Warning, TEXT("GOAP NPC -> %s CurrentTask: %s Is Running: %s Distance: %f Range: %f"),
+	// 	       *GetPawn()->GetName(),
+	// 	       *CurrentTask->GetName(),
+	// 	       CurrentTask->bRunning ? TEXT("true") : TEXT("false"),
+	// 	       FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()),
+	// 	       CurrentTask->GetRange())
+	// }
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
 		if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
@@ -94,16 +99,19 @@ void AGOAPAIController::Update() {
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i States : %i"), TasksQueue.Num(), Goals.Num(),
+	       States.Num())
+
 	if (TasksQueue.Num() <= 0) {
 		for (TTuple<UGOAPGoalComponent*, int> Goal : Goals) {
-			// for (auto gg : Goal.Key->Goals) {
-			// UE_LOG(LogTemp, Error, TEXT("GOAP GOAL: %s SubGoal: %s"), *Goal.Key->GetName(), *gg.Key);
-			// }
-			if (Goal.Key != NULL) {
+
+			if (Goal.Key != nullptr) {
 				//TODO: If set Goal.Key->Goals, Task stops working... need to check it...
 				TasksQueue = Planner->GetPlan(
-					Tasks, Goal.Key->Goals /* FIX Goals not adding tasks if new are visible */,
-					States);
+					Tasks,
+					Goal.Key->Goals /* FIX Goals not adding tasks if new are visible */,
+					States
+				);
 
 				if (TasksQueue.Num() > 0) {
 					CurrentGoal = Goal.Key;
@@ -136,7 +144,9 @@ void AGOAPAIController::Update() {
 		}
 	}
 
-	SetCurrentNPCStateDelegate.Broadcast(CurrentTask->GetTaskName());
+	if (CurrentTask != nullptr) {
+		SetCurrentNPCStateDelegate.Broadcast(CurrentTask->GetTaskName());
+	}
 
 }
 

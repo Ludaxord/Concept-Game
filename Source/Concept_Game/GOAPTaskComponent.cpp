@@ -48,15 +48,11 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 			for (AActor* AttachedActor : TaskAttachedActors) {
 				if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(AttachedActor)) {
 					if (GOAPActor != NearestAttachedActor) {
-						GOAPActor->bEnabled = true;
 						GOAPActor->DisabledActors.Remove(GetOwner());
 					}
 					else {
-						GOAPActor->bEnabled = false;
 						GOAPActor->DisabledActors.Add(GetOwner());
 					}
-					// UE_LOG(LogTemp, Warning, TEXT("GOAP Actor => %s Name -> %s"), *GOAPActor->GetName(),
-					//        GOAPActor->bEnabled ? TEXT("true") : TEXT("false"))
 				}
 			}
 			TaskAttachedActors.Remove(NearestAttachedActor);
@@ -68,9 +64,6 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 
 	for (AActor* AttachedActor : TaskAttachedActors) {
 		if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(AttachedActor)) {
-			// if (!GOAPActor->bEnabled) {
-			// 	continue;
-			// }
 			if (GOAPActor->DisabledActors.Contains(GetOwner())) {
 				continue;
 			}
@@ -97,7 +90,7 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 			GetRandomPointInNavigableRadius(NearestAttachedActor->GetActorLocation(), Range, Loc)) {
 			Target = Loc.Location;
 			if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(NearestAttachedActor)) {
-				GOAPActor->bEnabled = false;
+				GOAPActor->DisabledActors.Add(GetOwner());
 				TaskAttachedActors.Remove(NearestAttachedActor);
 			}
 

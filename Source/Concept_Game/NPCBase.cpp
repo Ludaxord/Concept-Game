@@ -8,7 +8,9 @@
 #include "GOAPFreeRoamGoalComponent.h"
 #include "GOAPTaskComponent.h"
 #include "NPCInventoryComponent.h"
+#include "WorldStateManager.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ANPCBase::ANPCBase(): bGoalSet(false) {
@@ -30,6 +32,14 @@ void ANPCBase::BeginPlay() {
 	Super::BeginPlay();
 
 	ID = FGuid::NewGuid();
+
+
+	if (StateManager == nullptr) {
+		StateManager = Cast<AWorldStateManager>(
+			UGameplayStatics::GetActorOfClass(GetWorld(), AWorldStateManager::StaticClass()));
+	}
+
+	StateManager->AddState(FString("CanWalk"), 1);
 
 	SetGoals();
 }

@@ -4,6 +4,8 @@
 #include "GOAPFreeRoamTaskComponent.h"
 
 #include "FreeRoamPoint.h"
+#include "NPCBase.h"
+#include "WorldStateManager.h"
 
 UGOAPFreeRoamTaskComponent::UGOAPFreeRoamTaskComponent() {
 	TaskName = "Free Roam";
@@ -24,6 +26,8 @@ bool UGOAPFreeRoamTaskComponent::PrePerform() {
 
 bool UGOAPFreeRoamTaskComponent::PostPerform() {
 	if (!bLoopTaskTillBreak) {
+		UE_LOG(LogTemp, Warning, TEXT("UGOAPFreeRoamTaskComponent::PostPerform => bLoopTaskTillBreak"))
+		TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
 		return true;
 	}
 

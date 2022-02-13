@@ -69,6 +69,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
 	class UGOAPDefeatEnemyGoalComponent* GoalDefeatEnemy;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	class AWorldStateManager* StateManager;
+
 	FGuid ID;
 
 	bool bGoalSet;
@@ -80,5 +83,9 @@ public:
 
 	FORCEINLINE UNPCInventoryComponent* GetInventoryComponent() const {
 		return InventoryComponent;
+	}
+
+	FORCEINLINE AWorldStateManager* GetStateManager() const {
+		return StateManager;
 	}
 };
