@@ -78,18 +78,10 @@ void AGOAPAIController::Update() {
 	//https://www.youtube.com/watch?v=PaOLBOuyswI
 	//https://www.cs.rochester.edu/~brown/242/assts/termprojs/games.pdf
 
+
+	InterruptTask();
+
 	States = StateManager->GetStates();
-
-
-	//
-	// if (CurrentTask != nullptr) {
-	// 	UE_LOG(LogTemp, Warning, TEXT("GOAP NPC -> %s CurrentTask: %s Is Running: %s Distance: %f Range: %f"),
-	// 	       *GetPawn()->GetName(),
-	// 	       *CurrentTask->GetName(),
-	// 	       CurrentTask->bRunning ? TEXT("true") : TEXT("false"),
-	// 	       FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()),
-	// 	       CurrentTask->GetRange())
-	// }
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
 		if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
@@ -102,9 +94,55 @@ void AGOAPAIController::Update() {
 	UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i States : %i"), TasksQueue.Num(), Goals.Num(),
 	       States.Num())
 
+	PlanTasks();
+
+	SetTasks();
+
+	if (CurrentTask != nullptr) {
+		SetCurrentNPCStateDelegate.Broadcast(CurrentTask->GetTaskName());
+	}
+
+}
+
+void AGOAPAIController::InterruptTask() {
+	if (ANPCBase* NPC = Cast<ANPCBase>(GetPawn())) {
+		if (NPC->bUpdateGoals) {
+			UE_LOG(LogTemp, Error, TEXT("INTERUPT GOAP TasksQueue.Num : %i Goals : %i States : %i States Manager : %i"),
+			       TasksQueue.Num(), Goals.Num(), States.Num(), StateManager->GetStates().Num())
+			if (CurrentTask != nullptr) {
+				CurrentTask->DuringPerform();
+				CompleteTask();
+			}
+
+			NPC->bUpdateGoals = false;
+		}
+	}
+}
+
+void AGOAPAIController::InitGoals(ANPCBase* NPC) {
+	int32 index = 0;
+	for (UGOAPGoalComponent* Goal : NPC->InitGoals_Implementation()) {
+		Goals.Add(Goal, index);
+		index++;
+	}
+}
+
+void AGOAPAIController::OnPossess(APawn* InPawn) {
+	Super::OnPossess(InPawn);
+	if (ANPCBase* NPC = Cast<ANPCBase>(InPawn)) {
+		NPC->SetGoals();
+		InitGoals(NPC);
+		TArray<UGOAPTaskComponent*> NPCTasks;
+		NPC->GetComponents(NPCTasks);
+		NPC->AttachActorsToGOAP();
+		Create(NPCTasks);
+		GetWorldTimerManager().SetTimer(OnUpdateTimer, this, &AGOAPAIController::Update, 1.f, true, 0);
+	}
+}
+
+void AGOAPAIController::PlanTasks() {
 	if (TasksQueue.Num() <= 0) {
 		for (TTuple<UGOAPGoalComponent*, int> Goal : Goals) {
-
 			if (Goal.Key != nullptr) {
 				//TODO: If set Goal.Key->Goals, Task stops working... need to check it...
 				TasksQueue = Planner->GetPlan(
@@ -120,7 +158,9 @@ void AGOAPAIController::Update() {
 			}
 		}
 	}
+}
 
+void AGOAPAIController::SetTasks() {
 	if (TasksQueue.Num() == 0) {
 		if (CurrentGoal != nullptr) {
 			if (CurrentGoal->bRemove) {
@@ -142,31 +182,5 @@ void AGOAPAIController::Update() {
 				TasksQueue.Empty();
 			}
 		}
-	}
-
-	if (CurrentTask != nullptr) {
-		SetCurrentNPCStateDelegate.Broadcast(CurrentTask->GetTaskName());
-	}
-
-}
-
-void AGOAPAIController::InitGoals(ANPCBase* NPC) {
-	int32 index = 0;
-	for (UGOAPGoalComponent* Goal : NPC->InitGoals_Implementation()) {
-		Goals.Add(Goal, index);
-		index++;
-	}
-}
-
-void AGOAPAIController::OnPossess(APawn* InPawn) {
-	Super::OnPossess(InPawn);
-	if (ANPCBase* NPC = Cast<ANPCBase>(InPawn)) {
-		NPC->SetGoals();
-		InitGoals(NPC);
-		TArray<UGOAPTaskComponent*> NPCTasks;
-		NPC->GetComponents(NPCTasks);
-		NPC->AttachActorsToGOAP();
-		Create(NPCTasks);
-		GetWorldTimerManager().SetTimer(OnUpdateTimer, this, &AGOAPAIController::Update, 1.f, true, 0);
 	}
 }

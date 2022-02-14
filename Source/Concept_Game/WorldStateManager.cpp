@@ -3,6 +3,9 @@
 
 #include "WorldStateManager.h"
 
+#include "NPCBase.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AWorldStateManager::AWorldStateManager(): bInterruptCurrentState(false) {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -26,8 +29,18 @@ bool AWorldStateManager::HasState(FString Key) {
 	return States.Contains(Key);
 }
 
-void AWorldStateManager::AddState(FString Key, int32 Val) {
+void AWorldStateManager::AddState(FString Key, int32 Val, bool bUpdateGoals) {
 	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, TEXT("AddState ") + Key);
+	if (bUpdateGoals) {
+		TArray<AActor*> WorldNPCs;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANPCBase::StaticClass(), WorldNPCs);
+
+		for (AActor* WorldActor : WorldNPCs) {
+			if (ANPCBase* WorldNPC = Cast<ANPCBase>(WorldActor)) {
+				WorldNPC->bUpdateGoals = true;
+			}
+		}
+	}
 	States.Add(Key, Val);
 }
 

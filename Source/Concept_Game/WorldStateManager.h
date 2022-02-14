@@ -27,7 +27,7 @@ public:
 	bool HasState(FString Key);
 
 	UFUNCTION(BlueprintCallable)
-	void AddState(FString Key, int32 Val);
+	void AddState(FString Key, int32 Val, bool bUpdateGoals = false);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveState(FString Key);

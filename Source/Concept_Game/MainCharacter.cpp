@@ -644,7 +644,7 @@ void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
 		PerformAttack();
 		PlayMontage(ECharacterMontage::ECM_UseWeapon, EquippedWeapon->GetWeaponType());
 		StartCrosshairMovement();
-		StateManager->AddState(FString("Fire Weapon"), 10);
+		StateManager->AddState(FString("Fire Weapon"), 10, true);
 		StateManager->SetInterruptCurrentState(true);
 		EquippedWeapon->DecreaseUsability();
 		StartAttackTimer(EquippedWeapon->GetWeaponType());

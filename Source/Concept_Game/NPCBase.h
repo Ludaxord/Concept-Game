@@ -77,6 +77,8 @@ protected:
 	bool bGoalSet;
 
 public:
+	bool bUpdateGoals;
+
 	FORCEINLINE USphereComponent* GetNPCSphere() const {
 		return NPCSphere;
 	}

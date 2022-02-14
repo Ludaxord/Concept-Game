@@ -8,6 +8,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSetCurrentNPCState, FString, State);
+
 /**
  * 
  */
@@ -27,9 +28,17 @@ class CONCEPT_GAME_API AGOAPAIController : public AAIController {
 	void Update();
 
 	UFUNCTION(BlueprintCallable)
+	void InterruptTask();
+
+	UFUNCTION(BlueprintCallable)
 	void InitGoals(class ANPCBase* InPawn);
 
 	virtual void OnPossess(APawn* InPawn) override;
+
+private:
+	void PlanTasks();
+
+	void SetTasks();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
