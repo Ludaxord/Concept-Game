@@ -31,6 +31,12 @@ ANPCBase::ANPCBase(): bGoalSet(false) {
 void ANPCBase::BeginPlay() {
 	Super::BeginPlay();
 
+	if (bNPCDisabled) {
+		SetActorTickEnabled(false);
+		// SetActorHiddenInGame(true);
+		SetActorEnableCollision(false);
+	}
+
 	ID = FGuid::NewGuid();
 
 
@@ -39,7 +45,12 @@ void ANPCBase::BeginPlay() {
 			UGameplayStatics::GetActorOfClass(GetWorld(), AWorldStateManager::StaticClass()));
 	}
 
+	if (LocalStateManager == nullptr) {
+		LocalStateManager = NewObject<AWorldStateManager>(AWorldStateManager::StaticClass());
+	}
+
 	StateManager->AddState(FString("CanWalk"), 1);
+	LocalStateManager->AddState(FString("CanWalk"), 1);
 
 	SetGoals();
 }

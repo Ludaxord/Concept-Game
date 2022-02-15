@@ -69,8 +69,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
 	class UGOAPDefeatEnemyGoalComponent* GoalDefeatEnemy;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="NPC State", meta = (AllowPrivateAccess = "true"))
+	bool bNPCDisabled;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	class AWorldStateManager* StateManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	class AWorldStateManager* LocalStateManager;
 
 	FGuid ID;
 
