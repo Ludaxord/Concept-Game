@@ -142,7 +142,8 @@ void AGOAPAIController::PlanTasks() {
 				TasksQueue = Planner->GetPlan(
 					Tasks,
 					Goal.Key->Goals /* FIX Goals not adding tasks if new are visible */,
-					States
+					States,
+					GetPawn()
 				);
 
 				if (TasksQueue.Num() > 0) {

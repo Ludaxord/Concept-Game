@@ -42,7 +42,6 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red,
 			                                 TEXT("Planning failed, no plan found for Pawn: ") + OwnerPawn->GetName()
 			);
-			return {};
 		}
 		else {
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow,
@@ -52,6 +51,9 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 				                                 InStates.Num()) + TEXT(" For Pawn: ") + OwnerPawn->GetName());
 		}
 	}
+
+	if (!bSuccess)
+		return {};
 
 	GOAPNode* CheapestNode = new GOAPNode();
 	CheapestNode->Cost = HUGE_VALF;
