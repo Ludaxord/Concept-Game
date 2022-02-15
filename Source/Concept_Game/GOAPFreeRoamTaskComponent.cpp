@@ -25,15 +25,18 @@ bool UGOAPFreeRoamTaskComponent::PrePerform() {
 }
 
 bool UGOAPFreeRoamTaskComponent::PostPerform() {
-	TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
 
 	if (!bLoopTaskTillBreak) {
+		TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
 		UE_LOG(LogTemp, Warning, TEXT("OWNER: %s UGOAPFreeRoamTaskComponent::PostPerform => bLoopTaskTillBreak"),
 		       *GetOwner()->GetName())
 		return true;
 	}
-
-	TaskOwner->GetStateManager()->AddState(FString("CanWalk"), 1);
+	else {
+		//TODO: Fix, right now it affect all npcs...
+		TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
+		TaskOwner->GetStateManager()->AddState(FString("CanWalk"), 1);
+	}
 
 	return Super::PostPerform();
 }
