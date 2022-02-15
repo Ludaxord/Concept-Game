@@ -25,7 +25,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	TArray<class UGOAPTaskComponent*> GetPlan(TArray<UGOAPTaskComponent*> InTasks, const TMap<FString, int32>& InGoals,
-	                                          const TMap<FString, int32>& InStates);
+	                                          const TMap<FString, int32>& InStates, APawn* OwnerPawn = nullptr);
 
 private:
 	bool BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArray<UGOAPTaskComponent*> PossibleTasks,

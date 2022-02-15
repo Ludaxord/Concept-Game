@@ -28,31 +28,29 @@ void AGOAPPlanner::Tick(float DeltaTime) {
 
 TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> InTasks,
                                                   const TMap<FString, int32>& InGoals,
-                                                  const TMap<FString, int32>& InStates) {
+                                                  const TMap<FString, int32>& InStates,
+                                                  APawn* OwnerPawn) {
 	Nodes.Empty();
-
-	TArray<UGOAPTaskComponent*> CurrentTasks;
-
-	for (UGOAPTaskComponent* const& Task : InTasks) {
-		if (Task->IsViable()) {
-			CurrentTasks.Add(Task);
-		}
-	}
 
 	GOAPNode* BeginNode = new GOAPNode(nullptr, 0.f, StateManager->GetStates(), InStates, nullptr);
 	bool bSuccess = BuildGraph(BeginNode, Nodes, InTasks, InGoals);
 	// bool bSuccess = BuildGraph(BeginNode, Nodes, CurrentTasks, InGoals);
 
 
-	if (!bSuccess) {
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Planning failed, no plan found:"));
-		return {};
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow,
-		                                 TEXT("Plan build Tasks: ") + FString::FromInt(InTasks.Num()) + TEXT(" Goals: ")
-		                                 + FString::FromInt(InGoals.Num()) + TEXT(" States: ") + FString::FromInt(
-			                                 InStates.Num()) + TEXT("  "));
+	if (OwnerPawn != nullptr) {
+		if (!bSuccess) {
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red,
+			                                 TEXT("Planning failed, no plan found for Pawn: ") + OwnerPawn->GetName()
+			);
+			return {};
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow,
+			                                 TEXT("Plan build Tasks: ") + FString::FromInt(InTasks.Num()) + TEXT(
+				                                 " Goals: ")
+			                                 + FString::FromInt(InGoals.Num()) + TEXT(" States: ") + FString::FromInt(
+				                                 InStates.Num()) + TEXT(" For Pawn: ") + OwnerPawn->GetName());
+		}
 	}
 
 	GOAPNode* CheapestNode = new GOAPNode();

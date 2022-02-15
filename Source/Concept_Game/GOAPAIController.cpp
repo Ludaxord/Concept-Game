@@ -48,17 +48,11 @@ void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
 }
 
 void AGOAPAIController::CompleteTask() {
-	UE_LOG(LogTemp, Error, TEXT("GOAP Complete Task: %s"), *CurrentTask->GetName())
+	UE_LOG(LogTemp, Error, TEXT("OWNER: %s GOAP Complete Task: %s"), *GetPawn()->GetName(), *CurrentTask->GetName())
 	CurrentTask->bRunning = false;
 	bool bPostPerformed = CurrentTask->PostPerform();
 	UE_LOG(LogTemp, Error, TEXT("GOAP Task PostPerformed: %s"), bPostPerformed ? TEXT("true") : TEXT("false"))
 	bInvoked = false;
-
-	if (CurrentGoal != nullptr) {
-		// for (CurrentTask->Effects) {
-		// CurrentGoal->Goals;
-		// }
-	}
 }
 
 void AGOAPAIController::Update() {

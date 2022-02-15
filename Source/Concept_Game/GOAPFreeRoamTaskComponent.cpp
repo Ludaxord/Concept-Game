@@ -26,7 +26,9 @@ bool UGOAPFreeRoamTaskComponent::PrePerform() {
 
 bool UGOAPFreeRoamTaskComponent::PostPerform() {
 	if (!bLoopTaskTillBreak) {
-		UE_LOG(LogTemp, Warning, TEXT("UGOAPFreeRoamTaskComponent::PostPerform => bLoopTaskTillBreak"))
+
+		UE_LOG(LogTemp, Warning, TEXT("OWNER: %s UGOAPFreeRoamTaskComponent::PostPerform => bLoopTaskTillBreak"),
+		       *GetOwner()->GetName())
 		TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
 		return true;
 	}

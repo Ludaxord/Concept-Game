@@ -37,7 +37,10 @@ void UGOAPTaskComponent::AttachActors(UClass* ActorClass) {
 bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 	int index = 0;
 
-	UE_LOG(LogTemp, Warning, TEXT("GOAP NPC => %s TaskName -> %s TaskAttachedActors => %i bLoopTaskTillBreak: %s"),
+	UE_LOG(LogTemp, Warning,
+	       TEXT(
+		       "FindNearestActorLocationFromOwner GOAP NPC => %s TaskName -> %s TaskAttachedActors => %i bLoopTaskTillBreak: %s"
+	       ),
 	       *GetOwner()->GetName(),
 	       *GetName(),
 	       TaskAttachedActors.Num(),
@@ -79,8 +82,12 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 				NearestAttachedActor = AttachedActor;
 			}
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("GOAP FindNearestActorLocationFromOwner Task Location: %s Owner Location: %s"),
-		//        *AttachedActor->GetActorLocation().ToString(), *TaskOwner->GetActorLocation().ToString())
+		UE_LOG(LogTemp, Warning,
+		       TEXT("GOAP FindNearestActorLocationFromOwner GOAP NPC => %s Task Location: %s Owner Location: %s"),
+		       *GetOwner()->GetName(),
+		       *AttachedActor->GetActorLocation().ToString(),
+		       *TaskOwner->GetActorLocation().ToString()
+		)
 		index++;
 	}
 
