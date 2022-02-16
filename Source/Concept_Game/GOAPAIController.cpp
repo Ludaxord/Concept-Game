@@ -101,8 +101,9 @@ void AGOAPAIController::Update() {
 void AGOAPAIController::InterruptTask() {
 	if (ANPCBase* NPC = Cast<ANPCBase>(GetPawn())) {
 		if (NPC->bUpdateGoals) {
-			UE_LOG(LogTemp, Error, TEXT("INTERUPT GOAP TasksQueue.Num : %i Goals : %i States : %i States Manager : %i"),
-			       TasksQueue.Num(), Goals.Num(), States.Num(), StateManager->GetStates().Num())
+			UE_LOG(LogTemp, Error,
+			       TEXT("INTERUPT %s GOAP TasksQueue.Num : %i Goals : %i States : %i States Manager : %i"),
+			       *NPC->GetName(), TasksQueue.Num(), Goals.Num(), States.Num(), StateManager->GetStates().Num())
 			if (CurrentTask != nullptr) {
 				CurrentTask->DuringPerform();
 				CompleteTask();

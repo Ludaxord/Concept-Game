@@ -32,11 +32,16 @@ bool UGOAPFreeRoamTaskComponent::PostPerform() {
 		       *GetOwner()->GetName())
 		return true;
 	}
-	else {
-		//TODO: Fix, right now it affect all npcs...
-		TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
-		TaskOwner->GetStateManager()->AddState(FString("CanWalk"), 1);
+
+	//TODO: Fix, right now it affect all npcs...
+	TaskOwner->GetStateManager()->RemoveState(FString("CanWalk_InLoop"));
+	if (ANPCBase* NPC = Cast<ANPCBase>(GetOwner())) {
+		if (NPC->bUpdateGoals) {
+			return Super::PostPerform();
+		}
 	}
+
+	TaskOwner->GetStateManager()->AddState(FString("CanWalk_InLoop"), 1);
 
 	return Super::PostPerform();
 }

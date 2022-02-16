@@ -50,7 +50,9 @@ void ANPCBase::BeginPlay() {
 	}
 
 	StateManager->AddState(FString("CanWalk"), 1);
+	StateManager->AddState(FString("CanWalk_InLoop"), 1);
 	LocalStateManager->AddState(FString("CanWalk"), 1);
+	LocalStateManager->AddState(FString("CanWalk_InLoop"), 1);
 
 	SetGoals();
 }

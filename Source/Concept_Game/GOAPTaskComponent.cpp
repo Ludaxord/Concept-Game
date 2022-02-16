@@ -124,6 +124,13 @@ bool UGOAPTaskComponent::PrePerform() {
 }
 
 bool UGOAPTaskComponent::PostPerform() {
+	if (ANPCBase* NPC = Cast<ANPCBase>(GetOwner())) {
+		if (NPC->bUpdateGoals) {
+
+			return true;
+		}
+	}
+
 	return FindNearestActorLocationFromOwner();
 }
 
