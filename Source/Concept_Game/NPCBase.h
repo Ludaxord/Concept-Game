@@ -51,6 +51,9 @@ public:
 	virtual void OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC", meta = (AllowPrivateAccess = "true"))
+	FString NPCName;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* NPCSphere;
 

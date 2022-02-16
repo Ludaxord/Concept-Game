@@ -75,6 +75,7 @@ void ANPCBase::Interact_Implementation(AMainCharacter* InCharacter) {
 
 void ANPCBase::QuestInteract_Implementation(AMainCharacter* InCharacter) {
 	UE_LOG(LogTemp, Warning, TEXT("ANPCBase::QuestInteract_Implementation"))
+	StateManager->AddState(FString("Is_Talking_") + NPCName, 2, true);
 	Interact_Implementation(InCharacter);
 }
 

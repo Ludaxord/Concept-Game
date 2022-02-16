@@ -3,7 +3,9 @@
 
 #include "GOAPDialogTaskComponent.h"
 
+#include "NPCBase.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UGOAPDialogTaskComponent::UGOAPDialogTaskComponent() {
 	TaskName = "Dialog";
@@ -20,7 +22,14 @@ void UGOAPDialogTaskComponent::CallActors() {
 }
 
 bool UGOAPDialogTaskComponent::PrePerform() {
-	return Super::PrePerform();
+	UE_LOG(LogTemp, Warning, TEXT("00000000000000 UGOAPDialogTaskComponent::PrePerform 00000000000000"))
+	if (ANPCBase* NPC = Cast<ANPCBase>(GetOwner())) {
+		NPC->GetController()->StopMovement();
+		UE_LOG(LogTemp, Warning, TEXT("UGOAPDialogTaskComponent::PrePerform -> %s"), *NPC->GetName())
+		return Super::PrePerform();
+	}
+
+	return false;
 }
 
 bool UGOAPDialogTaskComponent::PostPerform() {
