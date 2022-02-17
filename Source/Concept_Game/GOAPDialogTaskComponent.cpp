@@ -39,3 +39,17 @@ bool UGOAPDialogTaskComponent::PostPerform() {
 bool UGOAPDialogTaskComponent::IsViable() {
 	return Super::IsViable();
 }
+
+bool UGOAPDialogTaskComponent::StartAction() {
+	return true;
+}
+
+bool UGOAPDialogTaskComponent::PerformAction() {
+	//TODO: Check if Player pick option from menu....
+	// return Super::PerformAction();
+	if (ANPCBase* NPC = Cast<ANPCBase>(GetOwner())) {
+		return !NPC->GetQuestWidgetActive();
+	}
+
+	return false;
+}

@@ -46,7 +46,7 @@ public:
 
 	bool IsViableGiven(const TMap<FString, int32> InConditions);
 
-	bool StartAction();
+	virtual bool StartAction();
 
 protected:
 	friend class AGOAPAIController;

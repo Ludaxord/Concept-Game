@@ -80,6 +80,10 @@ void AGOAPAIController::Update() {
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
 		// if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
 		if (CurrentTask->PerformAction()) {
+			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Green,
+			                                 TEXT(" ======== PerformAction: ") + CurrentTask->GetName() + TEXT(" Pawn: ") +
+			                                 GetPawn()->GetName()
+			);
 			StopMovement();
 			CompleteTask();
 		}

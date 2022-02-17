@@ -89,6 +89,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FQuestInfoWidgetState, bool, bIsC
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAcceptQuest);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FQuestState);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAskForQuest, AActor*, InQuestHolderActor);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStepUpdate, bool, bShowAnimation, bool, bQuestIsSet);
@@ -146,6 +148,9 @@ private:
 	UFUNCTION()
 	void AcceptQuest();
 
+	UFUNCTION()
+	void QuestState();
+
 private:
 	friend class AQuestTrigger;
 
@@ -181,6 +186,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widget", meta = (AllowPrivateAccess = "true"))
 	bool bQuestListVisible;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Widget", meta = (AllowPrivateAccess = "true"))
+	bool bQuestWidgetActive;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget", meta = (AllowPrivateAccess = "true"))
 	bool bQuestInfoVisible;
 
@@ -202,6 +210,9 @@ public:
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAcceptQuest AcceptQuestDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FQuestState QuestStateDelegate;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAskForQuest AskForQuestDelegate;

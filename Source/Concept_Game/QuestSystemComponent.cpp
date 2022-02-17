@@ -6,6 +6,7 @@
 #include "MainCharacter.h"
 #include "NPCQuestCharacter.h"
 #include "QuestHolderInterface.h"
+#include "WorldStateManager.h"
 #include "Kismet/KismetArrayLibrary.h"
 
 // Sets default values for this component's properties
@@ -26,6 +27,7 @@ void UQuestSystemComponent::BeginPlay() {
 	// AddRemoveQuestDelegate.AddDynamic(this, &UQuestSystemComponent::UpdateCache);
 	AskForQuestDelegate.AddDynamic(this, &UQuestSystemComponent::AskForQuest);
 	AcceptQuestDelegate.AddDynamic(this, &UQuestSystemComponent::AcceptQuest);
+	QuestStateDelegate.AddDynamic(this, &UQuestSystemComponent::QuestState);
 
 	TimerDelegate.BindLambda([&] {
 		UE_LOG(LogTemp, Warning, TEXT("Delayed Step Update... CurrentQuestID: %i"), CurrentQuestID)
@@ -217,5 +219,13 @@ void UQuestSystemComponent::AcceptQuest() {
 				// }
 			}
 		}
+	}
+}
+
+void UQuestSystemComponent::QuestState() {
+	if (ANPCBase* NPCCharacter = Cast<ANPCBase>(QuestHolderActor)) {
+		NPCCharacter->SetQuestWidgetActive(false);
+		NPCCharacter->GetStateManager()->RemoveState(FString("Is_Talking_") + NPCCharacter->GetName());
+		NPCCharacter->GetStateManager()->AddState(FString("Taking_Finished_") + NPCCharacter->GetName(), 1, true);
 	}
 }

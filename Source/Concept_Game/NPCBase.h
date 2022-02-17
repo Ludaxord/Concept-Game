@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* NPCSphere;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
+	bool bQuestWidgetActive;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI", meta = (AllowPrivateAccess = "true"))
 	class UNPCInventoryComponent* InventoryComponent;
 
@@ -109,5 +112,13 @@ public:
 
 	FORCEINLINE AWorldStateManager* GetStateManager() const {
 		return StateManager;
+	}
+
+	FORCEINLINE bool GetQuestWidgetActive() const {
+		return bQuestWidgetActive;
+	}
+
+	FORCEINLINE void SetQuestWidgetActive(bool bInQuestWidgetActive) {
+		bQuestWidgetActive = bInQuestWidgetActive;
 	}
 };

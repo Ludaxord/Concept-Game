@@ -29,4 +29,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsViable() override;
 
+	virtual bool StartAction() override;
+
+	virtual bool PerformAction() override;
 };

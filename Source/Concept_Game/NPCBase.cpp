@@ -13,7 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
-ANPCBase::ANPCBase(): bGoalSet(false) {
+ANPCBase::ANPCBase(): bGoalSet(false), bQuestWidgetActive(false) {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -76,6 +76,7 @@ void ANPCBase::Interact_Implementation(AMainCharacter* InCharacter) {
 void ANPCBase::QuestInteract_Implementation(AMainCharacter* InCharacter) {
 	UE_LOG(LogTemp, Warning, TEXT("ANPCBase::QuestInteract_Implementation"))
 	StateManager->AddState(FString("Is_Talking_") + NPCName, 2, true);
+	bQuestWidgetActive = true;
 	Interact_Implementation(InCharacter);
 }
 
