@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NPCBase.h"
 #include "Components/ActorComponent.h"
 #include "GOAPTaskComponent.generated.h"
 
@@ -35,6 +36,8 @@ public:
 
 	virtual bool DuringPerform();
 
+	virtual bool PerformAction();
+
 	virtual bool IsViable();
 
 	virtual bool GoalInterrupt(UGOAPTaskComponent* InCurrentGoal);
@@ -42,6 +45,8 @@ public:
 	virtual void CallActors();
 
 	bool IsViableGiven(const TMap<FString, int32> InConditions);
+
+	bool StartAction();
 
 protected:
 	friend class AGOAPAIController;
@@ -109,5 +114,11 @@ public:
 
 	FORCEINLINE void SetViableTask(bool IsViableTask) {
 		bIsViableTask = IsViableTask;
+	}
+
+	void SetAIController(class AAIController* InOwningAIController) {
+		if (TaskOwner != nullptr) {
+			TaskOwner->SetAIController(InOwningAIController);
+		}
 	}
 };

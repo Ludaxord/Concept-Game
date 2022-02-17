@@ -57,8 +57,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "NPC Mesh", meta = (AllowPrivateAccess = "true"))
 	class USphereComponent* NPCSphere;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI", meta = (AllowPrivateAccess = "true"))
 	class UNPCInventoryComponent* InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	class AAIController* OwningAIController;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	TArray<class UGOAPGoalComponent*> GOAPGoalComponents;
@@ -94,6 +97,14 @@ public:
 
 	FORCEINLINE UNPCInventoryComponent* GetInventoryComponent() const {
 		return InventoryComponent;
+	}
+
+	FORCEINLINE AAIController* GetAIController() const {
+		return OwningAIController;
+	}
+
+	void SetAIController(AAIController* InOwningAIController) {
+		OwningAIController = InOwningAIController;
 	}
 
 	FORCEINLINE AWorldStateManager* GetStateManager() const {

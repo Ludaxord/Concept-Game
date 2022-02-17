@@ -3,6 +3,7 @@
 
 #include "GOAPTaskComponent.h"
 
+#include "AIController.h"
 #include "NPCBase.h"
 #include "FreeRoamPoint.h"
 #include "NavigationSystem.h"
@@ -138,6 +139,10 @@ bool UGOAPTaskComponent::DuringPerform() {
 	return false;
 }
 
+bool UGOAPTaskComponent::PerformAction() {
+	return FVector::Distance(TaskOwner->GetAIController()->GetPawn()->GetActorLocation(), GetTarget()) < GetRange();
+}
+
 bool UGOAPTaskComponent::IsViable() {
 	return bIsViableTask;
 }
@@ -158,6 +163,14 @@ bool UGOAPTaskComponent::IsViableGiven(const TMap<FString, int32> InConditions) 
 			return false;
 		}
 	}
+
+	return true;
+}
+
+bool UGOAPTaskComponent::StartAction() {
+	TaskOwner->GetAIController()->GetPawn()->bUseControllerRotationRoll = false;
+	TaskOwner->GetAIController()->GetPawn()->SetActorRotation(GetTarget().Rotation());
+	TaskOwner->GetAIController()->MoveToLocation(GetTarget(), false, true);
 
 	return true;
 }

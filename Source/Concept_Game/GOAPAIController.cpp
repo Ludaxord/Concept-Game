@@ -78,7 +78,8 @@ void AGOAPAIController::Update() {
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
-		if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
+		// if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
+		if (CurrentTask->PerformAction()) {
 			StopMovement();
 			CompleteTask();
 		}
@@ -167,12 +168,11 @@ void AGOAPAIController::SetTasks() {
 	else if (TasksQueue.Num() > 0) {
 		CurrentTask = TasksQueue[0];
 		if (CurrentTask != nullptr) {
+			CurrentTask->SetAIController(this);
 			if (CurrentTask->PrePerform()) {
 				TasksQueue.Remove(CurrentTask);
 				CurrentTask->bRunning = true;
-				GetPawn()->bUseControllerRotationRoll = false;
-				GetPawn()->SetActorRotation(CurrentTask->GetTarget().Rotation());
-				MoveToLocation(CurrentTask->GetTarget(), false, true);
+				CurrentTask->StartAction();
 			}
 			else {
 				TasksQueue.Empty();
