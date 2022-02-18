@@ -45,4 +45,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	bool bSetAsCurrentGoal;
+
+public:
+	FORCEINLINE TMap<FString, int32> GetGoals() {
+		return Goals;
+	}
 };

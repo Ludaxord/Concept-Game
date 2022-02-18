@@ -3,6 +3,8 @@
 
 #include "WorldStateManager.h"
 
+#include "GOAPGoalComponent.h"
+#include "GOAPTaskComponent.h"
 #include "NPCBase.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -30,14 +32,24 @@ bool AWorldStateManager::HasState(FString Key) {
 }
 
 void AWorldStateManager::AddState(FString Key, int32 Val, bool bUpdateGoals) {
-	GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Yellow, GetName() + TEXT(" AddState ") + Key);
 	if (bUpdateGoals) {
 		TArray<AActor*> WorldNPCs;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANPCBase::StaticClass(), WorldNPCs);
 
 		for (AActor* WorldActor : WorldNPCs) {
 			if (ANPCBase* WorldNPC = Cast<ANPCBase>(WorldActor)) {
-				WorldNPC->bUpdateGoals = true;
+				//TODO: Update only when Goal is Equal
+				for (const auto GOAPTaskComponent : WorldNPC->GetGOAPTasksComponents()) {
+					if (GOAPTaskComponent->PreConditions.Contains(Key)) {
+						GEngine->AddOnScreenDebugMessage(-1, 40.f, FColor::Emerald,
+						                                 TEXT(" UpdateGoals State: ") + WorldNPC->GetName() + TEXT(
+							                                 " NPC: ") + Key);
+						UE_LOG(LogTemp, Warning,
+						       TEXT("=============================== !!! == UpdateGoals State: %s, NPC: %s"), *Key,
+						       *WorldNPC->GetName())
+						WorldNPC->bUpdateGoals = true;
+					}
+				}
 			}
 		}
 	}

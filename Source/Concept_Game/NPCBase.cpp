@@ -4,6 +4,7 @@
 #include "NPCBase.h"
 
 #include "GOAPDefeatEnemyGoalComponent.h"
+#include "GOAPDialogGoalComponent.h"
 #include "GOAPEscapeGoalComponent.h"
 #include "GOAPFreeRoamGoalComponent.h"
 #include "GOAPTaskComponent.h"
@@ -20,6 +21,9 @@ ANPCBase::ANPCBase(): bGoalSet(false), bQuestWidgetActive(false) {
 	InventoryComponent = CreateDefaultSubobject<UNPCInventoryComponent>(TEXT("InventoryComponent"));
 
 	GoalFreeRoam = CreateDefaultSubobject<UGOAPFreeRoamGoalComponent>(TEXT("GoalFreeRoam"));
+
+	GoalDialog = CreateDefaultSubobject<UGOAPDialogGoalComponent>(TEXT("GoalDialog"));
+
 	GoalDefeatEnemy = CreateDefaultSubobject<UGOAPDefeatEnemyGoalComponent>(TEXT("GoalDefeatEnemy"));
 	GoalEscape = CreateDefaultSubobject<UGOAPEscapeGoalComponent>(TEXT("GoalEscape"));
 
@@ -55,6 +59,7 @@ void ANPCBase::BeginPlay() {
 	LocalStateManager->AddState(FString("CanWalk_InLoop"), 1);
 
 	SetGoals();
+	SetTasks();
 }
 
 // Called every frame
@@ -106,6 +111,16 @@ void ANPCBase::SetGoals() {
 		}
 
 		bGoalSet = true;
+	}
+}
+
+void ANPCBase::SetTasks() {
+	TArray<UActorComponent*> Elements;
+	GetComponents(UGOAPTaskComponent::StaticClass(), Elements);
+	for (UActorComponent* Element : Elements) {
+		if (UGOAPTaskComponent* Task = Cast<UGOAPTaskComponent>(Element)) {
+			TasksComponents.Add(Task);
+		}
 	}
 }
 

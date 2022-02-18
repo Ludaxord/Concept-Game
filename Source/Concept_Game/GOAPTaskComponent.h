@@ -51,6 +51,7 @@ public:
 protected:
 	friend class AGOAPAIController;
 	friend class AGOAPPlanner;
+	friend class AWorldStateManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	class ANPCBase* TaskOwner;

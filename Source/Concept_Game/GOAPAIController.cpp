@@ -131,6 +131,7 @@ void AGOAPAIController::OnPossess(APawn* InPawn) {
 	Super::OnPossess(InPawn);
 	if (ANPCBase* NPC = Cast<ANPCBase>(InPawn)) {
 		NPC->SetGoals();
+		NPC->SetTasks();
 		InitGoals(NPC);
 		TArray<UGOAPTaskComponent*> NPCTasks;
 		NPC->GetComponents(NPCTasks);

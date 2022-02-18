@@ -38,6 +38,8 @@ public:
 
 	virtual void SetGoals();
 
+	virtual void SetTasks();
+
 	virtual void AttachActorsToGOAP();
 
 	virtual TArray<class UGOAPGoalComponent*> InitGoals_Implementation() override;
@@ -69,8 +71,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	TArray<class UGOAPGoalComponent*> GOAPGoalComponents;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	TArray<class UGOAPTaskComponent*> TasksComponents;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
 	class UGOAPFreeRoamGoalComponent* GoalFreeRoam;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
+	class UGOAPDialogGoalComponent* GoalDialog;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
 	class UGOAPEscapeGoalComponent* GoalEscape;
@@ -100,6 +108,14 @@ public:
 
 	FORCEINLINE UNPCInventoryComponent* GetInventoryComponent() const {
 		return InventoryComponent;
+	}
+
+	FORCEINLINE TArray<class UGOAPGoalComponent*> GetGOAPGoalComponents() const {
+		return GOAPGoalComponents;
+	}
+
+	FORCEINLINE TArray<class UGOAPTaskComponent*> GetGOAPTasksComponents() const {
+		return TasksComponents;
 	}
 
 	FORCEINLINE AAIController* GetAIController() const {
