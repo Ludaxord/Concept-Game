@@ -225,7 +225,7 @@ void UQuestSystemComponent::AcceptQuest() {
 void UQuestSystemComponent::QuestState() {
 	if (ANPCBase* NPCCharacter = Cast<ANPCBase>(QuestHolderActor)) {
 		NPCCharacter->SetQuestWidgetActive(false);
-		NPCCharacter->GetStateManager()->RemoveState(FString("Is_Talking_") + NPCCharacter->GetName());
-		NPCCharacter->GetStateManager()->AddState(FString("Taking_Finished_") + NPCCharacter->GetName(), 1, true);
+		//////////////////////
+		UE_LOG(LogTemp, Warning, TEXT("QuestState :::> FINISH...."))
 	}
 }

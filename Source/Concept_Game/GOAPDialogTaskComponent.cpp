@@ -4,6 +4,7 @@
 #include "GOAPDialogTaskComponent.h"
 
 #include "NPCBase.h"
+#include "WorldStateManager.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -24,16 +25,21 @@ void UGOAPDialogTaskComponent::CallActors() {
 bool UGOAPDialogTaskComponent::PrePerform() {
 	UE_LOG(LogTemp, Warning, TEXT("00000000000000 UGOAPDialogTaskComponent::PrePerform 00000000000000"))
 	if (ANPCBase* NPC = Cast<ANPCBase>(GetOwner())) {
-		NPC->GetController()->StopMovement();
-		UE_LOG(LogTemp, Warning, TEXT("UGOAPDialogTaskComponent::PrePerform -> %s"), *NPC->GetName())
-		return Super::PrePerform();
+		if (NPC->GetQuestWidgetActive()) {
+			NPC->GetController()->StopMovement();
+			UE_LOG(LogTemp, Warning, TEXT("UGOAPDialogTaskComponent::PrePerform -> %s"), *NPC->GetName())
+			return Super::PrePerform();
+		}
+
+		return false;
 	}
 
 	return false;
 }
 
 bool UGOAPDialogTaskComponent::PostPerform() {
-	return Super::PostPerform();
+	TaskOwner->GetStateManager()->RemoveState(FString("Is_Talking_") + TaskOwner->GetName());
+	return true;
 }
 
 bool UGOAPDialogTaskComponent::IsViable() {

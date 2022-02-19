@@ -80,15 +80,23 @@ void AGOAPAIController::Update() {
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
 		// if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
 		if (CurrentTask->PerformAction()) {
-			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Green,
-			                                 TEXT(" ======== PerformAction: ") + CurrentTask->GetName() + TEXT(" Pawn: ") +
-			                                 GetPawn()->GetName()
-			);
+			// GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Green,
+			//                                  TEXT(" ======== PerformAction: ") + CurrentTask->GetName() + TEXT(
+			// 	                                 " Pawn: ") +
+			//                                  GetPawn()->GetName()
+			// );
 			StopMovement();
 			CompleteTask();
 		}
 		return;
 	}
+	// else if (CurrentTask != nullptr) {
+	// 	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange,
+	// 	                                 TEXT("Current Task ") + CurrentTask->GetName() + TEXT(" not Running PAWN.... ")
+	// 	                                 +
+	// 	                                 GetPawn()->GetName()
+	// 	);
+	// }
 
 	UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i States : %i"), TasksQueue.Num(), Goals.Num(),
 	       States.Num())
@@ -96,6 +104,8 @@ void AGOAPAIController::Update() {
 	PlanTasks();
 
 	SetTasks();
+
+	SetCurrentNPCStateDelegate.Broadcast(FString("No Plans Found..."));
 
 	if (CurrentTask != nullptr) {
 		SetCurrentNPCStateDelegate.Broadcast(CurrentTask->GetTaskName());
@@ -173,6 +183,12 @@ void AGOAPAIController::SetTasks() {
 	else if (TasksQueue.Num() > 0) {
 		CurrentTask = TasksQueue[0];
 		if (CurrentTask != nullptr) {
+			// GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange,
+			//                                  TEXT("Current Task ") + CurrentTask->GetName() + TEXT(
+			// 	                                 " not Running PAWN.... ")
+			//                                  +
+			//                                  GetPawn()->GetName()
+			// );
 			CurrentTask->SetAIController(this);
 			if (CurrentTask->PrePerform()) {
 				TasksQueue.Remove(CurrentTask);
