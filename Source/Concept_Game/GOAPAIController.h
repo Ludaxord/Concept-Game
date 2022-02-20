@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BaseAIPerceptionComponent.h"
 #include "GOAPAIController.generated.h"
 
 
@@ -49,6 +50,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	UGOAPTaskComponent* CurrentTask;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
+	UBaseAIPerceptionComponent* AIPerceptionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	class AWorldStateManager* StateManager;

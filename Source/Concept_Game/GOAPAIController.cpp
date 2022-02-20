@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 
 AGOAPAIController::AGOAPAIController(): bInterruptCurrentAction(false) {
+	AIPerceptionComponent = CreateDefaultSubobject<UBaseAIPerceptionComponent>(TEXT("BaseAIPerceptionComponent"));
 }
 
 void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
