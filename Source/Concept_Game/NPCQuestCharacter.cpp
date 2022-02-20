@@ -7,6 +7,7 @@
 #include "GOAPFreeRoamTaskComponent.h"
 #include "GOAPHideTaskComponent.h"
 #include "GOAPPanicTaskComponent.h"
+#include "GOAPPatrollingTaskComponent.h"
 #include "GOAPRunAwayTaskComponent.h"
 #include "QuestTrigger.h"
 #include "Blueprint/UserWidget.h"
@@ -18,6 +19,7 @@ ANPCQuestCharacter::ANPCQuestCharacter() {
 	// RunAwayTaskComponent = CreateDefaultSubobject<UGOAPRunAwayTaskComponent>(TEXT("RunAwayTaskComponent"));
 	DialogTaskComponent = CreateDefaultSubobject<UGOAPDialogTaskComponent>(TEXT("DialogTaskComponent"));
 	PanicTaskComponent = CreateDefaultSubobject<UGOAPPanicTaskComponent>(TEXT("PanicTaskComponent"));
+	PatrolTaskComponent = CreateDefaultSubobject<UGOAPPatrollingTaskComponent>(TEXT("PatrolTaskComponent"));
 
 	FreeRoamTaskComponent = CreateDefaultSubobject<UGOAPFreeRoamTaskComponent>(TEXT("FreeRoamTaskComponent"));
 	FreeRoamTaskComponent->SetViableTask(true);
