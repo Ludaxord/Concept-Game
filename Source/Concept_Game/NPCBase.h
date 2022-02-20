@@ -106,6 +106,10 @@ public:
 		return NPCSphere;
 	}
 
+	FORCEINLINE FString GetNPCName() const {
+		return NPCName;
+	}
+
 	FORCEINLINE UNPCInventoryComponent* GetInventoryComponent() const {
 		return InventoryComponent;
 	}

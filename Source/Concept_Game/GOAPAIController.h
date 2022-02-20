@@ -19,6 +19,8 @@ class CONCEPT_GAME_API AGOAPAIController : public AAIController {
 
 	AGOAPAIController();
 
+	virtual void BeginPlay() override;
+
 	UFUNCTION(BlueprintCallable)
 	void Create(TArray<class UGOAPTaskComponent*> AITasks);
 
@@ -33,6 +35,9 @@ class CONCEPT_GAME_API AGOAPAIController : public AAIController {
 
 	UFUNCTION(BlueprintCallable)
 	void InitGoals(class ANPCBase* InPawn);
+
+	UFUNCTION()
+	void TargetPerceptionUpdated(AActor* InActor, FAIStimulus InStimulus);
 
 	virtual void OnPossess(APawn* InPawn) override;
 

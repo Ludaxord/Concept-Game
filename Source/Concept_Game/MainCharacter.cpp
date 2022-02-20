@@ -7,6 +7,7 @@
 #include "Cover.h"
 // #include "CoverComponent.h"
 
+#include "BaseAIPercStimuliSourceComponent.h"
 #include "BaseHUDComponent.h"
 #include "CoverComponent.h"
 #include "DebugWidgetComponent.h"
@@ -120,6 +121,8 @@ AMainCharacter::AMainCharacter():
 		TEXT("CharacterPostProcessComponent"));
 	CharacterQuestSystemComponent = CreateDefaultSubobject<UQuestSystemComponent>(
 		TEXT("CharacterQuestSystemComponent"));
+	BaseAIPerceptionStimuliSourceComponent = CreateDefaultSubobject<UBaseAIPercStimuliSourceComponent>(
+		TEXT("BaseAIPerceptionStimuliSourceComponent"));
 
 	ConstructCameraBoom();
 	ConstructFollowCamera();

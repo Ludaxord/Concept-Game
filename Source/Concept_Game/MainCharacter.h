@@ -855,8 +855,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class URenderComponent* CharacterRenderComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State Manager", meta = (AllowPrivateAccess = "true"))
+	//TODO: Move to AI Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI", meta = (AllowPrivateAccess = "true"))
 	class AWorldStateManager* StateManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI", meta = (AllowPrivateAccess = "true"))
+	class UBaseAIPercStimuliSourceComponent* BaseAIPerceptionStimuliSourceComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Invisibility Properties",
 		meta = (AllowPrivateAccess = "true"))

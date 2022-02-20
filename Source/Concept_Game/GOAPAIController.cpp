@@ -12,7 +12,15 @@
 
 AGOAPAIController::AGOAPAIController(): bInterruptCurrentAction(false) {
 	AIPerceptionComponent = CreateDefaultSubobject<UBaseAIPerceptionComponent>(TEXT("BaseAIPerceptionComponent"));
+
 }
+
+void AGOAPAIController::BeginPlay() {
+	Super::BeginPlay();
+
+	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AGOAPAIController::TargetPerceptionUpdated);
+}
+
 
 void AGOAPAIController::Create(TArray<UGOAPTaskComponent*> AITasks) {
 
@@ -135,6 +143,24 @@ void AGOAPAIController::InitGoals(ANPCBase* NPC) {
 	for (UGOAPGoalComponent* Goal : NPC->InitGoals_Implementation()) {
 		Goals.Add(Goal, index);
 		index++;
+	}
+}
+
+void AGOAPAIController::TargetPerceptionUpdated(AActor* InActor, FAIStimulus InStimulus) {
+	if (AMainCharacter* InCharacter = Cast<AMainCharacter>(InActor)) {
+		if (ANPCBase* NPC = Cast<ANPCBase>(GetPawn())) {
+			UE_LOG(LogTemp, Display, TEXT("TargetPerceptionUpdated IsActive: %s WasSuccessfullySensed: %s IsValid: %s"),
+			       InStimulus.IsActive() ? TEXT("true") : TEXT("false"),
+			       InStimulus.WasSuccessfullySensed() ? TEXT("true") : TEXT("false"),
+			       InStimulus.IsValid() ? TEXT("true") : TEXT("false"))
+			if (InStimulus.IsActive()) {
+				GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald, GetName() + TEXT(" AddState ") + FString("CanSeePlayer_") + NPC->GetNPCName());
+				StateManager->AddState(FString("CanSeePlayer_") + NPC->GetNPCName(), 1);
+			}
+			else {
+				StateManager->RemoveState(FString("CanSeePlayer_" + NPC->GetNPCName()));
+			}
+		}
 	}
 }
 
