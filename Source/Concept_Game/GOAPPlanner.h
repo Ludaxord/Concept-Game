@@ -37,5 +37,7 @@ private:
 
 	bool GoalReached(TMap<FString, int32> Goal, TMap<FString, int32> State);
 
+	bool AllGoalsReached(TMap<FString, int32> Goal, TMap<FString, int32> State);
+
 	class AWorldStateManager* StateManager;
 };

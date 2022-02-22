@@ -111,7 +111,8 @@ bool AGOAPPlanner::BuildGraph(GOAPNode* Parent, TArray<GOAPNode*>& InNodes, TArr
 
 			GOAPNode* Node = new GOAPNode(Parent, Parent->Cost + Task->Cost, CurrentState, Task);
 
-			if (GoalReached(InGoals, CurrentState)) {
+			// if (GoalReached(InGoals, CurrentState)) {
+			if (AllGoalsReached(InGoals, CurrentState)) {
 				InNodes.Add(Node);
 				UE_LOG(LogTemp, Warning, TEXT("%s -> GoalReached"), *Task->GetOwner()->GetName())
 				bPathExists = true;
@@ -153,4 +154,20 @@ bool AGOAPPlanner::GoalReached(TMap<FString, int32> Goal, TMap<FString, int32> S
 	}
 
 	return true;
+}
+
+bool AGOAPPlanner::AllGoalsReached(TMap<FString, int32> Goal, TMap<FString, int32> State) {
+	int FoundGoals = 0;
+	for (TTuple<FString, int32> const& SubGoal : Goal) {
+		for (TTuple<FString, int32> const& SubState : State) {
+			if (SubGoal.Key == SubState.Key) {
+				if (SubState.Value >= SubGoal.Value) {
+					FoundGoals++;
+				}
+			}
+		}
+
+	}
+
+	return Goal.Num() == FoundGoals;
 }

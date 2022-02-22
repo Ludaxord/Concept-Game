@@ -78,7 +78,7 @@ protected:
 	class UGOAPFreeRoamGoalComponent* GoalFreeRoam;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
-	class GOAPGoalPatrolComponent* GoalPatrol;
+	class UGOAPGoalPatrolComponent* GoalPatrol;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Goals", meta = (AllowPrivateAccess = "true"))
 	class UGOAPDialogGoalComponent* GoalDialog;
