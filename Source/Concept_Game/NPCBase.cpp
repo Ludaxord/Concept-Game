@@ -7,6 +7,7 @@
 #include "GOAPDialogGoalComponent.h"
 #include "GOAPEscapeGoalComponent.h"
 #include "GOAPFreeRoamGoalComponent.h"
+#include "GOAPGoalPatrolComponent.h"
 #include "GOAPTaskComponent.h"
 #include "NPCInventoryComponent.h"
 #include "WorldStateManager.h"
@@ -21,6 +22,7 @@ ANPCBase::ANPCBase(): bGoalSet(false), bQuestWidgetActive(false) {
 	InventoryComponent = CreateDefaultSubobject<UNPCInventoryComponent>(TEXT("InventoryComponent"));
 
 	GoalFreeRoam = CreateDefaultSubobject<UGOAPFreeRoamGoalComponent>(TEXT("GoalFreeRoam"));
+	GoalPatrol = CreateDefaultSubobject<UGOAPGoalPatrolComponent>(TEXT("GoalPatrol"));
 
 	GoalDialog = CreateDefaultSubobject<UGOAPDialogGoalComponent>(TEXT("GoalDialog"));
 
