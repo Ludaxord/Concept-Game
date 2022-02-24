@@ -62,6 +62,7 @@ void APhysicsBasedItem::OnLiftItem() {
 	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
 		UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"),
 		       *Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GetName())
+
 		//TODO: FIX - UE_5 BUG.......
 		Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GrabComponentAtLocationWithRotation(
 			Character->GetCharacterItemComponent()->GetTraceHitItemHitComponent(),
