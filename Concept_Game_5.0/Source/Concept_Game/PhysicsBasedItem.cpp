@@ -8,6 +8,8 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Runtime/Launch/Resources/Version.h"
+
 
 APhysicsBasedItem::APhysicsBasedItem() {
 	PhysicsBasedMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PhysicsBasedMesh"));
@@ -43,14 +45,14 @@ void APhysicsBasedItem::OnPhysicsInteraction() {
 	if (Character) {
 		if (bItemCurrentlyOverlapped) {
 			if (Character->GetCharacterItemComponent()->IsHoldingItem()) {
-				Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->ReleaseComponent();
+				OnDropItem();
 			}
 			else {
 				OnLiftItem();
 			}
 		}
 		else {
-			Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->ReleaseComponent();
+			OnDropItem();
 		}
 	}
 }
@@ -60,27 +62,36 @@ void APhysicsBasedItem::OnLiftItem() {
 	FHitResult HitResult;
 	FVector HitLocation;
 	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
+#if ENGINE_MAJOR_VERSION == 5
+
+#else
 		UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"),
 		       *Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GetName())
-
-		//TODO: FIX - UE_5 BUG.......
 		Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GrabComponentAtLocationWithRotation(
 			Character->GetCharacterItemComponent()->GetTraceHitItemHitComponent(),
 			FName("None"),
-			// FName("hand_r"),
 			HitResult.Location,
 			UKismetMathLibrary::MakeRotFromX(HitResult.Normal)
-			// Character->GetActorLocation(),
-			// Character->GetActorRotation()
 		);
 		Character->GetCharacterItemComponent()->GetGrabHandleComponent()->SetWorldLocationAndRotation(
 			HitResult.Location,
 			UKismetMathLibrary::MakeRotFromX(HitResult.Normal));
+#endif
 	}
 }
 
 void APhysicsBasedItem::OnDropItem() {
+#if ENGINE_MAJOR_VERSION == 5
+
+#else
+	Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->ReleaseComponent();
+#endif
 }
 
 void APhysicsBasedItem::OnThrowItem() {
+#if ENGINE_MAJOR_VERSION == 5
+
+#else
+
+#endif
 }

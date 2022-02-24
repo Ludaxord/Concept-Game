@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "ItemComponent.generated.h"
 
@@ -52,6 +53,9 @@ private:
 	USceneComponent* GrabHandleComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
+	UPhysicsConstraintComponent* PhysicsConstraintComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
 	bool bIsHoldingItem;
 public:
 	FORCEINLINE AItem* GetTraceHitItem() const {
@@ -84,6 +88,14 @@ public:
 
 	FORCEINLINE UPhysicsHandleComponent* GetPhysicsHandleComponent() const {
 		return PhysicsHandleComponent;
+	}
+
+	FORCEINLINE UPhysicsConstraintComponent* GetPhysicsConstraintComponent() const {
+		return PhysicsConstraintComponent;
+	}
+
+	FORCEINLINE void SetPhysicsConstraintComponent(UPhysicsConstraintComponent* InPhysicsConstraintComponent) {
+		PhysicsConstraintComponent = InPhysicsConstraintComponent;
 	}
 
 	FORCEINLINE USceneComponent* GetGrabHandleComponent() const {

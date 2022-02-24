@@ -117,6 +117,7 @@ AMainCharacter::AMainCharacter():
 
 	CharacterQuestComponent = CreateDefaultSubobject<UQuestsComponent>(TEXT("CharacterQuestComponent"));
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
+
 	CharacterRenderComponent = CreateDefaultSubobject<URenderComponent>(
 		TEXT("CharacterPostProcessComponent"));
 	CharacterQuestSystemComponent = CreateDefaultSubobject<UQuestSystemComponent>(
@@ -163,6 +164,7 @@ AMainCharacter::AMainCharacter():
 
 	ClimbingTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ClimbingTransitionTimeline"));
 
+
 	InvisibleCharacterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("InvisibleCharacterMesh"));
 	InvisibleCharacterMesh->SetupAttachment(RootComponent);
 	InvisibleCharacterMesh->SetMasterPoseComponent(GetMesh());
@@ -170,11 +172,14 @@ AMainCharacter::AMainCharacter():
 	StateManager = Cast<AWorldStateManager>(
 		UGameplayStatics::GetActorOfClass(AActor::GetWorld(), AWorldStateManager::StaticClass()));
 
+	CharacterItemComponent->GetPhysicsConstraintComponent()->SetupAttachment(GetMesh());
+
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	ConstructCharacterMovement();
+
 }
 
 // Called when the game starts or when spawned

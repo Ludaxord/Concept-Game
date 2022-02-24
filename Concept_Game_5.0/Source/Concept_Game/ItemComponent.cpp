@@ -13,8 +13,12 @@ UItemComponent::UItemComponent(): bIsHoldingItem(false) {
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	PhysicsConstraintComponent = CreateDefaultSubobject<
+		UPhysicsConstraintComponent>(TEXT("PhysicsConstraintComponent"));
+
 	PhysicsHandleComponent = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandleComponent"));
 	GrabHandleComponent = CreateDefaultSubobject<USceneComponent>(TEXT("GrabHandleComponent"));
+
 	// ...
 }
 
@@ -47,11 +51,11 @@ void UItemComponent::TraceForItems() {
 			// TraceHitItemHitComponent = ItemTraceHitResult.GetComponent();
 			//TODO: If Trace hit item exists, switch between item types...
 			if (TraceHitItem) {
-				UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::Tracing item: %s"), *TraceHitItem->GetName());
+				// UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::Tracing item: %s"), *TraceHitItem->GetName());
 				// TODO: add custom depth...
 				if (Cast<APhysicsBasedItem>(TraceHitItem)) {
 					TraceHitItemHitComponent = ItemTraceHitResult.GetComponent();
-					UE_LOG(LogTemp, Error, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"), *TraceHitItemHitComponent->GetName())
+					// UE_LOG(LogTemp, Error, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"), *TraceHitItemHitComponent->GetName())
 				}
 			}
 
