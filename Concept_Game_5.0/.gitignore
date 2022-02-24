@@ -54,6 +54,10 @@ Content/VHExterior/
 Content/Vegetation/
 Content/WinterForest/
 
+Binaries/
+../Binaries/*
+../Intermediate/*
+
 
 
 # Visual Studio 2015 user specific files

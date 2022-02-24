@@ -1257,7 +1257,7 @@ void AMainCharacter::CoverSystem() {
 
 		if (bInCover) {
 			CurrentCoverHitResult = TracerResult;
-			CurrentCover = Cast<ACover>(TracerResult.Actor);
+			CurrentCover = Cast<ACover>(TracerResult.GetActor());
 			if (CurrentCover) {
 				CurrentCover->SetCurrentOverlappingCharacter(this);
 				CurrentCover->InCoverSystem();

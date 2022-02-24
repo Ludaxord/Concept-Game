@@ -132,10 +132,10 @@ void UQuestSystemComponent::TraceForQuestsHolders() {
 		OwningCharacter->TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
 		if (ItemTraceHitResult.bBlockingHit) {
 			// UE_LOG(LogTemp, Error, TEXT("TraceForQuestsHolders: %s"), *ItemTraceHitResult.Actor->GetName())
-			IQuestHolderInterface* Holder = Cast<IQuestHolderInterface>(ItemTraceHitResult.Actor);
+			IQuestHolderInterface* Holder = Cast<IQuestHolderInterface>(ItemTraceHitResult.GetActor());
 			if (Holder) {
 				// UE_LOG(LogTemp, Error, TEXT("Holder Actor Setup"))
-				QuestActor = Cast<AActor>(ItemTraceHitResult.Actor);
+				QuestActor = Cast<AActor>(ItemTraceHitResult.GetActor());
 			}
 
 			if (QuestActorLastFrame) {

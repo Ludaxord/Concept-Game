@@ -6,6 +6,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "UObject/WeakObjectPtrTemplates.h"
 
 AFireWeapon::AFireWeapon() {
 }
@@ -22,10 +23,11 @@ void AFireWeapon::PerformAttack() {
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetMuzzleFlash(), SocketTransform);
 		}
 
-		FHitResult BeamHitResult;
+		FHitResult BeamHitResult;	
 		//TODO: Add Types of actor that is able to be hit by BeamHitResult...
 		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult)) {
-			if (BeamHitResult.Actor.IsValid()) {
+			// if (BeamHitResult.GetActor().IsValid()) {
+			if (BeamHitResult.GetActor()) {
 				//TODO Add bullet hit interface
 				//TODO Add Damage to enemies && objects.
 			}

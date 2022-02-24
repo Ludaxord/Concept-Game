@@ -43,15 +43,15 @@ void UItemComponent::TraceForItems() {
 		FVector HitLocation;
 		OwningCharacter->TraceUnderCrosshairs(ItemTraceHitResult, HitLocation);
 		if (ItemTraceHitResult.bBlockingHit) {
-			TraceHitItem = Cast<AItem>(ItemTraceHitResult.Actor);
+			TraceHitItem = Cast<AItem>(ItemTraceHitResult.GetActor());
 			// TraceHitItemHitComponent = ItemTraceHitResult.GetComponent();
 			//TODO: If Trace hit item exists, switch between item types...
 			if (TraceHitItem) {
-				// UE_LOG(LogTemp, Error, TEXT("Tracing item: %s"), *TraceHitItem->GetName());
+				UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::Tracing item: %s"), *TraceHitItem->GetName());
 				// TODO: add custom depth...
 				if (Cast<APhysicsBasedItem>(TraceHitItem)) {
 					TraceHitItemHitComponent = ItemTraceHitResult.GetComponent();
-					// UE_LOG(LogTemp, Warning, TEXT("TraceHitItemHitComponent: %s"), *TraceHitItemHitComponent->GetName())
+					UE_LOG(LogTemp, Error, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"), *TraceHitItemHitComponent->GetName())
 				}
 			}
 

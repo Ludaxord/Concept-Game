@@ -39,7 +39,7 @@ AActor* APhysicsBasedItem::LookAt_Implementation(AActor* InActor, UPrimitiveComp
 }
 
 void APhysicsBasedItem::OnPhysicsInteraction() {
-	UE_LOG(LogTemp, Warning, TEXT("OnPhysicsInteraction"))
+	UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::OnPhysicsInteraction"))
 	if (Character) {
 		if (bItemCurrentlyOverlapped) {
 			if (Character->GetCharacterItemComponent()->IsHoldingItem()) {
@@ -56,14 +56,21 @@ void APhysicsBasedItem::OnPhysicsInteraction() {
 }
 
 void APhysicsBasedItem::OnLiftItem() {
+	UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::OnLiftItem"))
 	FHitResult HitResult;
 	FVector HitLocation;
 	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
+		UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"),
+		       *Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GetName())
+		//TODO: FIX - UE_5 BUG.......
 		Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GrabComponentAtLocationWithRotation(
 			Character->GetCharacterItemComponent()->GetTraceHitItemHitComponent(),
 			FName("None"),
+			// FName("hand_r"),
 			HitResult.Location,
 			UKismetMathLibrary::MakeRotFromX(HitResult.Normal)
+			// Character->GetActorLocation(),
+			// Character->GetActorRotation()
 		);
 		Character->GetCharacterItemComponent()->GetGrabHandleComponent()->SetWorldLocationAndRotation(
 			HitResult.Location,
