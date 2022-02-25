@@ -63,7 +63,11 @@ void APhysicsBasedItem::OnLiftItem() {
 	FVector HitLocation;
 	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
 #if ENGINE_MAJOR_VERSION == 5
-
+		Character->GetCharacterItemComponent()->GetPhysicsConstraintComponent()->SetConstrainedComponents(
+			Character->GetMesh(), FName("hand_r"), HitResult.GetComponent(), HitResult.BoneName);
+		HitResult.GetComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,
+		                                                        ECollisionResponse::ECR_Ignore);
+		ItemHolder = HitResult.GetComponent();
 #else
 		UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"),
 		       *Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GetName())
