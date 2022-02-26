@@ -569,6 +569,10 @@ bool UMainCharacterInputComponent::UseWeaponPressedBlocked() {
 		return true;
 	}
 
+	if (OwningCharacter->CharacterItemComponent->GetItemMainButtonInteraction()) {
+		return true;
+	}
+
 	return false;
 }
 

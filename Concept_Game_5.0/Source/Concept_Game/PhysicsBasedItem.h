@@ -39,4 +39,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
 	UPrimitiveComponent* ItemHolder;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	FHitResult InteractHitResult;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	float ImpulsePower;
+
+public:
+	FORCEINLINE bool IsItemHolder() {
+		return ItemHolder != nullptr;
+	}
 };

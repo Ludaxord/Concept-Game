@@ -106,6 +106,22 @@ void UItemComponent::TraceForLadder() {
 	}
 }
 
+bool UItemComponent::GetItemMainButtonInteraction() {
+	if (GetTraceHitItem()) {
+		if (APhysicsBasedItem* PhysicsItem = Cast<APhysicsBasedItem>(GetTraceHitItem())) {
+			if (PhysicsItem->IsItemHolder()) {
+				UE_LOG(LogTemp, Display, TEXT("OnThrowItem =>>>>>>>"))
+				PhysicsItem->OnThrowItem();
+				SetTraceHitItem(nullptr);
+				return true;
+			}
+		}
+	}
+
+
+	return false;
+}
+
 bool UItemComponent::IsHoldingItem() {
 	return IsValid(PhysicsHandleComponent->GetGrabbedComponent());
 }

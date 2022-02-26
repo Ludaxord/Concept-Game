@@ -4,6 +4,7 @@
 #include "PhysicsBasedItem.h"
 
 #include "MainCharacter.h"
+#include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -11,7 +12,7 @@
 #include "Runtime/Launch/Resources/Version.h"
 
 
-APhysicsBasedItem::APhysicsBasedItem() {
+APhysicsBasedItem::APhysicsBasedItem(): ImpulsePower(100000.f) {
 	PhysicsBasedMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PhysicsBasedMesh"));
 	SetRootComponent(PhysicsBasedMesh);
 
@@ -43,6 +44,14 @@ AActor* APhysicsBasedItem::LookAt_Implementation(AActor* InActor, UPrimitiveComp
 void APhysicsBasedItem::OnPhysicsInteraction() {
 	UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::OnPhysicsInteraction"))
 	if (Character) {
+#if ENGINE_MAJOR_VERSION == 5
+		if (ItemHolder != nullptr) {
+			OnDropItem();
+		}
+		else {
+			OnLiftItem();
+		}
+#else
 		if (bItemCurrentlyOverlapped) {
 			if (Character->GetCharacterItemComponent()->IsHoldingItem()) {
 				OnDropItem();
@@ -54,6 +63,7 @@ void APhysicsBasedItem::OnPhysicsInteraction() {
 		else {
 			OnDropItem();
 		}
+#endif
 	}
 }
 
@@ -62,9 +72,15 @@ void APhysicsBasedItem::OnLiftItem() {
 	FHitResult HitResult;
 	FVector HitLocation;
 	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
+		InteractHitResult = HitResult;
 #if ENGINE_MAJOR_VERSION == 5
 		Character->GetCharacterItemComponent()->GetPhysicsConstraintComponent()->SetConstrainedComponents(
-			Character->GetMesh(), FName("hand_r"), HitResult.GetComponent(), HitResult.BoneName);
+			Character->GetMesh(), 
+			// FName("hand_r"), 
+			FName("None"), 
+			HitResult.GetComponent(), 
+			HitResult.BoneName);
+		// SetItemState(EItemState::EIS_Equipped);
 		HitResult.GetComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,
 		                                                        ECollisionResponse::ECR_Ignore);
 		ItemHolder = HitResult.GetComponent();
@@ -86,7 +102,11 @@ void APhysicsBasedItem::OnLiftItem() {
 
 void APhysicsBasedItem::OnDropItem() {
 #if ENGINE_MAJOR_VERSION == 5
-
+	Character->GetCharacterItemComponent()->GetPhysicsConstraintComponent()->BreakConstraint();
+	ItemHolder->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	// SetItemState(EItemState::EIS_Pickup);
+	ItemHolder = nullptr;
+	InteractHitResult = {};
 #else
 	Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->ReleaseComponent();
 #endif
@@ -94,7 +114,17 @@ void APhysicsBasedItem::OnDropItem() {
 
 void APhysicsBasedItem::OnThrowItem() {
 #if ENGINE_MAJOR_VERSION == 5
-
+	if (ItemHolder != nullptr) {
+		FHitResult HitResult;
+		FVector HitLocation;
+		if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
+			OnDropItem();
+			HitResult.GetComponent()->AddImpulseAtLocation(
+				Character->GetEyesCamera()->GetForwardVector() * ImpulsePower,
+				HitResult.ImpactPoint,
+				HitResult.BoneName);
+		}
+	}
 #else
 
 #endif

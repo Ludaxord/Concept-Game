@@ -29,6 +29,7 @@ public:
 	void TraceForItems();
 	void HoldCurrentItem();
 	void TraceForLadder();
+	bool GetItemMainButtonInteraction();
 
 private:
 	class AMainCharacter* OwningCharacter;
