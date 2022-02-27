@@ -76,15 +76,19 @@ void APhysicsBasedItem::OnLiftItem() {
 	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
 		InteractHitResult = HitResult;
 #if ENGINE_MAJOR_VERSION == 5
-		Character->GetItemHoldMeshComponent()->SetWorldLocation(HitResult.ImpactPoint);
+		Character->GetItemHoldMeshComponent()->SetWorldLocation(
+			HitResult.ImpactPoint
+			// HitResult.GetComponent()->GetComponentLocation()
+		);
 		Character->GetCharacterItemComponent()->GetPhysicsConstraintComponent()->SetConstrainedComponents(
 			Character->GetItemHoldMeshComponent(),
 			FName("None"),
 			HitResult.GetComponent(),
 			HitResult.BoneName);
-		// SetItemState(EItemState::EIS_Equipped);
-		HitResult.GetComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,
-		                                                        ECollisionResponse::ECR_Ignore);
+		SetItemState(EItemState::EIS_Equipped);
+		// HitResult.GetComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,
+		//                                                         ECollisionResponse::ECR_Ignore);
+
 		ItemHolder = HitResult.GetComponent();
 
 		if (!Character->GetCharacterItemComponent()->GetGrabInPlace()) {
@@ -96,7 +100,8 @@ void APhysicsBasedItem::OnLiftItem() {
 
 			UKismetSystemLibrary::MoveComponentTo(Character->GetItemHoldMeshComponent(),
 			                                      Character->GetItemHoldPlacementComponent()->GetRelativeLocation(),
-			                                      Character->GetItemHoldMeshComponent()->GetRelativeRotation(),
+			                                      // Character->GetItemHoldMeshComponent()->GetRelativeRotation(),
+			                                      Character->GetMesh()->GetRelativeRotation(),
 			                                      true,
 			                                      true,
 			                                      0.3,
@@ -125,8 +130,8 @@ void APhysicsBasedItem::OnLiftItem() {
 void APhysicsBasedItem::OnDropItem() {
 #if ENGINE_MAJOR_VERSION == 5
 	Character->GetCharacterItemComponent()->GetPhysicsConstraintComponent()->BreakConstraint();
-	ItemHolder->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
-	// SetItemState(EItemState::EIS_Pickup);
+	// ItemHolder->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	SetItemState(EItemState::EIS_Pickup);
 	ItemHolder = nullptr;
 	InteractHitResult = {};
 #else
