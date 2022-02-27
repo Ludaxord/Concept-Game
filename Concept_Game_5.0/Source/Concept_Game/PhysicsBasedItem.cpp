@@ -5,10 +5,12 @@
 
 #include "MainCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Runtime/Launch/Resources/Version.h"
 
 
@@ -74,16 +76,36 @@ void APhysicsBasedItem::OnLiftItem() {
 	if (Character->TraceUnderCrosshairs(HitResult, HitLocation)) {
 		InteractHitResult = HitResult;
 #if ENGINE_MAJOR_VERSION == 5
+		Character->GetItemHoldMeshComponent()->SetWorldLocation(HitResult.ImpactPoint);
 		Character->GetCharacterItemComponent()->GetPhysicsConstraintComponent()->SetConstrainedComponents(
-			Character->GetMesh(), 
-			// FName("hand_r"), 
-			FName("None"), 
-			HitResult.GetComponent(), 
+			Character->GetItemHoldMeshComponent(),
+			FName("None"),
+			HitResult.GetComponent(),
 			HitResult.BoneName);
 		// SetItemState(EItemState::EIS_Equipped);
 		HitResult.GetComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,
 		                                                        ECollisionResponse::ECR_Ignore);
 		ItemHolder = HitResult.GetComponent();
+
+		if (!Character->GetCharacterItemComponent()->GetGrabInPlace()) {
+			FLatentActionInfo Info = FLatentActionInfo();
+			Info.CallbackTarget = this;
+			Info.ExecutionFunction = "MoveItem";
+			Info.Linkage = 0;
+			Info.UUID = FMath::Rand();
+
+			UKismetSystemLibrary::MoveComponentTo(Character->GetItemHoldMeshComponent(),
+			                                      Character->GetItemHoldPlacementComponent()->GetRelativeLocation(),
+			                                      Character->GetItemHoldMeshComponent()->GetRelativeRotation(),
+			                                      true,
+			                                      true,
+			                                      0.3,
+			                                      false,
+			                                      EMoveComponentAction::Type::Move,
+			                                      Info);
+		}
+
+
 #else
 		UE_LOG(LogTemp, Warning, TEXT("APhysicsBasedItem::TraceHitItemHitComponent: %s"),
 		       *Character->GetCharacterItemComponent()->GetPhysicsHandleComponent()->GetName())

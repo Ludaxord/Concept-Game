@@ -164,7 +164,6 @@ AMainCharacter::AMainCharacter():
 
 	ClimbingTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("ClimbingTransitionTimeline"));
 
-
 	InvisibleCharacterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("InvisibleCharacterMesh"));
 	InvisibleCharacterMesh->SetupAttachment(RootComponent);
 	InvisibleCharacterMesh->SetMasterPoseComponent(GetMesh());
@@ -172,7 +171,13 @@ AMainCharacter::AMainCharacter():
 	StateManager = Cast<AWorldStateManager>(
 		UGameplayStatics::GetActorOfClass(AActor::GetWorld(), AWorldStateManager::StaticClass()));
 
-	CharacterItemComponent->GetPhysicsConstraintComponent()->SetupAttachment(GetMesh());
+	ItemHoldMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemHoldMeshComponent"));
+	ItemHoldMeshComponent->SetupAttachment(RootComponent);
+
+	CharacterItemComponent->GetPhysicsConstraintComponent()->SetupAttachment(ItemHoldMeshComponent);
+
+	ItemHoldPlacementComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ItemHoldPlacementComponent"));
+	ItemHoldPlacementComponent->SetupAttachment(RootComponent);
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;

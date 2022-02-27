@@ -783,6 +783,12 @@ private:
 	bool bPlayClimbTurnAnimation;
 	bool bClimbingButtonPressed;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item", meta = (AllowPrivateAccess = "true"))
+	class UArrowComponent* ItemHoldPlacementComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item", meta = (AllowPrivateAccess = "true"))
+	class UStaticMeshComponent* ItemHoldMeshComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UCoverComponent* CharacterCoverComponent;
 
@@ -918,6 +924,14 @@ public:
 
 	UEnhancementComponent* GetCharacterEnhancementComponent() const {
 		return CharacterEnhancementComponent;
+	};
+
+	UArrowComponent* GetItemHoldPlacementComponent() const {
+		return ItemHoldPlacementComponent;
+	};
+
+	UStaticMeshComponent* GetItemHoldMeshComponent() const {
+		return ItemHoldMeshComponent;
 	};
 
 	UInventoryComponent* GetCharacterInventoryComponent() const {

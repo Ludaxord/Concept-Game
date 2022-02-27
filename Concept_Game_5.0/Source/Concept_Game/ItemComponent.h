@@ -58,6 +58,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Item", meta = (AllowPrivateAccess = "true"))
 	bool bIsHoldingItem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Item", meta = (AllowPrivateAccess = "true"))
+	bool bGrabInPlace;
 public:
 	FORCEINLINE AItem* GetTraceHitItem() const {
 		return TraceHitItem;
@@ -65,6 +68,10 @@ public:
 
 	FORCEINLINE AItem* GetCurrentInteractItem() const {
 		return CurrentInteractItem;
+	}
+
+	FORCEINLINE bool GetGrabInPlace() const {
+		return bGrabInPlace;
 	}
 
 	FORCEINLINE AItem* GetTraceHitItemLastFrame() const {
