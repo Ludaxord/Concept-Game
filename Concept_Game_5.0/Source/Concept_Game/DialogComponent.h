@@ -10,8 +10,7 @@
  * 
  */
 UCLASS()
-class CONCEPT_GAME_API UDialogComponent : public UActionComponent
-{
+class CONCEPT_GAME_API UDialogComponent : public UActionComponent {
 	GENERATED_BODY()
-	
+
 };
