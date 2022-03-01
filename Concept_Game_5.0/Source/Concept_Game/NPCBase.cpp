@@ -96,11 +96,11 @@ bool ANPCBase::GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) {
 }
 
 bool ANPCBase::DialogAvailable_Implementation() {
-	return IDialogHolderInterface::DialogAvailable_Implementation();
+	return false;
 }
 
 void ANPCBase::DialogInteract_Implementation(AMainCharacter* InCharacter) {
-	IDialogHolderInterface::DialogInteract_Implementation(InCharacter);
+	
 }
 
 void ANPCBase::SetGoals() {
