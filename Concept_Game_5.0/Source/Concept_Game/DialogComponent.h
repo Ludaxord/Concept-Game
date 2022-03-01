@@ -12,5 +12,9 @@
 UCLASS()
 class CONCEPT_GAME_API UDialogComponent : public UActionComponent {
 	GENERATED_BODY()
+public:
+	UDialogComponent();
+
+	void BeginPlay() override;
 
 };

@@ -95,6 +95,14 @@ bool ANPCBase::GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) {
 	return false;
 }
 
+bool ANPCBase::DialogAvailable_Implementation() {
+	return IDialogHolderInterface::DialogAvailable_Implementation();
+}
+
+void ANPCBase::DialogInteract_Implementation(AMainCharacter* InCharacter) {
+	IDialogHolderInterface::DialogInteract_Implementation(InCharacter);
+}
+
 void ANPCBase::SetGoals() {
 	if (!bGoalSet) {
 		TArray<UActorComponent*> Elements;

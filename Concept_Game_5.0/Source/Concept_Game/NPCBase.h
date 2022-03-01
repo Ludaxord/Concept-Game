@@ -7,10 +7,11 @@
 #include "GameFramework/Pawn.h"
 #include "NPCInterface.h"
 #include "QuestHolderInterface.h"
+#include "DialogHolderInterface.h"
 #include "NPCBase.generated.h"
 
 UCLASS()
-class CONCEPT_GAME_API ANPCBase : public ACharacter, public INPCInterface, public IQuestHolderInterface {
+class CONCEPT_GAME_API ANPCBase : public ACharacter, public INPCInterface, public IQuestHolderInterface, public IDialogHolderInterface {
 	GENERATED_BODY()
 
 public:
@@ -35,6 +36,10 @@ public:
 	virtual bool QuestAvailable_Implementation() override;
 
 	virtual bool GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) override;
+
+	virtual bool DialogAvailable_Implementation() override;
+
+	virtual void DialogInteract_Implementation(AMainCharacter* InCharacter) override;
 
 	virtual void SetGoals();
 
