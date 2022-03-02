@@ -197,7 +197,7 @@ void UMainCharacterInputComponent::Cover() {
 					OwningCharacter->CurrentCoverHitResult = OutHitResult;
 
 					OutHitResult.GetActor()->GetActorBounds(false, OwningCharacter->CurrentCoverOrigin,
-					                                   OwningCharacter->CurrentCoverBoxExtend);
+					                                        OwningCharacter->CurrentCoverBoxExtend);
 					OwningCharacter->CoverLocation = OutHitResult.Location;
 					OwningCharacter->CoverNormal = OutHitResult.Normal;
 					OwningCharacter->CurrentCover = Cast<ACover>(OutHitResult.GetActor());
@@ -450,9 +450,10 @@ void UMainCharacterInputComponent::InteractButtonPressed() {
 		OwningCharacter->CharacterItemComponent->GetTraceHitItem()->InteractWithItem(OwningCharacter);
 		OwningCharacter->CharacterItemComponent->SetTraceHitItem(nullptr);
 	}
+	//TODO: Change to Interact and in NPC class decide whether it is Quest Character Or Dialog Character.... FIX
 	else if (auto QuestActor = OwningCharacter->CharacterQuestSystemComponent->GetQuestActor()) {
 		if (QuestActor->GetClass()->ImplementsInterface(UQuestHolderInterface::StaticClass())) {
-		UE_LOG(LogTemp, Warning, TEXT("Quest Actor: %s"), *QuestActor ->GetName())
+			UE_LOG(LogTemp, Warning, TEXT("Quest Actor: %s"), *QuestActor ->GetName())
 			IQuestHolderInterface* QuestHolderActor = Cast<IQuestHolderInterface>(QuestActor);
 			QuestHolderActor->Execute_QuestInteract(QuestActor, OwningCharacter);
 		}
