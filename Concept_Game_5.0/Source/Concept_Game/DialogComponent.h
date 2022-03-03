@@ -17,4 +17,8 @@ public:
 
 	void BeginPlay() override;
 
+
+	AActor* GetDialogActor() {
+		return nullptr;
+	}
 };

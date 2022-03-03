@@ -11,8 +11,4 @@ UDialogComponent::UDialogComponent() {
 
 void UDialogComponent::BeginPlay() {
 	Super::BeginPlay();
-
-	if (ANPCBase* NPCOwner = Cast<ANPCBase>(GetOwner())) {
-		AAIController* AIController = NPCOwner->GetAIController();
-	}
 }

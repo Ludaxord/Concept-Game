@@ -5,6 +5,7 @@
 
 #include "Cover.h"
 #include "DebugWidgetComponent.h"
+#include "DialogComponent.h"
 #include "InventoryComponent.h"
 #include "ItemComponent.h"
 #include "MainCharacter.h"
@@ -470,6 +471,10 @@ void UMainCharacterInputComponent::InteractButtonPressed() {
 		// }
 
 		OwningCharacter->CharacterQuestSystemComponent->SetQuestActor(nullptr);
+	}
+	//TODO: For now just implement Dialog, refactor later...
+	else if (auto DialogActor = OwningCharacter->CharacterDialogComponent->GetDialogActor()) {
+		
 	}
 }
 
