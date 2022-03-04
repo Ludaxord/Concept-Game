@@ -68,6 +68,8 @@ protected:
 
 	void SetTestWeapon();
 
+	void CreateNullObjects();
+
 public:
 	void SetLookUpRates(float DeltaTime);
 	void CalculateCrosshairSpread(float DeltaTime);

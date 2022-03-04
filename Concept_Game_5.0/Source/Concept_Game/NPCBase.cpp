@@ -9,6 +9,7 @@
 #include "GOAPFreeRoamGoalComponent.h"
 #include "GOAPGoalPatrolComponent.h"
 #include "GOAPTaskComponent.h"
+#include "NPCDialogComponent.h"
 #include "NPCInventoryComponent.h"
 #include "WorldStateManager.h"
 #include "Components/SphereComponent.h"
@@ -28,6 +29,8 @@ ANPCBase::ANPCBase(): bGoalSet(false), bQuestWidgetActive(false) {
 
 	GoalDefeatEnemy = CreateDefaultSubobject<UGOAPDefeatEnemyGoalComponent>(TEXT("GoalDefeatEnemy"));
 	GoalEscape = CreateDefaultSubobject<UGOAPEscapeGoalComponent>(TEXT("GoalEscape"));
+
+	NPCDialogComponent = CreateDefaultSubobject<UNPCDialogComponent>(TEXT("NPCDialogComponent"));
 
 	NPCSphere = CreateDefaultSubobject<USphereComponent>(TEXT("NPCSphere"));
 	NPCSphere->SetupAttachment(GetRootComponent());
@@ -96,11 +99,12 @@ bool ANPCBase::GoalInterrupt_Implementation(UGOAPTaskComponent* InCurrentGoal) {
 }
 
 bool ANPCBase::DialogAvailable_Implementation() {
-	return false;
+	return true;
 }
 
 void ANPCBase::DialogInteract_Implementation(AMainCharacter* InCharacter) {
-	
+	UE_LOG(LogTemp, Warning, TEXT("textDialogInteract_Implementation "))
+	Interact_Implementation(InCharacter);
 }
 
 void ANPCBase::SetGoals() {

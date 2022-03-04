@@ -473,8 +473,20 @@ void UMainCharacterInputComponent::InteractButtonPressed() {
 		OwningCharacter->CharacterQuestSystemComponent->SetQuestActor(nullptr);
 	}
 	//TODO: For now just implement Dialog, refactor later...
-	else if (auto DialogActor = OwningCharacter->CharacterDialogComponent->GetDialogActor()) {
-		
+	else if (auto DialogComponent = OwningCharacter->CharacterDialogComponent) {
+		if (auto DialogActor = DialogComponent->GetDialogActor()) {
+			UE_LOG(LogTemp, Warning, TEXT("Dialog Actor: %s"), *DialogActor ->GetName())
+			if (DialogActor->GetClass()->ImplementsInterface(UDialogHolderInterface::StaticClass())) {
+				UE_LOG(LogTemp, Warning, TEXT("IMPLEMENTED Dialog Actor: %s"), *DialogActor ->GetName())
+				IDialogHolderInterface* DialogHolderActor = Cast<IDialogHolderInterface>(DialogActor);
+				DialogHolderActor->Execute_DialogInteract(DialogActor, OwningCharacter);
+			}
+
+			OwningCharacter->CharacterDialogComponent->SetDialogActor(nullptr);
+		}
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("ERROR CHARACTER DIALOG COMPONENT"))
 	}
 }
 

@@ -30,6 +30,8 @@ public:
 	virtual void OnSphereEndOverlap_Implementation(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	                                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
 
+	virtual bool QuestAvailable_Implementation() override;
+
 private:
 	void LoadQuestsToNPC();
 

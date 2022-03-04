@@ -17,8 +17,30 @@ public:
 
 	void BeginPlay() override;
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	AActor* GetDialogActor() {
-		return nullptr;
+	UFUNCTION(BlueprintCallable)
+	virtual void TraceForDialogHolders();
+
+private:
+	class AMainCharacter* OwningCharacter;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Dialog", meta = (AllowPrivateAccess = "true"))
+	AActor* DialogActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Dialog", meta = (AllowPrivateAccess = "true"))
+	AActor* DialogActorLastFrame;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
+	class UUserWidget* DialogWidget;
+
+public:
+	AActor* GetDialogActor() const {
+		return DialogActor;
+	}
+
+	void SetDialogActor(AActor* InActor) {
+		DialogActor = InActor;
 	}
 };
