@@ -50,6 +50,10 @@ void ANPCQuestCharacter::Interact_Implementation(AMainCharacter* InCharacter) {
 			InCharacter->GetQuestComponent()->AskForQuestDelegate.Broadcast(this);
 		}
 	}
+
+	// if (Dialogs.Dialogs.Num() > 0) {
+	// 	InCharacter->GetDialogComponent()->MakeADialogDelegate.Broadcast(this);
+	// }
 }
 
 void ANPCQuestCharacter::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent,
@@ -79,6 +83,10 @@ void ANPCQuestCharacter::OnSphereEndOverlap_Implementation(UPrimitiveComponent* 
 			OtherCharacter->SphereOverlapEnd(ID);
 		}
 	}
+}
+
+bool ANPCQuestCharacter::QuestAvailable_Implementation() {
+	return Quests.Quests.Num() > 0;
 }
 
 void ANPCQuestCharacter::LoadQuestsToNPC() {

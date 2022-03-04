@@ -117,6 +117,7 @@ AMainCharacter::AMainCharacter():
 
 	CharacterQuestComponent = CreateDefaultSubobject<UQuestsComponent>(TEXT("CharacterQuestComponent"));
 	CharacterItemComponent = CreateDefaultSubobject<UItemComponent>(TEXT("CharacterItemComponent"));
+	CharacterDialogComponent = CreateDefaultSubobject<UDialogComponent>(TEXT("CharacterDialogComponent"));
 
 	CharacterRenderComponent = CreateDefaultSubobject<URenderComponent>(
 		TEXT("CharacterPostProcessComponent"));
@@ -147,7 +148,7 @@ AMainCharacter::AMainCharacter():
 	CharacterInputComponent = CreateDefaultSubobject<UMainCharacterInputComponent>(TEXT("CharacterInputComponent"));
 	CharacterBaseHUDComponent = CreateDefaultSubobject<UBaseHUDComponent>(TEXT("CharacterBaseHUDComponent"));
 	DebugWidgetComponent = CreateDefaultSubobject<UDebugWidgetComponent>(TEXT("DebugWidgetComponent"));
-	CharacterDialogComponent = CreateDefaultSubobject<UDialogComponent>(TEXT("CharacterDialogComponent"));
+
 	CharacterStealthComponent = CreateDefaultSubobject<UStealthComponent>(TEXT("CharacterStealthComponent"));
 	CharacterLockpickComponent = CreateDefaultSubobject<ULockpickComponent>(TEXT("CharacterLockpickComponent"));
 	CharacterHackingComponent = CreateDefaultSubobject<UHackingComponent>(TEXT("CharacterHackingComponent"));
@@ -192,6 +193,7 @@ void AMainCharacter::BeginPlay() {
 	Super::BeginPlay();
 
 	// InitSkills();
+	CreateNullObjects();
 
 	SetDefaultCameras();
 
@@ -229,6 +231,14 @@ void AMainCharacter::SetTestWeapon() {
 		// Destroy();
 		// GetWorld()->DestroyActor(this);
 		EquipWeapon(Weapon);
+	}
+}
+
+void AMainCharacter::CreateNullObjects() {
+
+	if (!CharacterDialogComponent) {
+		CharacterDialogComponent = NewObject<UDialogComponent>(this, UDialogComponent::StaticClass(),
+		                                                       TEXT("CharacterDialogComponent"));
 	}
 }
 

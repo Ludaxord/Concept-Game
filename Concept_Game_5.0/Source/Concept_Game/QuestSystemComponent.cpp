@@ -125,6 +125,7 @@ void UQuestSystemComponent::QuestListToggle() {
 	UE_LOG(LogTemp, Warning, TEXT("bQuestList Visible: %s"), bQuestListVisible ? TEXT("true"): TEXT("false"))
 }
 
+//TODO: Fix to trace for NPCs just in one place, not separate in quest component and dialog component
 void UQuestSystemComponent::TraceForQuestsHolders() {
 	if (OwningCharacter->OverlappedItemIDs.Num() > 0) {
 		FHitResult ItemTraceHitResult;
@@ -134,8 +135,10 @@ void UQuestSystemComponent::TraceForQuestsHolders() {
 			// UE_LOG(LogTemp, Error, TEXT("TraceForQuestsHolders: %s"), *ItemTraceHitResult.Actor->GetName())
 			IQuestHolderInterface* Holder = Cast<IQuestHolderInterface>(ItemTraceHitResult.GetActor());
 			if (Holder) {
-				// UE_LOG(LogTemp, Error, TEXT("Holder Actor Setup"))
-				QuestActor = Cast<AActor>(ItemTraceHitResult.GetActor());
+				if (Holder->QuestAvailable_Implementation()) {
+					// UE_LOG(LogTemp, Error, TEXT("Holder Actor Setup"))
+					QuestActor = Cast<AActor>(ItemTraceHitResult.GetActor());
+				}
 			}
 
 			if (QuestActorLastFrame) {

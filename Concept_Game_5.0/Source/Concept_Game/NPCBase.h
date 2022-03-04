@@ -103,6 +103,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="GOAP", meta = (AllowPrivateAccess = "true"))
 	class AWorldStateManager* LocalStateManager;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	class UNPCDialogComponent* NPCDialogComponent;
+
 	FGuid ID;
 
 	bool bGoalSet;
