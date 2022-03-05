@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddRemoveDialogWidget);
+
 UCLASS()
 class CONCEPT_GAME_API UDialogComponent : public UActionComponent {
 	GENERATED_BODY()
@@ -34,7 +37,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
 	class UUserWidget* DialogWidget;
-
+	
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FAddRemoveDialogWidget AddRemoveDialogWidgetDelegate;
 public:
 	AActor* GetDialogActor() const {
 		return DialogActor;
