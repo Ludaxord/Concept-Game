@@ -3,6 +3,7 @@
 
 #include "NPCQuestCharacter.h"
 
+#include "DialogComponent.h"
 #include "GOAPDialogTaskComponent.h"
 #include "GOAPFreeRoamTaskComponent.h"
 #include "GOAPHideTaskComponent.h"
@@ -50,10 +51,13 @@ void ANPCQuestCharacter::Interact_Implementation(AMainCharacter* InCharacter) {
 			InCharacter->GetQuestComponent()->AskForQuestDelegate.Broadcast(this);
 		}
 	}
+	// else
 
 	// if (Dialogs.Dialogs.Num() > 0) {
-	// 	InCharacter->GetDialogComponent()->MakeADialogDelegate.Broadcast(this);
-	// }
+	if (bEnableDialogs) {
+		UE_LOG(LogTemp, Error, TEXT("ANPCQuestCharacter::ENABLE DIALOGS"))
+		InCharacter->GetDialogComponent()->AskForDialogDelegate.Broadcast(this);
+	}
 }
 
 void ANPCQuestCharacter::OnSphereBeginOverlap_Implementation(UPrimitiveComponent* OverlappedComponent,

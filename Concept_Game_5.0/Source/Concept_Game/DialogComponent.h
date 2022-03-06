@@ -10,9 +10,15 @@
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddRemoveDialogWidget);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddRemoveDialogWidget, bool, bIsOpened);
 
-UCLASS()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDialogSpeakFinish);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAskForDialog, AActor*, InQuestHolderActor);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogReplyFinish, int, ReplyIndex);
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CONCEPT_GAME_API UDialogComponent : public UActionComponent {
 	GENERATED_BODY()
 public:
@@ -26,6 +32,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void TraceForDialogHolders();
 
+	UFUNCTION()
+	void AskForDialog(AActor* InQuestHolderActor);
+
 private:
 	class AMainCharacter* OwningCharacter;
 
@@ -35,12 +44,28 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Dialog", meta = (AllowPrivateAccess = "true"))
 	AActor* DialogActorLastFrame;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Quest", meta = (AllowPrivateAccess = "true"))
+	class AActor* DialogHolderActor;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
 	class UUserWidget* DialogWidget;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Widget", meta = (AllowPrivateAccess = "true"))
+	bool bDialogWidgetVisible;
+
+public:
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
 	FAddRemoveDialogWidget AddRemoveDialogWidgetDelegate;
-public:
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FAskForDialog AskForDialogDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FDialogSpeakFinish DialogSpeakFinishDelegate;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category= "Delegates", meta = (AllowPrivateAccess = "true"))
+	FDialogReplyFinish DialogSpeakReplyDelegate;
+
 	AActor* GetDialogActor() const {
 		return DialogActor;
 	}

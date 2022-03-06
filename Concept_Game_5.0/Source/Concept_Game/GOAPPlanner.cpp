@@ -42,7 +42,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 			// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red,
 			//                                  TEXT("Planning failed, no plan found for Pawn: ") + OwnerPawn->GetName()
 			// );
-			UE_LOG(LogTemp, Error, TEXT("Planning failed, no plan found for Pawn: %s"), *OwnerPawn->GetName());
+			// UE_LOG(LogTemp, Error, TEXT("Planning failed, no plan found for Pawn: %s"), *OwnerPawn->GetName());
 		}
 		else {
 			// GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow,
@@ -50,9 +50,9 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 			// 	                                 " Goals: ")
 			//                                  + FString::FromInt(InGoals.Num()) + TEXT(" States: ") + FString::FromInt(
 			// 	                                 InStates.Num()) + TEXT(" For Pawn: ") + OwnerPawn->GetName());
-
-			UE_LOG(LogTemp, Warning, TEXT("Plan build Tasks: %i, Goals: %i, States: %i, For Pawn: %s"), InTasks.Num(),
-			       InGoals.Num(), InStates.Num(), *OwnerPawn->GetName());
+			//
+			// UE_LOG(LogTemp, Warning, TEXT("Plan build Tasks: %i, Goals: %i, States: %i, For Pawn: %s"), InTasks.Num(),
+			//        InGoals.Num(), InStates.Num(), *OwnerPawn->GetName());
 		}
 	}
 
@@ -136,7 +136,7 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::TaskSubset(TArray<UGOAPTaskComponent*>
 
 	for (UGOAPTaskComponent* const& Task : InTasks) {
 		if (Task != TaskToRemove) {
-			UE_LOG(LogTemp, Warning, TEXT("GOAP %s ActionSubset: %s"), *Task->GetOwner()->GetName(), *Task->GetName())
+			// UE_LOG(LogTemp, Warning, TEXT("GOAP %s ActionSubset: %s"), *Task->GetOwner()->GetName(), *Task->GetName())
 			TasksSubset.Add(Task);
 		}
 	}

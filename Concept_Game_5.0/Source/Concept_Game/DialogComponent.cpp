@@ -4,6 +4,7 @@
 #include "DialogComponent.h"
 
 #include "NPCBase.h"
+#include "NPCQuestCharacter.h"
 
 UDialogComponent::UDialogComponent() {
 
@@ -12,6 +13,8 @@ UDialogComponent::UDialogComponent() {
 void UDialogComponent::BeginPlay() {
 	Super::BeginPlay();
 	OwningCharacter = Cast<AMainCharacter>(GetOwner());
+
+	AskForDialogDelegate.AddDynamic(this, &UDialogComponent::AskForDialog);
 }
 
 void UDialogComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -50,5 +53,12 @@ void UDialogComponent::TraceForDialogHolders() {
 	}
 	else if (DialogActorLastFrame) {
 		// LeaveCachedDialogActorTrace();
+	}
+}
+
+void UDialogComponent::AskForDialog(AActor* InDialogHolderActor) {
+	if (auto NPCCharacter = Cast<ANPCQuestCharacter>(InDialogHolderActor)) {
+		DialogHolderActor = NPCCharacter;
+		AddRemoveDialogWidgetDelegate.Broadcast(!bDialogWidgetVisible);
 	}
 }

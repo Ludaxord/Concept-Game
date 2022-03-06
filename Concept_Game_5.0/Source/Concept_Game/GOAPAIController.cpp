@@ -65,10 +65,10 @@ void AGOAPAIController::CompleteTask() {
 }
 
 void AGOAPAIController::Update() {
-	UE_LOG(LogTemp, Warning,
-	       TEXT("========================= Update GOAP Actor: %s... TasksQueue Num: %i ========================="),
-	       *GetPawn()->GetName(),
-	       TasksQueue.Num())
+	// UE_LOG(LogTemp, Warning,
+	//        TEXT("========================= Update GOAP Actor: %s... TasksQueue Num: %i ========================="),
+	//        *GetPawn()->GetName(),
+	//        TasksQueue.Num())
 
 	//TODO: Add states based on this docs....
 	//http://alumni.media.mit.edu/~jorkin/GOAP_draft_AIWisdom2_2003.pdf
@@ -107,8 +107,8 @@ void AGOAPAIController::Update() {
 	// 	);
 	// }
 
-	UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i States : %i"), TasksQueue.Num(), Goals.Num(),
-	       States.Num())
+	// UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i States : %i"), TasksQueue.Num(), Goals.Num(),
+	//        States.Num())
 
 	PlanTasks();
 
