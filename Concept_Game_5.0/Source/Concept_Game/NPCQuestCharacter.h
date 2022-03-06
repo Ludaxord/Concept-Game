@@ -42,6 +42,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Quests", meta = (AllowPrivateAccess = "true"))
 	FNPCQuestStore Quests;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Dialogs", meta = (AllowPrivateAccess = "true"))
+	bool bEnableDialogs;
+
 	//TODO: For now create task components just as properties, later move it to NPCBase and create Array...
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Task", meta= (AllowPrivateAccess = "true"))
 	class UGOAPDialogTaskComponent* DialogTaskComponent;

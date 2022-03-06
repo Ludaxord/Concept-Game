@@ -839,7 +839,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UDebugWidgetComponent* DebugWidgetComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UDialogComponent* CharacterDialogComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
@@ -914,6 +914,10 @@ public:
 
 	UQuestSystemComponent* GetQuestComponent() const {
 		return CharacterQuestSystemComponent;
+	};
+
+	UDialogComponent* GetDialogComponent() const {
+		return CharacterDialogComponent;
 	};
 
 	UMeleeComponent* GetCharacterMeleeComponent() const {
