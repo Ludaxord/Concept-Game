@@ -3,6 +3,7 @@
 
 #include "DialogComponent.h"
 
+#include "AIController.h"
 #include "NPCBase.h"
 #include "NPCQuestCharacter.h"
 
@@ -61,4 +62,16 @@ void UDialogComponent::AskForDialog(AActor* InDialogHolderActor) {
 		DialogHolderActor = NPCCharacter;
 		AddRemoveDialogWidgetDelegate.Broadcast(!bDialogWidgetVisible);
 	}
+}
+
+AAIController* UDialogComponent::GetAIControllerFromDialogActor() const {
+	if (auto NPCCharacter = Cast<ANPCQuestCharacter>(DialogHolderActor)) {
+		if (auto ANPCController = Cast<AAIController>(NPCCharacter->GetController())) {
+			return ANPCController;
+		}
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("GetAIControllerFromDialogActor returns null"))
+
+	return nullptr;
 }
