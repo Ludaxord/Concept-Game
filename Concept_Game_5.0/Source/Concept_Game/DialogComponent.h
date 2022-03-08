@@ -10,6 +10,13 @@
  * 
  */
 
+UENUM(BlueprintType)
+enum class EDialogState: uint8 {
+	EDS_Speak UMETA(DisplayName = "Speak"),
+	EDS_Reply UMETA(DisplayName = "Reply"),
+	EAS_MAX UMETA(DisplayName = "DefaultMAX"),
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAddRemoveDialogWidget, bool, bIsOpened);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDialogSpeakFinish);
@@ -18,7 +25,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAskForDialog, AActor*, InQuestHolde
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDialogReplyFinish, int, ReplyIndex);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UDialogComponent : public UActionComponent {
 	GENERATED_BODY()
 public:
@@ -73,4 +80,7 @@ public:
 	void SetDialogActor(AActor* InActor) {
 		DialogActor = InActor;
 	}
+
+		UFUNCTION(BlueprintCallable)
+	class AAIController* GetAIControllerFromDialogActor() const;
 };
