@@ -29,7 +29,6 @@ void ADoor::BeginPlay() {
 
 void ADoor::Tick(float DeltaSeconds) {
 	Super::Tick(DeltaSeconds);
-
 	if (bIsOpenedRef != bIsOpened) {
 		FRotator Rot = PhysicsBasedMesh->GetComponentRotation();
 
