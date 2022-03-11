@@ -33,7 +33,7 @@ private:
 	UFUNCTION()
 	void UpdateDoorMovementTransitionTimeline(float Output);
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Door Properties", meta = (AllowPrivateAccess = "true"))
 	bool bIsOpened;
 

@@ -27,8 +27,7 @@ ACabinet::ACabinet(): bIsOpened(false) {
 	RightDoorMesh->SetCollisionProfileName(FName("BlockAllDynamic"));
 
 	LeftDoorPhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("LeftDoorPhysicsConstraint"));
-	RightDoorPhysicsConstraint = CreateDefaultSubobject<
-		UPhysicsConstraintComponent>(TEXT("RightDoorPhysicsConstraint"));
+	RightDoorPhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("RightDoorPhysicsConstraint"));
 
 	DoorMovementTransitionTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DoorMovementTransitionTimeline"));
 
@@ -240,15 +239,15 @@ void ACabinet::Tick(float DeltaSeconds) {
 			                                                : CurrentLeftRotYaw,
 		                                                CurrentDoorRotation);
 		float RightLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
-			                                                 ? CurrentLeftRotYaw
+			                                                 ? CurrentRightRotYaw
 			                                                 : CurrentLeftRotYaw + 110,
 		                                                 bIsOpenedRef
-			                                                 ? CurrentLeftRotYaw + 110
-			                                                 : CurrentLeftRotYaw,
+			                                                 ? CurrentRightRotYaw + 110
+			                                                 : CurrentRightRotYaw,
 		                                                 CurrentDoorRotation);
 
 		FRotator LNewRot = {LRot.Pitch, LeftLerpRotYaw, LRot.Roll};
-		FRotator RNewRot = {LRot.Pitch, RightLerpRotYaw, LRot.Roll};
+		FRotator RNewRot = {RRot.Pitch, RightLerpRotYaw, RRot.Roll};
 
 		LeftDoorMesh->SetWorldLocationAndRotation(LeftDoorMesh->GetComponentLocation(), LNewRot);
 		RightDoorMesh->SetWorldLocationAndRotation(RightDoorMesh->GetComponentLocation(), RNewRot);

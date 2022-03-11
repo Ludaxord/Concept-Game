@@ -773,7 +773,7 @@ void AMainCharacter::Jump() {
 			GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 		}
 		else if (bInCover || bCoverActive || bCoveringActive) {
-			if (!bSlideToLeftCover && !bSlideToRightCover) {
+			if (!bSlideToLeftCover && !bSlideToRightCover && CurrentCoverPoint != nullptr) {
 				//TODO: Remove duplicates, to make code clearer
 				if (CurrentCoverPoint->GetOverlappingCover() != nullptr) {
 					UE_LOG(LogTemp, Warning, TEXT("Change Cover"))
