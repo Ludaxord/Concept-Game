@@ -13,7 +13,7 @@ UCLASS()
 class CONCEPT_GAME_API ATwoAxisDoor : public ADoor {
 	GENERATED_BODY()
 public:
-	ADoor();
+	ATwoAxisDoor();
 
 	virtual void BeginPlay() override;
 
