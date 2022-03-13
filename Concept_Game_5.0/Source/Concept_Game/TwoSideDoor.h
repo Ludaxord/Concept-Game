@@ -20,7 +20,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-private:
+	virtual void SetDoorRotation(FRotator LeftRotator, FRotator RightRotator);
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* LeftDoorMesh;
 
