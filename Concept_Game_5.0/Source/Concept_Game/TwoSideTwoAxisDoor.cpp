@@ -18,46 +18,46 @@ void ATwoSideTwoAxisDoor::Tick(float DeltaSeconds) {
 
 		float LeftLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                ? CurrentLeftRotYaw
-			                                                : CurrentLeftRotYaw - RotationYawAngle,
+			                                                : CurrentLeftRotYaw - RotationYawLeftAngle,
 		                                                bIsOpenedRef
-			                                                ? CurrentLeftRotYaw - RotationYawAngle
+			                                                ? CurrentLeftRotYaw - RotationYawLeftAngle
 			                                                : CurrentLeftRotYaw,
 		                                                CurrentDoorRotation);
 		float RightLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                 ? CurrentRightRotYaw
-			                                                 : CurrentRightRotYaw + RotationYawAngle,
+			                                                 : CurrentRightRotYaw + RotationYawRightAngle,
 		                                                 bIsOpenedRef
-			                                                 ? CurrentRightRotYaw + RotationYawAngle
+			                                                 ? CurrentRightRotYaw + RotationYawRightAngle
 			                                                 : CurrentRightRotYaw,
 		                                                 CurrentDoorRotation);
 
 		float LeftLerpRotPitch = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                ? CurrentLeftRotPitch
-			                                                : CurrentLeftRotPitch - RotationPitchAngle,
+			                                                : CurrentLeftRotPitch - RotationPitchLeftAngle,
 		                                                bIsOpenedRef
-			                                                ? CurrentLeftRotPitch - RotationPitchAngle
+			                                                ? CurrentLeftRotPitch - RotationPitchLeftAngle
 			                                                : CurrentLeftRotPitch,
 		                                                CurrentDoorRotation);
 		float RightLerpRotPitch = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                 ? CurrentRightRotPitch
-			                                                 : CurrentRightRotPitch + RotationPitchAngle,
+			                                                 : CurrentRightRotPitch + RotationPitchRightAngle,
 		                                                 bIsOpenedRef
-			                                                 ? CurrentRightRotPitch + RotationPitchAngle
+			                                                 ? CurrentRightRotPitch + RotationPitchRightAngle
 			                                                 : CurrentRightRotPitch,
 		                                                 CurrentDoorRotation);
 
 		float LeftLerpRotRoll = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                ? CurrentLeftRotRoll
-			                                                : CurrentLeftRotRoll - RotationRollAngle,
+			                                                : CurrentLeftRotRoll - RotationRollLeftAngle,
 		                                                bIsOpenedRef
-			                                                ? CurrentLeftRotRoll - RotationRollAngle
+			                                                ? CurrentLeftRotRoll - RotationRollLeftAngle
 			                                                : CurrentLeftRotRoll,
 		                                                CurrentDoorRotation);
 		float RightLerpRotRoll = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                 ? CurrentRightRotRoll
-			                                                 : CurrentRightRotRoll + RotationRollAngle,
+			                                                 : CurrentRightRotRoll + RotationRollRightAngle,
 		                                                 bIsOpenedRef
-			                                                 ? CurrentRightRotRoll + RotationRollAngle
+			                                                 ? CurrentRightRotRoll + RotationRollRightAngle
 			                                                 : CurrentRightRotRoll,
 		                                                 CurrentDoorRotation);
 

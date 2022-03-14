@@ -15,22 +15,63 @@ class CONCEPT_GAME_API ATwoAxisDoor : public ADoor {
 public:
 	ATwoAxisDoor();
 
+	virtual void InteractWithItem(AMainCharacter* InCharacter) override;
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	virtual void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                               UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                               const FHitResult& SweepResult) override;
+
+	virtual void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                             UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
+
+	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                  UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+	                                  const FHitResult& SweepResult) override;
+
+	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex) override;
+
+	virtual void OnBoxHandrailLeftBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                           UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	                                           bool bFromSweep,
+	                                           const FHitResult& SweepResult);
+
+	virtual void OnBoxHandrailLeftEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
+
+	virtual void OnBoxHandrailRightBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                            UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	                                            bool bFromSweep,
+	                                            const FHitResult& SweepResult);
+
+	virtual void OnBoxHandrailRightEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	                                          UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
-	float RotationPitchAngle;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* SkeletalBasedMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* CollisionLeftBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Item Properties", meta = (AllowPrivateAccess = "true"))
+	class UBoxComponent* CollisionRightBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
-	float RotationRollAngle;
+	class UAnimationAsset* DoorOpenAnimation;
 
-	float CurrentLeftRotPitch;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	class UAnimationAsset* DoorCloseAnimation;
 
-	float CurrentRightRotPitch;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	bool bStairsOverlap;
 
-	float CurrentLeftRotRoll;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	bool bStairsHandrailLeftOverlap;
 
-	float CurrentRightRotRoll;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	bool bStairsHandrailRightOverlap;
 };

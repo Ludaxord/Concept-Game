@@ -5,7 +5,7 @@
 
 #include "Kismet/KismetMathLibrary.h"
 
-ATwoSideDoor::ATwoSideDoor(): ADoor() {
+ATwoSideDoor::ATwoSideDoor(): ADoor(), RotationYawLeftAngle(RotationYawAngle), RotationYawRightAngle(RotationYawAngle) {
 	ItemInteractionName = "Open";
 	ItemName = "Door";
 
@@ -39,16 +39,16 @@ void ATwoSideDoor::Tick(float DeltaSeconds) {
 
 		float LeftLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                ? CurrentLeftRotYaw
-			                                                : CurrentLeftRotYaw - RotationYawAngle,
+			                                                : CurrentLeftRotYaw - RotationYawLeftAngle,
 		                                                bIsOpenedRef
-			                                                ? CurrentLeftRotYaw - RotationYawAngle
+			                                                ? CurrentLeftRotYaw - RotationYawLeftAngle
 			                                                : CurrentLeftRotYaw,
 		                                                CurrentDoorRotation);
 		float RightLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                 ? CurrentRightRotYaw
-			                                                 : CurrentLeftRotYaw + RotationYawAngle,
+			                                                 : CurrentLeftRotYaw + RotationYawRightAngle,
 		                                                 bIsOpenedRef
-			                                                 ? CurrentRightRotYaw + RotationYawAngle
+			                                                 ? CurrentRightRotYaw + RotationYawRightAngle
 			                                                 : CurrentRightRotYaw,
 		                                                 CurrentDoorRotation);
 

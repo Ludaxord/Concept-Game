@@ -28,6 +28,24 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Cabinet Properties", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* RightDoorMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	float RotationYawLeftAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	float RotationYawRightAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	float RotationPitchLeftAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	float RotationPitchRightAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	float RotationRollLeftAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	float RotationRollRightAngle;
+
 	float CurrentLeftRotYaw;
 
 	float CurrentRightRotYaw;
