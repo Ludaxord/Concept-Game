@@ -49,6 +49,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
 	float CurrentDoorRotation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Door Properties", meta = (AllowPrivateAccess = "true"))
+	float RotationYawAngle;
+
 	UPROPERTY(EditAnywhere, Category="Door Properties", meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* DoorMovementTransitionFloatCurve;
 

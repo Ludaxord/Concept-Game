@@ -6,7 +6,7 @@
 #include "MainCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
 
-ADoor::ADoor(): bIsOpened(false), bIsOpenedRef(false) {
+ADoor::ADoor(): bIsOpened(false), bIsOpenedRef(false), RotationYawAngle(110.f) {
 	ItemInteractionName = "Open";
 	ItemName = "Door";
 
@@ -34,9 +34,9 @@ void ADoor::Tick(float DeltaSeconds) {
 
 		float LerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                            ? CurrentRotYaw
-			                                            : CurrentRotYaw - 110,
+			                                            : CurrentRotYaw - RotationYawAngle,
 		                                            bIsOpenedRef
-			                                            ? CurrentRotYaw - 110
+			                                            ? CurrentRotYaw - RotationYawAngle
 			                                            : CurrentRotYaw,
 		                                            CurrentDoorRotation);
 

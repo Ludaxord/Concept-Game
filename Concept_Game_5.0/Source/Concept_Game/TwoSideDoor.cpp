@@ -5,7 +5,7 @@
 
 #include "Kismet/KismetMathLibrary.h"
 
-ATwoSideDoor::ATwoSideDoor(): ADoor() {
+ATwoSideDoor::ATwoSideDoor(): ADoor(), RotationYawLeftAngle(RotationYawAngle), RotationYawRightAngle(RotationYawAngle) {
 	ItemInteractionName = "Open";
 	ItemName = "Door";
 
@@ -39,28 +39,32 @@ void ATwoSideDoor::Tick(float DeltaSeconds) {
 
 		float LeftLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                ? CurrentLeftRotYaw
-			                                                : CurrentLeftRotYaw - 110,
+			                                                : CurrentLeftRotYaw - RotationYawLeftAngle,
 		                                                bIsOpenedRef
-			                                                ? CurrentLeftRotYaw - 110
+			                                                ? CurrentLeftRotYaw - RotationYawLeftAngle
 			                                                : CurrentLeftRotYaw,
 		                                                CurrentDoorRotation);
 		float RightLerpRotYaw = UKismetMathLibrary::Lerp(bIsOpenedRef
 			                                                 ? CurrentRightRotYaw
-			                                                 : CurrentLeftRotYaw + 110,
+			                                                 : CurrentLeftRotYaw + RotationYawRightAngle,
 		                                                 bIsOpenedRef
-			                                                 ? CurrentRightRotYaw + 110
+			                                                 ? CurrentRightRotYaw + RotationYawRightAngle
 			                                                 : CurrentRightRotYaw,
 		                                                 CurrentDoorRotation);
 
 		FRotator LNewRot = {LRot.Pitch, LeftLerpRotYaw, LRot.Roll};
 		FRotator RNewRot = {RRot.Pitch, RightLerpRotYaw, RRot.Roll};
 
-		LeftDoorMesh->SetWorldLocationAndRotation(LeftDoorMesh->GetComponentLocation(), LNewRot);
-		RightDoorMesh->SetWorldLocationAndRotation(RightDoorMesh->GetComponentLocation(), RNewRot);
-		if (CurrentDoorRotation == 1.f) {
-			bIsOpened = !bIsOpened;
-			ItemInteractionName = bIsOpened ? "Close" : "Open";
-			CurrentDoorRotation = 0;
-		}
+		SetDoorRotation(LNewRot, RNewRot);
+	}
+}
+
+void ATwoSideDoor::SetDoorRotation(FRotator LeftRotator, FRotator RightRotator) {
+	LeftDoorMesh->SetWorldLocationAndRotation(LeftDoorMesh->GetComponentLocation(), LeftRotator);
+	RightDoorMesh->SetWorldLocationAndRotation(RightDoorMesh->GetComponentLocation(), RightRotator);
+	if (CurrentDoorRotation == 1.f) {
+		bIsOpened = !bIsOpened;
+		ItemInteractionName = bIsOpened ? "Close" : "Open";
+		CurrentDoorRotation = 0;
 	}
 }
