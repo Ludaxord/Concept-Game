@@ -39,9 +39,9 @@ TArray<UGOAPTaskComponent*> AGOAPPlanner::GetPlan(TArray<UGOAPTaskComponent*> In
 
 	if (OwnerPawn != nullptr) {
 		if (!bSuccess) {
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red,
-			                                 TEXT("Planning failed, no plan found for Pawn: ") + OwnerPawn->GetName()
-			);
+			// GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red,
+			//                                  TEXT("Planning failed, no plan found for Pawn: ") + OwnerPawn->GetName()
+			// );
 			UE_LOG(LogTemp, Error, TEXT("Planning failed, no plan found for Pawn: %s"), *OwnerPawn->GetName());
 		}
 		else {

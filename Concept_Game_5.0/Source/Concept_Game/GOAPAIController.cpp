@@ -65,10 +65,10 @@ void AGOAPAIController::CompleteTask() {
 }
 
 void AGOAPAIController::Update() {
-	// UE_LOG(LogTemp, Warning,
-	//        TEXT("========================= Update GOAP Actor: %s... TasksQueue Num: %i ========================="),
-	//        *GetPawn()->GetName(),
-	//        TasksQueue.Num())
+	UE_LOG(LogTemp, Warning,
+	       TEXT("========================= Update GOAP Actor: %s... TasksQueue Num: %i ========================="),
+	       *GetPawn()->GetName(),
+	       TasksQueue.Num())
 
 	//TODO: Add states based on this docs....
 	//http://alumni.media.mit.edu/~jorkin/GOAP_draft_AIWisdom2_2003.pdf
@@ -87,15 +87,25 @@ void AGOAPAIController::Update() {
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Green,TEXT("Current Task is running and is not null"));
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red,TEXT("Current task is null or not running"));
+	}
+
+	if (CurrentTask != nullptr && CurrentTask->bRunning) {
 		// if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
 		if (CurrentTask->PerformAction()) {
-			// GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Green,
-			//                                  TEXT(" ======== PerformAction: ") + CurrentTask->GetName() + TEXT(
-			// 	                                 " Pawn: ") +
-			//                                  GetPawn()->GetName()
-			// );
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Green,TEXT("PERFORM ACTION ------> "));
 			StopMovement();
 			CompleteTask();
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red,
+			                                 TEXT(" ======== TASK NOT PERFORMED: ") + CurrentTask->GetName() + TEXT(
+				                                 " Pawn: ") +
+			                                 GetPawn()->GetName()
+			);
 		}
 		return;
 	}
@@ -154,7 +164,9 @@ void AGOAPAIController::TargetPerceptionUpdated(AActor* InActor, FAIStimulus InS
 			       InStimulus.WasSuccessfullySensed() ? TEXT("true") : TEXT("false"),
 			       InStimulus.IsValid() ? TEXT("true") : TEXT("false"))
 			if (InStimulus.IsActive()) {
-				GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald, GetName() + TEXT(" AddState ") + FString("CanSeePlayer_") + NPC->GetNPCName());
+				GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
+				                                 GetName() + TEXT(" AddState ") + FString("CanSeePlayer_") + NPC->
+				                                 GetNPCName());
 				StateManager->AddState(FString("CanSeePlayer_") + NPC->GetNPCName(), 1);
 			}
 			else {
@@ -200,6 +212,12 @@ void AGOAPAIController::PlanTasks() {
 }
 
 void AGOAPAIController::SetTasks() {
+	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT(
+		                                 "SetTasks TasksQueue Number: ") + FString::FromInt(TasksQueue.Num()) + TEXT(
+		                                 "PAWN.... ")
+	                                 +
+	                                 GetPawn()->GetName()
+	);
 	if (TasksQueue.Num() == 0) {
 		if (CurrentGoal != nullptr) {
 			if (CurrentGoal->bRemove) {
@@ -210,12 +228,12 @@ void AGOAPAIController::SetTasks() {
 	else if (TasksQueue.Num() > 0) {
 		CurrentTask = TasksQueue[0];
 		if (CurrentTask != nullptr) {
-			// GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange,
-			//                                  TEXT("Current Task ") + CurrentTask->GetName() + TEXT(
-			// 	                                 " not Running PAWN.... ")
-			//                                  +
-			//                                  GetPawn()->GetName()
-			// );
+			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange,
+			                                 TEXT("Current Task ") + CurrentTask->GetName() + TEXT(
+				                                 " not Running PAWN.... ")
+			                                 +
+			                                 GetPawn()->GetName()
+			);
 			CurrentTask->SetAIController(this);
 			if (CurrentTask->PrePerform()) {
 				TasksQueue.Remove(CurrentTask);
