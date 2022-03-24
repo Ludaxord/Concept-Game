@@ -96,14 +96,19 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 	);
 
 	if (NearestAttachedActor != nullptr) {
+		FNavLocation Loc;
+		UNavigationSystemV1::GetNavigationSystem(GetWorld())->
+			GetRandomPointInNavigableRadius(NearestAttachedActor->GetActorLocation(), Range, Loc);
+
+
 		const FString TheFloatStr = FString::SanitizeFloat(Range);
 		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Green,
 		                                 TEXT("NearestAttachedActor ") + NearestAttachedActor->GetName() + TEXT(" Loc ")
 		                                 +
 		                                 NearestAttachedActor->GetActorLocation().ToString() +
-		                                 TEXT(" Range ") + TheFloatStr
+		                                 TEXT(" Range ") + TheFloatStr + TEXT(" Random ") + Loc.Location.ToString()
 		);
-		FNavLocation Loc;
+
 		if (UNavigationSystemV1::GetNavigationSystem(GetWorld())->
 			GetRandomPointInNavigableRadius(NearestAttachedActor->GetActorLocation(), Range, Loc)) {
 
