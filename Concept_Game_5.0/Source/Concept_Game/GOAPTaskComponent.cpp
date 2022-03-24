@@ -134,6 +134,21 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 	return false;
 }
 
+bool UGOAPTaskComponent::FindFromAttachedActors() {
+	if (NPCTargetActorPoints.Num() > 0) {
+		for (AActor* TargetActor : NPCTargetActorPoints) {
+			if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(TargetActor)) {
+				if (GOAPActor != NearestAttachedActor) {
+					NearestAttachedActor = GOAPActor;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 void UGOAPTaskComponent::CallActors() {
 }
 
@@ -146,6 +161,10 @@ void UGOAPTaskComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 bool UGOAPTaskComponent::PrePerform() {
+	if (NPCTargetActorPoints.Num() > 0) {
+		return FindFromAttachedActors();
+	}
+
 	return FindNearestActorLocationFromOwner();
 }
 
@@ -154,6 +173,10 @@ bool UGOAPTaskComponent::PostPerform() {
 		if (NPC->bUpdateGoals) {
 			return true;
 		}
+	}
+
+	if (NPCTargetActorPoints.Num() > 0) {
+		return FindFromAttachedActors();
 	}
 
 	return FindNearestActorLocationFromOwner();

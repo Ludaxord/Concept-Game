@@ -24,6 +24,7 @@ protected:
 
 	bool FindNearestActorLocationFromOwner();
 
+	bool FindFromAttachedActors();
 
 public:
 	// Called every frame
@@ -61,6 +62,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	AActor* NearestAttachedActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
+	TArray<AActor*> NPCTargetActorPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "GOAP", meta = (AllowPrivateAccess = "true"))
 	FString TaskName = "Task";
