@@ -92,10 +92,30 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 		index++;
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("")
+	);
+
 	if (NearestAttachedActor != nullptr) {
 		FNavLocation Loc;
+		UNavigationSystemV1::GetNavigationSystem(GetWorld())->
+			GetRandomPointInNavigableRadius(NearestAttachedActor->GetActorLocation(), Range, Loc);
+
+
+		const FString TheFloatStr = FString::SanitizeFloat(Range);
+		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Green,
+		                                 TEXT("NearestAttachedActor ") + NearestAttachedActor->GetName() + TEXT(" Loc ")
+		                                 +
+		                                 NearestAttachedActor->GetActorLocation().ToString() +
+		                                 TEXT(" Range ") + TheFloatStr + TEXT(" Random ") + Loc.Location.ToString()
+		);
+
 		if (UNavigationSystemV1::GetNavigationSystem(GetWorld())->
 			GetRandomPointInNavigableRadius(NearestAttachedActor->GetActorLocation(), Range, Loc)) {
+
+			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Emerald,
+			                                 TEXT("GetRandomPointInNavigableRadius FOR ") + NearestAttachedActor->
+			                                 GetName() + TEXT(" AT RANGE ") + FString::FromInt(Range)
+			);
 			Target = Loc.Location;
 			if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(NearestAttachedActor)) {
 				GOAPActor->DisabledActors.Add(GetOwner());
@@ -104,6 +124,11 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 
 			return true;
 		}
+	}
+	else {
+
+		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red, TEXT("NearestAttachedActor IS NULL")
+		);
 	}
 
 	return false;
