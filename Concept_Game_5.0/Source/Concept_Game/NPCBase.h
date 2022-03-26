@@ -111,6 +111,9 @@ protected:
 	bool bGoalSet;
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Task", meta = (AllowPrivateAccess = "true"))
+	FString NPCCurrentTask;
+
 	bool bUpdateGoals;
 
 	FORCEINLINE USphereComponent* GetNPCSphere() const {

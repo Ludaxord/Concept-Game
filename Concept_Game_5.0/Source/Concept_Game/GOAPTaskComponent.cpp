@@ -7,6 +7,7 @@
 #include "NPCBase.h"
 #include "FreeRoamPoint.h"
 #include "NavigationSystem.h"
+#include "WorldStateManager.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
@@ -151,6 +152,10 @@ void UGOAPTaskComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 }
 
 bool UGOAPTaskComponent::PrePerform() {
+	if (ANPCBase* NPC = Cast<ANPCBase>(GetOwner())) {
+		NPC->NPCCurrentTask = TaskName;
+	}
+
 	if (NPCTargetActorPoints.Num() > 0) {
 		GEngine->AddOnScreenDebugMessage(-1, 40.f, FColor::Magenta, TEXT("UGOAPTaskComponent::PrePerform"));
 		return FindFromAttachedActors();
@@ -162,6 +167,7 @@ bool UGOAPTaskComponent::PrePerform() {
 bool UGOAPTaskComponent::PostPerform() {
 	if (ANPCBase* NPC = Cast<ANPCBase>(GetOwner())) {
 		if (NPC->bUpdateGoals) {
+			NPC->GetStateManager()->RemoveState(NPC->NPCCurrentTask);
 			return true;
 		}
 	}

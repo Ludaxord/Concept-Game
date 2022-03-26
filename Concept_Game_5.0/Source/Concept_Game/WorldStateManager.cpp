@@ -32,6 +32,7 @@ bool AWorldStateManager::HasState(FString Key) {
 }
 
 void AWorldStateManager::AddState(FString Key, int32 Val, bool bUpdateGoals) {
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Magenta, FString(" AddState ") + Key);
 
 	if (bUpdateGoals) {
 		TArray<AActor*> WorldNPCs;
@@ -58,7 +59,7 @@ void AWorldStateManager::AddState(FString Key, int32 Val, bool bUpdateGoals) {
 }
 
 void AWorldStateManager::RemoveState(FString Key) {
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Cyan, GetName() + TEXT(" RemoveState ") + Key);
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, GetName() + TEXT(" RemoveState ") + Key);
 	if (States.Contains(Key)) {
 		States.Remove(Key);
 	}
