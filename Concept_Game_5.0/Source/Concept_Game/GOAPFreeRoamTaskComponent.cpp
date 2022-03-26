@@ -26,6 +26,13 @@ bool UGOAPFreeRoamTaskComponent::PrePerform() {
 
 bool UGOAPFreeRoamTaskComponent::PostPerform() {
 
+	if (NPCTargetActorPoints.Num() > 0) {
+		// TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
+		// TaskOwner->GetStateManager()->AddState(FString("CanWalk"), 1);
+
+		return Super::PostPerform();
+	}
+
 	if (!bLoopTaskTillBreak) {
 		TaskOwner->GetStateManager()->RemoveState(FString("CanWalk"));
 		UE_LOG(LogTemp, Warning, TEXT("OWNER: %s UGOAPFreeRoamTaskComponent::PostPerform => bLoopTaskTillBreak"),

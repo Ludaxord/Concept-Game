@@ -87,38 +87,13 @@ void AGOAPAIController::Update() {
 	States = StateManager->GetStates();
 
 	if (CurrentTask != nullptr && CurrentTask->bRunning) {
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Green,TEXT("Current Task is running and is not null"));
-	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red,TEXT("Current task is null or not running"));
-	}
-
-	if (CurrentTask != nullptr && CurrentTask->bRunning) {
 		// if (FVector::Distance(GetPawn()->GetActorLocation(), CurrentTask->GetTarget()) < CurrentTask->GetRange()) {
 		if (CurrentTask->PerformAction()) {
-			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Green,TEXT("PERFORM ACTION ------> "));
 			StopMovement();
 			CompleteTask();
 		}
-		else {
-			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red,
-			                                 TEXT(" ======== TASK NOT PERFORMED: ") + CurrentTask->GetName() + TEXT(
-				                                 " Pawn: ") +
-			                                 GetPawn()->GetName()
-			);
-		}
 		return;
 	}
-	// else if (CurrentTask != nullptr) {
-	// 	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange,
-	// 	                                 TEXT("Current Task ") + CurrentTask->GetName() + TEXT(" not Running PAWN.... ")
-	// 	                                 +
-	// 	                                 GetPawn()->GetName()
-	// 	);
-	// }
-
-	// UE_LOG(LogTemp, Warning, TEXT("GOAP TasksQueue.Num : %i Goals : %i States : %i"), TasksQueue.Num(), Goals.Num(),
-	//        States.Num())
 
 	PlanTasks();
 
@@ -212,12 +187,6 @@ void AGOAPAIController::PlanTasks() {
 }
 
 void AGOAPAIController::SetTasks() {
-	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT(
-		                                 "SetTasks TasksQueue Number: ") + FString::FromInt(TasksQueue.Num()) + TEXT(
-		                                 "PAWN.... ")
-	                                 +
-	                                 GetPawn()->GetName()
-	);
 	if (TasksQueue.Num() == 0) {
 		if (CurrentGoal != nullptr) {
 			if (CurrentGoal->bRemove) {
@@ -228,12 +197,6 @@ void AGOAPAIController::SetTasks() {
 	else if (TasksQueue.Num() > 0) {
 		CurrentTask = TasksQueue[0];
 		if (CurrentTask != nullptr) {
-			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange,
-			                                 TEXT("Current Task ") + CurrentTask->GetName() + TEXT(
-				                                 " not Running PAWN.... ")
-			                                 +
-			                                 GetPawn()->GetName()
-			);
 			CurrentTask->SetAIController(this);
 			if (CurrentTask->PrePerform()) {
 				TasksQueue.Remove(CurrentTask);
