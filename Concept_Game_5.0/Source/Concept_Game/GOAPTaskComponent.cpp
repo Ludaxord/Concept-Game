@@ -83,18 +83,33 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 				NearestAttachedActor = AttachedActor;
 			}
 		}
-		UE_LOG(LogTemp, Warning,
-		       TEXT("GOAP FindNearestActorLocationFromOwner GOAP NPC => %s Task Location: %s Owner Location: %s"),
-		       *GetOwner()->GetName(),
-		       *AttachedActor->GetActorLocation().ToString(),
-		       *TaskOwner->GetActorLocation().ToString()
-		)
+
 		index++;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("")
-	);
+	return SetNearestActorLocation();
+}
 
+bool UGOAPTaskComponent::FindFromAttachedActors() {
+	if (NPCTargetActorPoints.Num() > 0) {
+		for (AActor* TargetActor : NPCTargetActorPoints) {
+			if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(TargetActor)) {
+				if (GOAPActor != NearestAttachedActor) {
+					NearestAttachedActor = GOAPActor;
+					GEngine->AddOnScreenDebugMessage(-1, 40.f, FColor::Red,
+					                                 TEXT("GOAPActor ") + GOAPActor->GetName());
+					GEngine->AddOnScreenDebugMessage(-1, 40.f, FColor::Yellow,
+					                                 TEXT("NearestAttachedActor ") + NearestAttachedActor->GetName());
+					break;
+				}
+			}
+		}
+	}
+
+	return SetNearestActorLocation();
+}
+
+bool UGOAPTaskComponent::SetNearestActorLocation() {
 	if (NearestAttachedActor != nullptr) {
 		FNavLocation Loc;
 		UNavigationSystemV1::GetNavigationSystem(GetWorld())->
@@ -111,11 +126,6 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 
 		if (UNavigationSystemV1::GetNavigationSystem(GetWorld())->
 			GetRandomPointInNavigableRadius(NearestAttachedActor->GetActorLocation(), Range, Loc)) {
-
-			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Emerald,
-			                                 TEXT("GetRandomPointInNavigableRadius FOR ") + NearestAttachedActor->
-			                                 GetName() + TEXT(" AT RANGE ") + FString::FromInt(Range)
-			);
 			Target = Loc.Location;
 			if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(NearestAttachedActor)) {
 				GOAPActor->DisabledActors.Add(GetOwner());
@@ -123,26 +133,6 @@ bool UGOAPTaskComponent::FindNearestActorLocationFromOwner() {
 			}
 
 			return true;
-		}
-	}
-	else {
-
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red, TEXT("NearestAttachedActor IS NULL")
-		);
-	}
-
-	return false;
-}
-
-bool UGOAPTaskComponent::FindFromAttachedActors() {
-	if (NPCTargetActorPoints.Num() > 0) {
-		for (AActor* TargetActor : NPCTargetActorPoints) {
-			if (AGOAPTaskAttachedActor* GOAPActor = Cast<AGOAPTaskAttachedActor>(TargetActor)) {
-				if (GOAPActor != NearestAttachedActor) {
-					NearestAttachedActor = GOAPActor;
-					return true;
-				}
-			}
 		}
 	}
 
@@ -162,6 +152,7 @@ void UGOAPTaskComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 bool UGOAPTaskComponent::PrePerform() {
 	if (NPCTargetActorPoints.Num() > 0) {
+		GEngine->AddOnScreenDebugMessage(-1, 40.f, FColor::Magenta, TEXT("UGOAPTaskComponent::PrePerform"));
 		return FindFromAttachedActors();
 	}
 
@@ -176,7 +167,9 @@ bool UGOAPTaskComponent::PostPerform() {
 	}
 
 	if (NPCTargetActorPoints.Num() > 0) {
-		return FindFromAttachedActors();
+		GEngine->AddOnScreenDebugMessage(-1, 40.f, FColor::Cyan, TEXT("UGOAPTaskComponent::PostPerform"));
+		// return FindFromAttachedActors();
+		return true;
 	}
 
 	return FindNearestActorLocationFromOwner();
