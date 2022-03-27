@@ -14,6 +14,7 @@
 #include "MainCharacterInterface.h"
 #include "MeleeWeapon.h"
 #include "PoseType.h"
+#include "TeamInfoInterface.h"
 #include "ThrowableWeapon.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Character.h"
@@ -55,7 +56,7 @@ struct FInterpLocation {
 };
 
 UCLASS()
-class CONCEPT_GAME_API AMainCharacter : public ACharacter, public IMainCharacterInterface {
+class CONCEPT_GAME_API AMainCharacter : public ACharacter, public IMainCharacterInterface, public ITeamInfoInterface {
 	GENERATED_BODY()
 
 public:
@@ -127,6 +128,12 @@ public:
 	void StartFireTimer();
 
 	void InterpCapsuleHalfHeight(float DeltaTime);
+
+	virtual int32 GetTeamID_Implementation() override;
+
+	virtual bool IsAlive_Implementation() override;
+
+	virtual bool IsTargetAnEnemy_Implementation(int32 TeamID) override;
 
 	//TODO: In Target only change camera to Follow Camera when player stick to cover,
 	//TODO: NOTE: Button need to be pressed to stick to cover, when only close to cover player will lean from cover. 
@@ -499,6 +506,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "HUD", meta =(AllowPrivateAccess = "true"))
 	FVector2D CrossHairBaseCenter;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Team", meta =(AllowPrivateAccess = "true"))
+	int32 TeamID;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline", meta = (AllowPrivateAccess = "true"))
 	class UTimelineComponent* ChangeCameraTimeline;
 
@@ -730,10 +740,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Movement", meta = (AllowPrivateAccess = "true"))
 	float LookUpVal;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	float Health;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat", meta = (AllowPrivateAccess = "true"))

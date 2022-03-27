@@ -80,6 +80,7 @@ AMainCharacter::AMainCharacter():
 	bShouldTraceForItems(false),
 	bJumpFromClimb(false),
 	PoseAxisValueCounter(0),
+	TeamID(-1),
 	CameraDefaultFOV(0.0f),
 	CameraZoomedFOV(35.0f),
 	CameraCurrentFOV(0.0f),
@@ -667,8 +668,12 @@ void AMainCharacter::UseWeaponByType(EWeaponType WeaponType) {
 		PerformAttack();
 		PlayMontage(ECharacterMontage::ECM_UseWeapon, EquippedWeapon->GetWeaponType());
 		StartCrosshairMovement();
-		StateManager->AddState(FString("Fire Weapon"), 10, true);
-		StateManager->SetInterruptCurrentState(true);
+
+		if (StateManager) {
+			StateManager->AddState(FString("Fire Weapon"), 10, true);
+			StateManager->SetInterruptCurrentState(true);
+		}
+
 		EquippedWeapon->DecreaseUsability();
 		StartAttackTimer(EquippedWeapon->GetWeaponType());
 		EquippedWeapon->StartWeaponAnimationTimer();
@@ -1032,6 +1037,18 @@ void AMainCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
 	GetMesh()->AddLocalOffset(MeshOffset);
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
+}
+
+int32 AMainCharacter::GetTeamID_Implementation() {
+	return TeamID;
+}
+
+bool AMainCharacter::IsAlive_Implementation() {
+	return Health > 0;
+}
+
+bool AMainCharacter::IsTargetAnEnemy_Implementation(int32 InTeamID) {
+	return TeamID != InTeamID;
 }
 
 void AMainCharacter::SwitchCamera(bool bFollowCamera) {

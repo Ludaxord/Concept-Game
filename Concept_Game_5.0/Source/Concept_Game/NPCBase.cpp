@@ -58,10 +58,12 @@ void ANPCBase::BeginPlay() {
 		LocalStateManager = NewObject<AWorldStateManager>(AWorldStateManager::StaticClass());
 	}
 
-	StateManager->AddState(FString("CanWalk"), 1);
-	StateManager->AddState(FString("CanWalk_InLoop"), 1);
-	LocalStateManager->AddState(FString("CanWalk"), 1);
-	LocalStateManager->AddState(FString("CanWalk_InLoop"), 1);
+	if (StateManager) {
+		StateManager->AddState(FString("CanWalk"), 1);
+		StateManager->AddState(FString("CanWalk_InLoop"), 1);
+		LocalStateManager->AddState(FString("CanWalk"), 1);
+		LocalStateManager->AddState(FString("CanWalk_InLoop"), 1);
+	}
 
 	SetGoals();
 	SetTasks();
@@ -85,7 +87,10 @@ void ANPCBase::Interact_Implementation(AMainCharacter* InCharacter) {
 
 void ANPCBase::QuestInteract_Implementation(AMainCharacter* InCharacter) {
 	UE_LOG(LogTemp, Warning, TEXT("ANPCBase::QuestInteract_Implementation"))
-	StateManager->AddState(FString("Is_Talking_") + NPCName, 2, true);
+	if (StateManager) {
+		StateManager->AddState(FString("Is_Talking_") + NPCName, 2, true);
+	}
+
 	bQuestWidgetActive = true;
 	Interact_Implementation(InCharacter);
 }
@@ -105,6 +110,18 @@ bool ANPCBase::DialogAvailable_Implementation() {
 void ANPCBase::DialogInteract_Implementation(AMainCharacter* InCharacter) {
 	UE_LOG(LogTemp, Warning, TEXT("textDialogInteract_Implementation "))
 	Interact_Implementation(InCharacter);
+}
+
+int32 ANPCBase::GetTeamID_Implementation() {
+	return TeamID;
+}
+
+bool ANPCBase::IsAlive_Implementation() {
+	return Health > 0;
+}
+
+bool ANPCBase::IsTargetAnEnemy_Implementation(int32 InTeamID) {
+	return TeamID != InTeamID;
 }
 
 void ANPCBase::SetGoals() {
