@@ -8,10 +8,12 @@
 #include "NPCInterface.h"
 #include "QuestHolderInterface.h"
 #include "DialogHolderInterface.h"
+#include "TeamInfoInterface.h"
 #include "NPCBase.generated.h"
 
 UCLASS()
-class CONCEPT_GAME_API ANPCBase : public ACharacter, public INPCInterface, public IQuestHolderInterface, public IDialogHolderInterface {
+class CONCEPT_GAME_API ANPCBase : public ACharacter, public INPCInterface, public IQuestHolderInterface,
+                                  public IDialogHolderInterface, public ITeamInfoInterface {
 	GENERATED_BODY()
 
 public:
@@ -40,6 +42,12 @@ public:
 	virtual bool DialogAvailable_Implementation() override;
 
 	virtual void DialogInteract_Implementation(AMainCharacter* InCharacter) override;
+
+	virtual int32 GetTeamID_Implementation() override;
+
+	virtual bool IsAlive_Implementation() override;
+
+	virtual bool IsTargetAnEnemy_Implementation(int32 TeamID) override;
 
 	virtual void SetGoals();
 
@@ -105,6 +113,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Components", meta = (AllowPrivateAccess = "true"))
 	class UNPCDialogComponent* NPCDialogComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Team", meta =(AllowPrivateAccess = "true"))
+	int32 TeamID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	float Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	float MaxHealth;
 
 	FGuid ID;
 
