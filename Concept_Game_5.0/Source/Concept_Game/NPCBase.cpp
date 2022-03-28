@@ -13,6 +13,7 @@
 #include "NPCInventoryComponent.h"
 #include "WorldStateManager.h"
 #include "Components/SphereComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -122,6 +123,97 @@ bool ANPCBase::IsAlive_Implementation() {
 
 bool ANPCBase::IsTargetAnEnemy_Implementation(int32 InTeamID) {
 	return TeamID != InTeamID;
+}
+
+void ANPCBase::PickupWeapon_Implementation(AWeapon* InWeapon) {
+	EquipWeapon(InWeapon);
+}
+
+void ANPCBase::FireWeapon_Implementation() {
+	if (Health <= 0.0f) return;
+	if (EquippedWeapon == nullptr) return;
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (PoseType == EPoseType::EPT_Climb) return;
+
+	UseWeaponByType(EquippedWeapon->GetWeaponType());
+}
+
+void ANPCBase::UseCurrentItem_Implementation() {
+
+}
+
+void ANPCBase::DropItem_Implementation(AItem* ItemToDrop) {
+	if (ItemToDrop) {
+		ItemToDrop->GetItemMesh()->DetachFromComponent({EDetachmentRule::KeepWorld, true});
+		ItemToDrop->SetItemState(EItemState::EIS_Falling);
+		ItemToDrop->ThrowItem();
+
+		ItemToDrop = nullptr;
+	}
+}
+
+void ANPCBase::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool bSwapping) {
+	if (WeaponToEquip) {
+		const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(SocketName);
+		if (Socket) {
+			Socket->AttachActor(WeaponToEquip, GetMesh());
+		}
+
+		//TODO: create delegate
+		//TODO: Create animation for picking up weapon.
+		if (EquippedWeapon == nullptr) {
+
+		}
+		else if (!bSwapping) {
+
+		}
+
+		EquippedWeapon = WeaponToEquip;
+		EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
+	}
+}
+
+void ANPCBase::UseWeaponByType(EWeaponType WeaponType) {
+	const TEnumAsByte<EWeaponType> WeaponEnum = WeaponType;
+	FString EnumAsString = UEnum::GetValueAsString(WeaponEnum.GetValue());
+	UE_LOG(LogTemp, Warning, TEXT("Weapon Type: %s"), *EnumAsString);
+
+	switch (WeaponType) {
+	case EWeaponType::EWT_Melee: {
+	}
+	break;
+	case EWeaponType::EWT_Fire: {
+		PlayCharacterSound(ECharacterSoundState::ECSS_UseWeapon);
+		PerformAttack();
+		PlayMontage(ECharacterMontage::ECM_UseWeapon, EquippedWeapon->GetWeaponType());
+
+		if (StateManager) {
+			StateManager->AddState(FString("Fire Weapon"), 10, true);
+			StateManager->SetInterruptCurrentState(true);
+		}
+
+		EquippedWeapon->DecreaseUsability();
+
+		EquippedWeapon->StartWeaponAnimationTimer();
+	}
+	break;
+	case EWeaponType::EWT_Force: {
+	}
+	break;
+	case EWeaponType::EWT_Any: break;
+	case EWeaponType::EWT_Throwable: break;
+	case EWeaponType::EWT_MAX: break;
+	default: ;
+	}
+}
+
+void ANPCBase::PlayCharacterSound(ECharacterSoundState CharacterSoundState) {
+}
+
+void ANPCBase::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType WeaponType) {
+}
+
+void ANPCBase::PerformAttack() {
 }
 
 void ANPCBase::SetGoals() {

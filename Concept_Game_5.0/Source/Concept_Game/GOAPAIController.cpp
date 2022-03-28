@@ -139,9 +139,6 @@ void AGOAPAIController::TargetPerceptionUpdated(AActor* InActor, FAIStimulus InS
 			       InStimulus.WasSuccessfullySensed() ? TEXT("true") : TEXT("false"),
 			       InStimulus.IsValid() ? TEXT("true") : TEXT("false"))
 			if (InStimulus.IsActive()) {
-				GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Emerald,
-				                                 GetName() + TEXT(" AddState ") + FString("CanSeePlayer_") + NPC->
-				                                 GetNPCName());
 				StateManager->AddState(FString("CanSeePlayer_") + NPC->GetNPCName(), 1);
 			}
 			else {

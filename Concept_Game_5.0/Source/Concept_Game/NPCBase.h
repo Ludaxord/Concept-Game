@@ -49,6 +49,24 @@ public:
 
 	virtual bool IsTargetAnEnemy_Implementation(int32 TeamID) override;
 
+	virtual void PickupWeapon_Implementation(AWeapon* InWeapon) override;
+
+	virtual void FireWeapon_Implementation() override;
+
+	virtual void UseCurrentItem_Implementation() override;
+
+	virtual void DropItem_Implementation(AItem* ItemToDrop) override;
+
+	void EquipWeapon(AWeapon* WeaponToEquip, FName SocketName = "RightHandSocket", bool bSwapping = false);
+
+	void UseWeaponByType(EWeaponType WeaponType);
+
+	void PlayCharacterSound(ECharacterSoundState CharacterSoundState);
+
+	void PlayMontage(ECharacterMontage CharacterMontage, EWeaponType WeaponType);
+
+	void PerformAttack();
+
 	virtual void SetGoals();
 
 	virtual void SetTasks();
@@ -122,6 +140,17 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
+	class AWeapon* EquippedWeapon;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	ECombatState CombatState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Movement", meta = (AllowPrivateAccess = "true"))
+	EPoseType PoseType;
+
+	EPoseType LastPoseType;
 
 	FGuid ID;
 
