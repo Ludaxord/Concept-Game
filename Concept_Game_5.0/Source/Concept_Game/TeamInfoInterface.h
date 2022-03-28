@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Weapon.h"
 #include "UObject/Interface.h"
 #include "TeamInfoInterface.generated.h"
 
@@ -27,4 +28,19 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsAlive();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void PickupWeapon(AWeapon* InWeapon);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void FireWeapon();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void DropItem(AItem* ItemToDrop);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SwitchWeapon(AWeapon* InWeapon);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void UseCurrentItem();
 };

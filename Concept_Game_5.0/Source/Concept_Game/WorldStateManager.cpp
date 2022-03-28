@@ -32,7 +32,6 @@ bool AWorldStateManager::HasState(FString Key) {
 }
 
 void AWorldStateManager::AddState(FString Key, int32 Val, bool bUpdateGoals) {
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Magenta, FString(" AddState ") + Key);
 
 	if (bUpdateGoals) {
 		TArray<AActor*> WorldNPCs;
@@ -43,9 +42,6 @@ void AWorldStateManager::AddState(FString Key, int32 Val, bool bUpdateGoals) {
 				//TODO: Update only when Goal is Equal
 				for (const auto GOAPTaskComponent : WorldNPC->GetGOAPTasksComponents()) {
 					if (GOAPTaskComponent->PreConditions.Contains(Key)) {
-						GEngine->AddOnScreenDebugMessage(-1, 40.f, FColor::Emerald,
-						                                 TEXT(" UpdateGoals State: ") + WorldNPC->GetName() + TEXT(
-							                                 " NPC: ") + Key);
 						UE_LOG(LogTemp, Warning,
 						       TEXT("=============================== !!! == UpdateGoals State: %s, NPC: %s"), *Key,
 						       *WorldNPC->GetName())
@@ -59,7 +55,6 @@ void AWorldStateManager::AddState(FString Key, int32 Val, bool bUpdateGoals) {
 }
 
 void AWorldStateManager::RemoveState(FString Key) {
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, GetName() + TEXT(" RemoveState ") + Key);
 	if (States.Contains(Key)) {
 		States.Remove(Key);
 	}

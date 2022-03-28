@@ -29,6 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetRandomLocationForActor(float InRadius, FVector& OutVector);
 
+	UFUNCTION(BlueprintCallable)
+	bool SetActorFocus(AActor* InFocusActor);
+
+	UFUNCTION(BlueprintCallable)
+	bool ClearActorFocus();
+
 	bool IsVisibleActorEnemy(AActor* InTargetActor);
 
 	bool ActorDetected(ITeamInfoInterface* CurrentTargetActor);

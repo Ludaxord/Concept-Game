@@ -50,11 +50,28 @@ bool ABehaviorTreeAIController::GetRandomLocationForActor(float InRadius, FVecto
 	return false;
 }
 
+bool ABehaviorTreeAIController::SetActorFocus(AActor* InFocusActor) {
+	if (IsVisibleActorEnemy(InFocusActor)) {
+		SetFocus(InFocusActor);
+		return true;
+	}
+
+	ClearFocus(EAIFocusPriority::Default);
+	return false;
+}
+
+bool ABehaviorTreeAIController::ClearActorFocus() {
+	ClearFocus(EAIFocusPriority::Default);
+	return true;
+}
+
 bool ABehaviorTreeAIController::IsVisibleActorEnemy(AActor* InTargetActor) {
-	if (InTargetActor->GetClass()->ImplementsInterface(UTeamInfoInterface::StaticClass())) {
-		ITeamInfoInterface* CurrentTargetActor = Cast<ITeamInfoInterface>(InTargetActor);
-		if (ActorDetected(CurrentTargetActor)) {
-			return CurrentTargetActor->IsAlive();
+	if (InTargetActor) {
+		if (InTargetActor->GetClass()->ImplementsInterface(UTeamInfoInterface::StaticClass())) {
+			ITeamInfoInterface* CurrentTargetActor = Cast<ITeamInfoInterface>(InTargetActor);
+			if (ActorDetected(CurrentTargetActor)) {
+				return CurrentTargetActor->IsAlive();
+			}
 		}
 	}
 
