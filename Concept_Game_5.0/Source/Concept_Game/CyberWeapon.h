@@ -52,6 +52,8 @@ public:
 	virtual void DecreaseUsability() override;
 
 	virtual void StartWeaponAnimationTimer() override;
+
+	virtual int32 GetWeaponUsability() override;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	ECyberWeaponType CyberWeaponType;

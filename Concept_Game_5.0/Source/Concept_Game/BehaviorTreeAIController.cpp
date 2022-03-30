@@ -4,6 +4,7 @@
 #include "BehaviorTreeAIController.h"
 
 #include "NavigationSystem.h"
+#include "NPCBase.h"
 #include "TeamInfoInterface.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -107,6 +108,17 @@ void ABehaviorTreeAIController::UpdateTargetActor() {
 	if (IsValid(TargetActor)) {
 		Blackboard->SetValueAsObject(FName("TargetActor"), TargetActor);
 		Blackboard->SetValueAsObject(FName("LockedActor"), LockActor);
+	}
+}
+
+void ABehaviorTreeAIController::FireWeapon() {
+	if (IsValid(GetPawn())) {
+		ANPCBase* NPC = Cast<ANPCBase>(GetPawn());
+		if (!NPC->GetEquippedWeapon()) {
+			NPC->NPCEquipWeapon(EInventoryWeapon::EIW_Any);
+		}
+
+		NPC->FireWeapon_Implementation();
 	}
 }
 

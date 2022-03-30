@@ -112,10 +112,14 @@ public:
 	virtual void PerformTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) override;
 
 	virtual void LeaveTrace(AMainCharacter* InMainCharacter, TArray<FGuid> Guids) override;
+
+	virtual int32 GetWeaponUsability();
+
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual void BeginPlay() override;
+
 
 	void StopFalling();
 

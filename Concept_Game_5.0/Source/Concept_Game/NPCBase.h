@@ -8,6 +8,7 @@
 #include "NPCInterface.h"
 #include "QuestHolderInterface.h"
 #include "DialogHolderInterface.h"
+#include "NPCInventoryComponent.h"
 #include "TeamInfoInterface.h"
 #include "NPCBase.generated.h"
 
@@ -57,9 +58,18 @@ public:
 
 	virtual void DropItem_Implementation(AItem* ItemToDrop) override;
 
+	virtual AItem* GetEquippedItem_Implementation() override;
+
 	void EquipWeapon(AWeapon* WeaponToEquip, FName SocketName = "RightHandSocket", bool bSwapping = false);
 
 	void UseWeaponByType(EWeaponType WeaponType);
+
+	void SetTestWeapon();
+
+	AWeapon* SpawnDefaultWeapon(EWeaponType WeaponType = EWeaponType::EWT_Any);
+
+	template <typename T>
+	T* SpawnWeapon(TSubclassOf<T> WeaponClass);
 
 	void PlayCharacterSound(ECharacterSoundState CharacterSoundState);
 
@@ -72,6 +82,8 @@ public:
 	virtual void SetTasks();
 
 	virtual void AttachActorsToGOAP();
+
+	virtual void NPCEquipWeapon(EInventoryWeapon InInventoryWeapon);
 
 	virtual TArray<class UGOAPGoalComponent*> InitGoals_Implementation() override;
 
@@ -144,6 +156,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat", meta = (AllowPrivateAccess = "true"))
 	class AWeapon* EquippedWeapon;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AFireWeapon> DefaultFireWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ACyberWeapon> DefaultCyberWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AThrowableWeapon> DefaultThrowableWeaponClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AMeleeWeapon> DefaultMeleeWeaponClass;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Combat", meta = (AllowPrivateAccess = "true"))
 	ECombatState CombatState;
 
@@ -161,6 +185,10 @@ public:
 	FString NPCCurrentTask;
 
 	bool bUpdateGoals;
+
+	FORCEINLINE AWeapon* GetEquippedWeapon() const {
+		return EquippedWeapon;
+	}
 
 	FORCEINLINE USphereComponent* GetNPCSphere() const {
 		return NPCSphere;

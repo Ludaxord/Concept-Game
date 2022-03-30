@@ -22,3 +22,7 @@ void ACyberWeapon::DecreaseUsability() {
 void ACyberWeapon::StartWeaponAnimationTimer() {
 	
 }
+
+int32 ACyberWeapon::GetWeaponUsability() {
+	return Super::GetWeaponUsability();
+}
