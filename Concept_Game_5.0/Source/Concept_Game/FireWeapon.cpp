@@ -23,7 +23,7 @@ void AFireWeapon::PerformAttack() {
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), GetMuzzleFlash(), SocketTransform);
 		}
 
-		FHitResult BeamHitResult;	
+		FHitResult BeamHitResult;
 		//TODO: Add Types of actor that is able to be hit by BeamHitResult...
 		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamHitResult)) {
 			// if (BeamHitResult.GetActor().IsValid()) {
@@ -180,4 +180,8 @@ void AFireWeapon::BeginPlay() {
 void AFireWeapon::OnConstruction(const FTransform& Transform) {
 	Super::OnConstruction(Transform);
 	InitializeWeaponDataTable();
+}
+
+int32 AFireWeapon::GetWeaponUsability() {
+	return GetAmmo();
 }

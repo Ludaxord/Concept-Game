@@ -49,6 +49,7 @@ void ANPCBase::BeginPlay() {
 
 	ID = FGuid::NewGuid();
 
+	SetTestWeapon();
 
 	if (StateManager == nullptr) {
 		StateManager = Cast<AWorldStateManager>(
@@ -68,6 +69,70 @@ void ANPCBase::BeginPlay() {
 
 	SetGoals();
 	SetTasks();
+
+}
+
+void ANPCBase::SetTestWeapon() {
+	AWeapon* Weapon = SpawnDefaultWeapon();
+	bool bAdded = InventoryComponent->InsertInventoryItem(Weapon);
+	UE_LOG(LogTemp, Warning, TEXT("Added Test Weapon: %s => %s"), *GetName(),
+	       bAdded ? TEXT("true") : TEXT("false"));
+	if (bAdded) {
+		// Destroy();
+		// GetWorld()->DestroyActor(this);
+		EquipWeapon(Weapon);
+	}
+}
+
+AWeapon* ANPCBase::SpawnDefaultWeapon(EWeaponType InWeaponType) {
+	AWeapon* WeaponCreated = nullptr;
+	switch (InWeaponType) {
+	case EWeaponType::EWT_Any: {
+		if (DefaultFireWeaponClass) {
+			WeaponCreated = SpawnWeapon(DefaultFireWeaponClass);
+		}
+
+		if (!WeaponCreated) {
+			if (DefaultCyberWeaponClass) {
+				WeaponCreated = SpawnWeapon(DefaultCyberWeaponClass);
+			}
+		}
+
+		if (!WeaponCreated) {
+			if (DefaultMeleeWeaponClass) {
+				WeaponCreated = SpawnWeapon(DefaultMeleeWeaponClass);
+			}
+		}
+	}
+	break;
+	case EWeaponType::EWT_Melee:
+		if (DefaultMeleeWeaponClass) {
+			WeaponCreated = SpawnWeapon(DefaultMeleeWeaponClass);
+		}
+		break;
+	case EWeaponType::EWT_Fire:
+		if (DefaultFireWeaponClass) {
+			WeaponCreated = SpawnWeapon(DefaultFireWeaponClass);
+		}
+		break;
+	case EWeaponType::EWT_Throwable:
+		if (DefaultThrowableWeaponClass) {
+			WeaponCreated = SpawnWeapon(DefaultThrowableWeaponClass);
+		}
+		break;
+	case EWeaponType::EWT_Force:
+		if (DefaultCyberWeaponClass) {
+			WeaponCreated = SpawnWeapon(DefaultCyberWeaponClass);
+		}
+		break;
+	}
+
+	return WeaponCreated;
+}
+
+template <typename T>
+T* ANPCBase::SpawnWeapon(TSubclassOf<T> WeaponClass) {
+	return GetWorld()->SpawnActor<T>(WeaponClass);
 }
 
 // Called every frame
@@ -150,6 +215,10 @@ void ANPCBase::DropItem_Implementation(AItem* ItemToDrop) {
 
 		ItemToDrop = nullptr;
 	}
+}
+
+AItem* ANPCBase::GetEquippedItem_Implementation() {
+	return EquippedWeapon;
 }
 
 void ANPCBase::EquipWeapon(AWeapon* WeaponToEquip, FName SocketName, bool bSwapping) {
@@ -256,6 +325,10 @@ void ANPCBase::AttachActorsToGOAP() {
 		Task->CallActors();
 	}
 
+}
+
+void ANPCBase::NPCEquipWeapon(EInventoryWeapon InInventoryWeapon) {
+	EquippedWeapon = InventoryComponent->EquipWeaponByType(InInventoryWeapon);
 }
 
 TArray<UGOAPGoalComponent*> ANPCBase::InitGoals_Implementation() {

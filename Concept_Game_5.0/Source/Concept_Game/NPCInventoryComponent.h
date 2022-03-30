@@ -7,6 +7,18 @@
 #include "NPCInventoryComponent.generated.h"
 
 
+UENUM()
+enum class EInventoryWeapon : uint8 {
+	EIW_HighestAmmo UMETA(DisplayName = "Highest Ammo"),
+	EIW_HighestDamage UMETA(DisplayName = "Highest Damage"),
+	EIW_HighRange UMETA(DisplayName = "High Range"),
+	EIW_MiddleRange UMETA(DisplayName = "Middle Range"),
+	EIW_LowRange UMETA(DisplayName = "Low Range"),
+	EIW_Melee UMETA(DisplayName = "Melee"),
+	EIW_Any UMETA(DisplayName = "Any"),
+	EIW_MAX UMETA(DisplayName = "DefaultMAX"),
+};
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class CONCEPT_GAME_API UNPCInventoryComponent : public UActorComponent {
 	GENERATED_BODY()
@@ -24,7 +36,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	void InsertInventoryItem(class AItem* InItem);
+	bool InsertInventoryItem(class AItem* InItem);
 
 	bool EquipItem(class AItem* InItem);
 
@@ -33,6 +45,8 @@ public:
 	bool RemoveItemsOfClass(UClass* ItemClass);
 
 	bool RemoveItemOfClass(UClass* ItemClass);
+
+	class AWeapon* EquipWeaponByType(EInventoryWeapon InInventoryWeapon);
 
 	TArray<AItem*> GetItemsOfClass(UClass* ItemClass);
 

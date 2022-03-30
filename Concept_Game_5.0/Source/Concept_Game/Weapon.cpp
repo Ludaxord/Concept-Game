@@ -104,5 +104,9 @@ void AWeapon::BeginPlay() {
 	}
 }
 
+int32 AWeapon::GetWeaponUsability() {
+	return -1;
+}
+
 void AWeapon::StopFalling() {
 }

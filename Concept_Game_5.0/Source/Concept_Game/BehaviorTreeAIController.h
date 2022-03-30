@@ -43,6 +43,9 @@ public:
 
 	void UpdateTargetActor();
 
+	UFUNCTION(BlueprintCallable)
+	void FireWeapon();
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Behavior Tree", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* CurrentBehaviorTree;

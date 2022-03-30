@@ -67,6 +67,8 @@ public:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	virtual int32 GetWeaponUsability() override;
+
 	int32 GetAmmo() const {
 		return Ammo;
 	}

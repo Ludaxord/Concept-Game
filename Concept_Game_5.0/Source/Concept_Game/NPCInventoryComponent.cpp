@@ -29,11 +29,14 @@ void UNPCInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UNPCInventoryComponent::InsertInventoryItem(AItem* InItem) {
+bool UNPCInventoryComponent::InsertInventoryItem(AItem* InItem) {
 	if (InItem != nullptr) {
 		InItem->SetItemState(EItemState::EIS_Equipped);
 		InventoryItems.Add(InItem, false);
+		return true;
 	}
+
+	return false;
 }
 
 bool UNPCInventoryComponent::EquipItem(AItem* InItem) {
@@ -77,6 +80,47 @@ bool UNPCInventoryComponent::RemoveItemOfClass(UClass* ItemClass) {
 	}
 
 	return false;
+}
+
+AWeapon* UNPCInventoryComponent::EquipWeaponByType(EInventoryWeapon InInventoryWeapon) {
+
+	AWeapon* NewWeapon = nullptr;
+
+	TArray<AItem*> Weapons = GetItemsOfClass(AWeapon::StaticClass());
+
+	for (AItem* Item : Weapons) {
+		AWeapon* Weapon = Cast<AWeapon>(Item);
+		switch (InInventoryWeapon) {
+		case EInventoryWeapon::EIW_HighestAmmo:
+			if (NewWeapon != nullptr) {
+				if (NewWeapon->GetWeaponUsability() > Weapon->GetWeaponUsability()) {
+					NewWeapon = Weapon;
+				}
+			}
+			else {
+				NewWeapon = Weapon;
+			}
+			break;
+		case EInventoryWeapon::EIW_HighestDamage:
+			break;
+		case EInventoryWeapon::EIW_HighRange:
+			break;
+		case EInventoryWeapon::EIW_MiddleRange:
+			break;
+		case EInventoryWeapon::EIW_LowRange:
+			break;
+		case EInventoryWeapon::EIW_Melee:
+			break;
+		case EInventoryWeapon::EIW_Any:
+			if (Weapons.Num() > 0) {
+				NewWeapon = Cast<AWeapon>(Weapons[0]);
+			}
+			break;
+		default: ;
+		}
+	}
+
+	return NewWeapon;
 }
 
 TArray<AItem*> UNPCInventoryComponent::GetItemsOfClass(UClass* ItemClass) {
