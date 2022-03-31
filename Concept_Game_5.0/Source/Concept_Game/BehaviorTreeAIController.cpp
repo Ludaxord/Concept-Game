@@ -112,13 +112,19 @@ void ABehaviorTreeAIController::UpdateTargetActor() {
 }
 
 void ABehaviorTreeAIController::FireWeapon() {
-	if (IsValid(GetPawn())) {
-		ANPCBase* NPC = Cast<ANPCBase>(GetPawn());
-		if (!NPC->GetEquippedWeapon()) {
-			NPC->NPCEquipWeapon(EInventoryWeapon::EIW_Any);
-		}
+	if (GetPawn() != nullptr) {
+		if (IsValid(GetPawn())) {
+			const float RandomDelay = FMath::FRandRange(3.f, 6.f);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]() {
+				ANPCBase* NPC = Cast<ANPCBase>(GetPawn());
+				if (!NPC->GetEquippedWeapon()) {
+					NPC->NPCEquipWeapon(EInventoryWeapon::EIW_Any);
+				}
 
-		NPC->FireWeapon_Implementation();
+				NPC->FireWeapon_Implementation();
+			}, RandomDelay, true);
+
+		}
 	}
 }
 

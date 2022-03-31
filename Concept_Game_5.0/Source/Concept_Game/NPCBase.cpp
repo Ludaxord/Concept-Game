@@ -3,6 +3,7 @@
 
 #include "NPCBase.h"
 
+#include "BehaviorTreeAIController.h"
 #include "GOAPDefeatEnemyGoalComponent.h"
 #include "GOAPDialogGoalComponent.h"
 #include "GOAPEscapeGoalComponent.h"
@@ -12,6 +13,7 @@
 #include "NPCDialogComponent.h"
 #include "NPCInventoryComponent.h"
 #include "WorldStateManager.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
@@ -195,10 +197,15 @@ void ANPCBase::PickupWeapon_Implementation(AWeapon* InWeapon) {
 }
 
 void ANPCBase::FireWeapon_Implementation() {
+	UE_LOG(LogTemp, Warning, TEXT("FireWeapon_Implementation"))
 	if (Health <= 0.0f) return;
+	UE_LOG(LogTemp, Warning, TEXT("FireWeapon_Implementation => Health"))
 	if (EquippedWeapon == nullptr) return;
+	UE_LOG(LogTemp, Warning, TEXT("FireWeapon_Implementation => EquippedWeapon"))
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	UE_LOG(LogTemp, Warning, TEXT("FireWeapon_Implementation => CombatState"))
 	if (PoseType == EPoseType::EPT_Climb) return;
+	UE_LOG(LogTemp, Warning, TEXT("FireWeapon_Implementation => PoseType"))
 
 	UseWeaponByType(EquippedWeapon->GetWeaponType());
 }
@@ -283,6 +290,7 @@ void ANPCBase::PlayMontage(ECharacterMontage CharacterMontage, EWeaponType Weapo
 }
 
 void ANPCBase::PerformAttack() {
+	EquippedWeapon->PerformAttack();
 }
 
 void ANPCBase::SetGoals() {
