@@ -15,6 +15,7 @@ ABehaviorTreeAIController::ABehaviorTreeAIController() {
 }
 
 void ABehaviorTreeAIController::TargetPerceptionUpdated(AActor* InActor, FAIStimulus InStimulus) {
+	UE_LOG(LogTemp, Warning, TEXT("====================== TargetPerceptionUpdated ======================"))
 	if (InStimulus.WasSuccessfullySensed()) {
 		if (IsVisibleActorEnemy(InActor)) {
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]() {
@@ -52,7 +53,8 @@ bool ABehaviorTreeAIController::GetRandomLocationForActor(float InRadius, FVecto
 }
 
 bool ABehaviorTreeAIController::SetActorFocus(AActor* InFocusActor) {
-	if (IsVisibleActorEnemy(InFocusActor)) {
+	// if (IsVisibleActorEnemy(InFocusActor)) {
+	if (InFocusActor) {
 		SetFocus(InFocusActor);
 		return true;
 	}
@@ -71,7 +73,7 @@ bool ABehaviorTreeAIController::IsVisibleActorEnemy(AActor* InTargetActor) {
 		if (InTargetActor->GetClass()->ImplementsInterface(UTeamInfoInterface::StaticClass())) {
 			ITeamInfoInterface* CurrentTargetActor = Cast<ITeamInfoInterface>(InTargetActor);
 			if (ActorDetected(CurrentTargetActor)) {
-				return CurrentTargetActor->IsAlive();
+				return CurrentTargetActor->Execute_IsAlive(this);
 			}
 		}
 	}
@@ -80,7 +82,7 @@ bool ABehaviorTreeAIController::IsVisibleActorEnemy(AActor* InTargetActor) {
 }
 
 bool ABehaviorTreeAIController::ActorDetected(ITeamInfoInterface* CurrentTargetActor) {
-	return CurrentTargetActor->IsTargetAnEnemy(CurrentTargetActor->GetTeamID());
+	return CurrentTargetActor->IsTargetAnEnemy(CurrentTargetActor->Execute_GetTeamID(this));
 }
 
 AActor* ABehaviorTreeAIController::GetClosestEnemy() {

@@ -37,6 +37,8 @@ bool AWeapon::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult
 	FVector OutBeamLocation;
 	FHitResult CrosshairHitResult;
 
+	UE_LOG(LogTemp, Warning, TEXT(" ================================ WEAPON BEAM END LOCATION ================================ "))
+
 	if (Character == nullptr) {
 		Character = InCharacter;
 	}
