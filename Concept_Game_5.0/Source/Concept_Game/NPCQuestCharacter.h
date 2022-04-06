@@ -32,6 +32,8 @@ public:
 
 	virtual bool QuestAvailable_Implementation() override;
 
+	virtual int32 GetTeamID_Implementation() override;
+
 private:
 	void LoadQuestsToNPC();
 

@@ -93,6 +93,10 @@ bool ANPCQuestCharacter::QuestAvailable_Implementation() {
 	return Quests.Quests.Num() > 0;
 }
 
+int32 ANPCQuestCharacter::GetTeamID_Implementation() {
+	return Super::GetTeamID_Implementation();
+}
+
 void ANPCQuestCharacter::LoadQuestsToNPC() {
 	for (FNPCQuest NPCQuest : Quests.Quests) {
 		for (FQuestStep QuestStep : NPCQuest.QuestSteps) {
