@@ -70,8 +70,11 @@ bool ABehaviorTreeAIController::ClearActorFocus() {
 
 bool ABehaviorTreeAIController::IsVisibleActorEnemy(AActor* InTargetActor) {
 	if (InTargetActor) {
+		UE_LOG(LogTemp, Warning, TEXT("IsVisibleActorEnemy %s"), *InTargetActor->GetName())
 		if (InTargetActor->GetClass()->ImplementsInterface(UTeamInfoInterface::StaticClass())) {
+			UE_LOG(LogTemp, Warning, TEXT("ImplementsInterface %s"), *InTargetActor->GetName())
 			ITeamInfoInterface* CurrentTargetActor = Cast<ITeamInfoInterface>(InTargetActor);
+			UE_LOG(LogTemp, Warning, TEXT("ActorDetected %s"), *InTargetActor->GetName())
 			if (ActorDetected(CurrentTargetActor)) {
 				return CurrentTargetActor->Execute_IsAlive(this);
 			}
@@ -82,7 +85,12 @@ bool ABehaviorTreeAIController::IsVisibleActorEnemy(AActor* InTargetActor) {
 }
 
 bool ABehaviorTreeAIController::ActorDetected(ITeamInfoInterface* CurrentTargetActor) {
-	return CurrentTargetActor->IsTargetAnEnemy(CurrentTargetActor->Execute_GetTeamID(this));
+	if (CurrentTargetActor) {
+		return CurrentTargetActor->IsTargetAnEnemy_Implementation(CurrentTargetActor->GetTeamID_Implementation());
+		// return CurrentTargetActor->IsTargetAnEnemy(CurrentTargetActor->GetTeamID());
+	}
+
+	return false;
 }
 
 AActor* ABehaviorTreeAIController::GetClosestEnemy() {
